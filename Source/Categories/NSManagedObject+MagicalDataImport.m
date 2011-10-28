@@ -14,6 +14,7 @@ NSString * const kMagicalRecordImportAttributeKeyMapKey = @"mappedKeyName";
 NSString * const kMagicalRecordImportAttributeValueClassNameKey = @"attributeValueClassName";
 
 NSString * const kMagicalRecordImportRelationshipMapKey = @"mappedKeyName";
+NSString * const kMagicalRecordImportRelationshipClassKey = @"subclassName";
 NSString * const kMagicalRecordImportRelationshipPrimaryKey = @"primaryRelationshipKey";
 NSString * const kMagicalRecordImportRelationshipTypeKey = @"type";
 
@@ -77,14 +78,21 @@ NSString * const kMagicalRecordImportRelationshipTypeKey = @"type";
 
 - (NSManagedObject *) MR_findObjectForRelationship:(NSRelationshipDescription *)relationshipInfo withData:(id)singleRelatedObjectData
 {
-    NSEntityDescription *destinationEntity = [relationshipInfo destinationEntity];
+    NSString *destinationName = [singleRelatedObjectData objectForKey:kMagicalRecordImportRelationshipClassKey];
+    NSEntityDescription *destination = [relationshipInfo destinationEntity];
+    if (destinationName) {
+        NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
+        if ([customDestination isKindOfEntity:destination])
+            destination = customDestination;
+    }
+
     NSManagedObject *objectForRelationship = nil;
     id relatedValue = [singleRelatedObjectData MR_relatedValueForRelationship:relationshipInfo];
 
     if (relatedValue) 
     {
         NSManagedObjectContext *context = [self managedObjectContext];
-        Class managedObjectClass = NSClassFromString([destinationEntity managedObjectClassName]);
+        Class managedObjectClass = NSClassFromString([destination managedObjectClassName]);
         objectForRelationship = [managedObjectClass findFirstByAttribute:[relationshipInfo MR_primaryKey]
                                                                withValue:relatedValue
                                                                inContext:context];
@@ -162,7 +170,14 @@ NSString * const kMagicalRecordImportRelationshipTypeKey = @"type";
          NSManagedObject *relatedObject = nil;
          if ([objectData isKindOfClass:[NSDictionary class]]) 
          {
-             relatedObject = [self MR_createInstanceForEntity:[relationshipInfo destinationEntity] withDictionary:objectData];
+             NSString *destinationName = [objectData objectForKey:kMagicalRecordImportRelationshipClassKey];
+             NSEntityDescription *destination = [relationshipInfo destinationEntity];
+             if (destinationName) {
+                 NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
+                 if ([customDestination isKindOfEntity:destination])
+                     destination = customDestination;
+             }
+             relatedObject = [self MR_createInstanceForEntity:destination withDictionary:objectData];
          }
          else
          {
@@ -192,8 +207,14 @@ NSString * const kMagicalRecordImportRelationshipTypeKey = @"type";
                                                                     withData:objectData];
          if (relatedObject == nil)
          {
-             relatedObject = [self MR_createInstanceForEntity:[relationshipInfo destinationEntity]
-                                               withDictionary:objectData];
+             NSString *destinationName = [objectData objectForKey:kMagicalRecordImportRelationshipClassKey];
+             NSEntityDescription *destination = [relationshipInfo destinationEntity];
+             if (destinationName) {
+                 NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
+                 if ([customDestination isKindOfEntity:destination])
+                     destination = customDestination;
+             }
+             relatedObject = [self MR_createInstanceForEntity:destination withDictionary:objectData];
          }
          else
          {
