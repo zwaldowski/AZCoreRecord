@@ -157,74 +157,70 @@ NSString * const kMagicalRecordImportRelationshipTypeKey = @"type";
 
 - (void) MR_importValuesForKeysWithDictionary:(NSDictionary *)objectData
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    
-    NSDictionary *attributes = [[self entity] attributesByName];
-    [self MR_setAttributes:attributes forKeysWithDictionary:objectData];
-    
-    NSDictionary *relationships = [[self entity] relationshipsByName];
-    [self MR_setRelationships:relationships
-        forKeysWithDictionary:objectData 
-                    withBlock:^(NSRelationshipDescription *relationshipInfo, id objectData)
-     {
-         NSManagedObject *relatedObject = nil;
-         if ([objectData isKindOfClass:[NSDictionary class]]) 
+    @autoreleasepool {
+        NSDictionary *attributes = [[self entity] attributesByName];
+        [self MR_setAttributes:attributes forKeysWithDictionary:objectData];
+        
+        NSDictionary *relationships = [[self entity] relationshipsByName];
+        [self MR_setRelationships:relationships
+            forKeysWithDictionary:objectData 
+                        withBlock:^(NSRelationshipDescription *relationshipInfo, id objectData)
          {
-             NSString *destinationName = [objectData objectForKey:kMagicalRecordImportRelationshipClassKey];
-             NSEntityDescription *destination = [relationshipInfo destinationEntity];
-             if (destinationName) {
-                 NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
-                 if ([customDestination isKindOfEntity:destination])
-                     destination = customDestination;
+             NSManagedObject *relatedObject = nil;
+             if ([objectData isKindOfClass:[NSDictionary class]]) 
+             {
+                 NSString *destinationName = [objectData objectForKey:kMagicalRecordImportRelationshipClassKey];
+                 NSEntityDescription *destination = [relationshipInfo destinationEntity];
+                 if (destinationName) {
+                     NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
+                     if ([customDestination isKindOfEntity:destination])
+                         destination = customDestination;
+                 }
+                 relatedObject = [self MR_createInstanceForEntity:destination withDictionary:objectData];
              }
-             relatedObject = [self MR_createInstanceForEntity:destination withDictionary:objectData];
-         }
-         else
-         {
-             relatedObject = [self MR_findObjectForRelationship:relationshipInfo withData:objectData];
-         }
-         [relatedObject MR_importValuesForKeysWithDictionary:objectData];
-
-         [self MR_addObject:relatedObject forRelationship:relationshipInfo];            
-     }];
-    
-    [pool drain];
+             else
+             {
+                 relatedObject = [self MR_findObjectForRelationship:relationshipInfo withData:objectData];
+             }
+             [relatedObject MR_importValuesForKeysWithDictionary:objectData];
+             
+             [self MR_addObject:relatedObject forRelationship:relationshipInfo];            
+         }];
+    }
 }
 
 - (void) MR_updateValuesForKeysWithDictionary:(NSDictionary *)objectData
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    
-    NSDictionary *attributes = [[self entity] attributesByName];
-    [self MR_setAttributes:attributes forKeysWithDictionary:objectData];
-    
-    NSDictionary *relationships = [[self entity] relationshipsByName];
-    [self MR_setRelationships:relationships
-        forKeysWithDictionary:objectData 
-                    withBlock:^(NSRelationshipDescription *relationshipInfo, id objectData)
-     {
-         NSManagedObject *relatedObject = [self MR_findObjectForRelationship:relationshipInfo
-                                                                    withData:objectData];
-         if (relatedObject == nil)
+    @autoreleasepool {
+        NSDictionary *attributes = [[self entity] attributesByName];
+        [self MR_setAttributes:attributes forKeysWithDictionary:objectData];
+        
+        NSDictionary *relationships = [[self entity] relationshipsByName];
+        [self MR_setRelationships:relationships
+            forKeysWithDictionary:objectData 
+                        withBlock:^(NSRelationshipDescription *relationshipInfo, id objectData)
          {
-             NSString *destinationName = [objectData objectForKey:kMagicalRecordImportRelationshipClassKey];
-             NSEntityDescription *destination = [relationshipInfo destinationEntity];
-             if (destinationName) {
-                 NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
-                 if ([customDestination isKindOfEntity:destination])
-                     destination = customDestination;
+             NSManagedObject *relatedObject = [self MR_findObjectForRelationship:relationshipInfo
+                                                                        withData:objectData];
+             if (relatedObject == nil)
+             {
+                 NSString *destinationName = [objectData objectForKey:kMagicalRecordImportRelationshipClassKey];
+                 NSEntityDescription *destination = [relationshipInfo destinationEntity];
+                 if (destinationName) {
+                     NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
+                     if ([customDestination isKindOfEntity:destination])
+                         destination = customDestination;
+                 }
+                 relatedObject = [self MR_createInstanceForEntity:destination withDictionary:objectData];
              }
-             relatedObject = [self MR_createInstanceForEntity:destination withDictionary:objectData];
-         }
-         else
-         {
-             [relatedObject MR_importValuesForKeysWithDictionary:objectData];
-         }
-         
-         [self MR_addObject:relatedObject forRelationship:relationshipInfo];            
-     }];
-    
-    [pool drain];
+             else
+             {
+                 [relatedObject MR_importValuesForKeysWithDictionary:objectData];
+             }
+             
+             [self MR_addObject:relatedObject forRelationship:relationshipInfo];            
+         }];
+    }
 }
 
 + (id) MR_importFromDictionary:(NSDictionary *)objectData inContext:(NSManagedObjectContext *)context;

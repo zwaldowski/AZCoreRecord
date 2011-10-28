@@ -150,16 +150,9 @@ static NSString const * kMagicalRecordManagedObjectContextKey = @"MagicalRecord_
 
 - (void) saveWrapper
 {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED == __IPHONE_5_0
-    @autoreleasepool
-    {
+    @autoreleasepool {
         [self save];
     }
-#else
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    [self save];
-    [pool drain];
-#endif
 }
 
 - (BOOL) saveOnBackgroundThread
