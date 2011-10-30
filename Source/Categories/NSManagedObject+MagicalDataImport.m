@@ -167,6 +167,27 @@ NSString * const kMagicalRecordImportRelationshipTypeKey = @"type";
                         withBlock:^(NSRelationshipDescription *relationshipInfo, id objectData)
          {
              NSManagedObject *relatedObject = nil;
+             if ([objectData isKindOfClass:[NSURL class]]) {
+                 objectData = [self.managedObjectContext.persistentStoreCoordinator managedObjectIDForURIRepresentation:objectData];
+                 if (!objectData)
+                     return;
+             }
+             
+             if ([objectData isKindOfClass:[NSManagedObjectID class]]) {
+                 objectData = [self.managedObjectContext existingObjectWithID:objectData error:nil];
+                 if (!objectData)
+                     return;
+             }
+             
+             if ([objectData isKindOfClass:[NSManagedObject class]]) {
+                 NSEntityDescription *objDescription = [objectData entity];
+                 NSEntityDescription *relDescription = [relationshipInfo destinationEntity];
+                 if ([objDescription isKindOfEntity:relDescription]) {
+                     [self MR_addObject:objectData forRelationship:relationshipInfo];
+                 }
+                 return;
+             }
+                      
              if ([objectData isKindOfClass:[NSDictionary class]]) 
              {
                  NSString *destinationName = [objectData objectForKey:kMagicalRecordImportRelationshipClassKey];
@@ -177,12 +198,13 @@ NSString * const kMagicalRecordImportRelationshipTypeKey = @"type";
                          destination = customDestination;
                  }
                  relatedObject = [self MR_createInstanceForEntity:destination withDictionary:objectData];
+                 [relatedObject MR_importValuesForKeysWithDictionary:objectData];
              }
              else
              {
                  relatedObject = [self MR_findObjectForRelationship:relationshipInfo withData:objectData];
+                 [relatedObject MR_importValuesForKeysWithDictionary:objectData];
              }
-             [relatedObject MR_importValuesForKeysWithDictionary:objectData];
              
              [self MR_addObject:relatedObject forRelationship:relationshipInfo];            
          }];
