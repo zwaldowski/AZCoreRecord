@@ -307,4 +307,16 @@ NSString * const kMagicalRecordImportRelationshipTypeKey = @"type";
     return [self findAllWithPredicate:[NSPredicate predicateWithFormat:@"self IN %@", objectIDs] inContext:context];
 }
 
++ (void)MR_updateFromArray:(NSArray *)listOfObjectData {
+    [MRCoreDataAction saveDataWithBlock:^(NSManagedObjectContext *localContext) {
+        [self MR_updateFromArray:listOfObjectData inContext:localContext];
+    }];
+}
+
++ (void)MR_updateFromArray:(NSArray *)listOfObjectData inContext:(NSManagedObjectContext *)localContext {
+    [listOfObjectData enumerateObjectsUsingBlock:^(NSDictionary *objectData, NSUInteger idx, BOOL *stop) {
+        [self MR_updateFromDictionary:objectData inContext:localContext];
+    }];
+}
+
 @end

@@ -28,8 +28,12 @@ extern NSString * const kMagicalRecordImportRelationshipTypeKey;
 + (NSArray *) MR_importFromArray:(NSArray *)listOfObjectData;
 + (NSArray *) MR_importFromArray:(NSArray *)listOfObjectData inContext:(NSManagedObjectContext *)context;
 
-+ (id) MR_updateFromDictionary:(NSDictionary *)objectData;
-+ (id) MR_updateFromDictionary:(NSDictionary *)objectData inContext:(NSManagedObjectContext *)context;
++ (id)MR_updateFromDictionary:(NSDictionary *)objectData;
++ (id)MR_updateFromDictionary:(NSDictionary *)objectData inContext:(NSManagedObjectContext *)context;
+
++ (void)MR_updateFromArray:(NSArray *)listOfObjectData;
++ (void)MR_updateFromArray:(NSArray *)listOfObjectData inContext:(NSManagedObjectContext *)localContext;
+
 
 @end
 
