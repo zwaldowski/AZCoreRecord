@@ -8,38 +8,30 @@
 
 #import "NSManagedObjectModel+MagicalRecord.h"
 
-static NSManagedObjectModel *defaultManagedObjectModel_ = nil;
+static __strong NSManagedObjectModel *defaultManagedObjectModel_ = nil;
 
 @implementation NSManagedObjectModel (MagicalRecord)
 
-+ (NSManagedObjectModel *) MR_defaultManagedObjectModel
++ (NSManagedObjectModel *) defaultManagedObjectModel
 {
 	if (defaultManagedObjectModel_ == nil && [MagicalRecordHelpers shouldAutoCreateManagedObjectModel])
 	{
-        [self MR_setDefaultManagedObjectModel:[self MR_mergedObjectModelFromMainBundle]];
+        [self setDefaultManagedObjectModel:[self mergedObjectModelFromMainBundle]];
 	}
 	return defaultManagedObjectModel_;
 }
 
-+ (void) MR_setDefaultManagedObjectModel:(NSManagedObjectModel *)newDefaultModel
++ (void) setDefaultManagedObjectModel:(NSManagedObjectModel *)newDefaultModel
 {
-    [newDefaultModel retain];
-    [defaultManagedObjectModel_ release];
-	defaultManagedObjectModel_ = newDefaultModel;
+    defaultManagedObjectModel_ = newDefaultModel;
 }
 
-+ (NSManagedObjectModel *) MR_mergedObjectModelFromMainBundle;
++ (NSManagedObjectModel *)mergedObjectModelFromMainBundle;
 {
     return [self mergedModelFromBundles:nil];
 }
 
-//deprecated
-+ (NSManagedObjectModel *) MR_newManagedObjectModel 
-{
-    return [[self MR_mergedObjectModelFromMainBundle] retain];
-}
-
-+ (NSManagedObjectModel *) MR_newModelNamed:(NSString *) modelName inBundleNamed:(NSString *) bundleName
++ (NSManagedObjectModel *)newModelNamed:(NSString *) modelName inBundleNamed:(NSString *) bundleName
 {
     NSString *path = [[NSBundle mainBundle] pathForResource:[modelName stringByDeletingPathExtension] 
                                                      ofType:[modelName pathExtension] 
@@ -51,7 +43,7 @@ static NSManagedObjectModel *defaultManagedObjectModel_ = nil;
     return mom;
 }
 
-+ (NSManagedObjectModel *) MR_newManagedObjectModelNamed:(NSString *)modelFileName
++ (NSManagedObjectModel *)newManagedObjectModelNamed:(NSString *)modelFileName
 {
 	NSString *path = [[NSBundle mainBundle] pathForResource:[modelFileName stringByDeletingPathExtension] ofType:[modelFileName pathExtension]];
 	NSURL *momURL = [NSURL fileURLWithPath:path];
@@ -60,9 +52,9 @@ static NSManagedObjectModel *defaultManagedObjectModel_ = nil;
 	return model;
 }
 
-+ (NSManagedObjectModel *) MR_managedObjectModelNamed:(NSString *)modelFileName
++ (NSManagedObjectModel *)managedObjectModelNamed:(NSString *)modelFileName
 {
-	return [[self MR_newManagedObjectModelNamed:modelFileName] autorelease];
+	return [self newManagedObjectModelNamed:modelFileName];
 }
 
 @end

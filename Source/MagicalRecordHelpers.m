@@ -22,7 +22,7 @@ static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
     errorHandlerAction = nil;
 	[MRCoreDataAction cleanUp];
 	[NSManagedObjectContext setDefaultContext:nil];
-	[NSManagedObjectModel MR_setDefaultManagedObjectModel:nil];
+	[NSManagedObjectModel setDefaultManagedObjectModel:nil];
 	[NSPersistentStoreCoordinator MR_setDefaultStoreCoordinator:nil];
 	[NSPersistentStore setDefaultPersistentStore:nil];
 }
@@ -32,7 +32,7 @@ static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
     NSMutableString *status = [NSMutableString stringWithString:@"Current Default Core Data Stack: ---- \n"];
     
     [status appendFormat:@"Context:     %@\n", [NSManagedObjectContext defaultContext]];
-    [status appendFormat:@"Model:       %@\n", [NSManagedObjectModel MR_defaultManagedObjectModel]];
+    [status appendFormat:@"Model:       %@\n", [NSManagedObjectModel defaultManagedObjectModel]];
     [status appendFormat:@"Coordinator: %@\n", [NSPersistentStoreCoordinator MR_defaultStoreCoordinator]];
     [status appendFormat:@"Store:       %@\n", [NSPersistentStore defaultPersistentStore]];
     
