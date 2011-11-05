@@ -23,12 +23,12 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 + (void) MR_setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator
 {
 	defaultCoordinator_ = coordinator;
-    if ([NSPersistentStore MR_defaultPersistentStore] == nil)
+    if ([NSPersistentStore defaultPersistentStore] == nil)
     {
         NSArray *persistentStores = [defaultCoordinator_ persistentStores];
         if ([persistentStores count])
         {
-            [NSPersistentStore MR_setDefaultPersistentStore:[persistentStores objectAtIndex:0]];
+            [NSPersistentStore setDefaultPersistentStore:[persistentStores objectAtIndex:0]];
         }
     }
 }
@@ -49,7 +49,7 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 
 - (void) MR_setupSqliteStoreNamed:(id)storeFileName withOptions:(NSDictionary *)options
 {
-    NSURL *url = [storeFileName isKindOfClass:[NSURL class]] ? storeFileName : [NSPersistentStore MR_urlForStoreName:storeFileName];
+    NSURL *url = [storeFileName isKindOfClass:[NSURL class]] ? storeFileName : [NSPersistentStore URLForStoreName:storeFileName];
     NSError *error = nil;
     
     [self MR_createPathToStoreFileIfNeccessary:url];
@@ -63,7 +63,7 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
     {
         [MagicalRecordHelpers handleErrors:error];
     }
-    [NSPersistentStore MR_setDefaultPersistentStore:store];        
+    [NSPersistentStore setDefaultPersistentStore:store];        
 }
 
 + (NSPersistentStoreCoordinator *) MR_coordinatorWithPersitentStore:(NSPersistentStore *)persistentStore;
