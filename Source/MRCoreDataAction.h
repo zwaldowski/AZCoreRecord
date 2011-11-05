@@ -1,12 +1,11 @@
 //
-//  ARCoreDataAction.h
-//  Freshpod
+//  MRCoreDataAction.h
+//  MagicalRecord
 //
 //  Created by Saul Mora on 2/24/11.
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "NSManagedObjectContext+MagicalRecord.h"
 
 typedef enum

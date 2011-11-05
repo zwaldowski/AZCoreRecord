@@ -1,12 +1,10 @@
 //
-//  NSManagedObject+JSONHelpers.h
-//  Gathering
+//  NSManagedObject+MagicalDataImport.h
+//  MagicalRecord
 //
 //  Created by Saul Mora on 6/28/11.
-//  Copyright 2011 Magical Panda Software LLC. All rights reserved.
+//  Copyright 2011 Magical Panda Software. All rights reserved.
 //
-
-#import <CoreData/CoreData.h>
 
 /** Importing for Core Data.
  
@@ -61,7 +59,7 @@
  to search for when associating different model objects
  using relationships in imported dictionaries.
  */
-@interface NSManagedObject (NSManagedObject_DataImport)
+@interface NSManagedObject (MagicalDataImport)
 
 /** Imports values into a managed object by using
  the contents of a dictionary, creating new model

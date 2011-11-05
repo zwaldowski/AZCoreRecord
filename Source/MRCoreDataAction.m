@@ -1,13 +1,12 @@
 //
-//  ARCoreDataAction.m
-//  Freshpod
+//  MRCoreDataAction.m
+//  MagicalRecord
 //
 //  Created by Saul Mora on 2/24/11.
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-//#import "ARCoreDataAction.h"
-#import "CoreData+MagicalRecord.h"
+#import "MRCoreDataAction.h"
 #import <dispatch/dispatch.h>
 
 dispatch_queue_t background_save_queue(void);

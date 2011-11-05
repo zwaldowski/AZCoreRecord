@@ -1,9 +1,9 @@
 //
-//  NSManagedObject+JSONHelpers.m
-//  Gathering
+//  NSManagedObject+MagicalDataImport.m
+//  MagicalRecord
 //
 //  Created by Saul Mora on 6/28/11.
-//  Copyright 2011 Magical Panda Software LLC. All rights reserved.
+//  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
 #import "CoreData+MagicalRecord.h"
@@ -29,7 +29,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
     return [firstCharacter stringByAppendingFormat:@"%@ID", [value substringFromIndex:1]];
 }
 
-@implementation NSManagedObject (MagicalRecord_DataImport)
+@implementation NSManagedObject (MagicalDataImport)
 
 - (NSManagedObject *)_createInstanceForEntity:(NSEntityDescription *)entityDescription withDictionary:(id)objectData
 {

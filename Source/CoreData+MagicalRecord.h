@@ -1,3 +1,10 @@
+//
+//  MagicalRecord for Core Data.
+//
+//  Created by Saul Mora.
+//  Copyright 2011 Magical Panda Software. All rights reserved.
+//
+
 // enable to use caches for the fetchedResultsControllers (iOS only)
 #if TARGET_OS_IPHONE
 #define STORE_USE_CACHE

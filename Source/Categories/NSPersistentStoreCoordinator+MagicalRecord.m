@@ -2,10 +2,10 @@
 //  NSPersistentStoreCoordinator+MagicalRecord.m
 //
 //  Created by Saul Mora on 3/11/10.
-//  Copyright 2010 Magical Panda Software, LLC All rights reserved.
+//  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-#import "CoreData+MagicalRecord.h"
+#import "NSPersistentStoreCoordinator+MagicalRecord.h"
 
 static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 

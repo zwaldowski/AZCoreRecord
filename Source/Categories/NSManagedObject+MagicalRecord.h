@@ -1,11 +1,10 @@
 //
+//  NSManagedObject+MagicalRecord.h
+//  MagicalRecord
 //
 //  Created by Saul Mora on 11/15/09.
-//  Copyright 2010 Magical Panda Software, LLC All rights reserved.
+//  Copyright 2011 Magical Panda Software. All rights reserved.
 //
-
-#import <CoreData/CoreData.h>
-#import "MagicalRecordHelpers.h"
 
 #define kMagicalRecordDefaultBatchSize 20
 

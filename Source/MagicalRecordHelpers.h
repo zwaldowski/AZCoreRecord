@@ -1,8 +1,9 @@
 //
 //  MagicalRecordHelpers.h
+//  MagicalRecord
 //
 //  Created by Saul Mora on 3/11/10.
-//  Copyright 2010 Magical Panda Software, LLC All rights reserved.
+//  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
 #if TARGET_OS_IPHONE == 0

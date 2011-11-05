@@ -1,11 +1,10 @@
 //
 //  NSManagedObjectContext+MagicalRecord.h
+//  MagicalRecord
 //
 //  Created by Saul Mora on 11/23/09.
-//  Copyright 2010 Magical Panda Software, LLC All rights reserved.
+//  Copyright 2011 Magical Panda Software. All rights reserved.
 //
-
-#import "MagicalRecordHelpers.h"
 
 @interface NSManagedObjectContext (MagicalRecord)
 
@@ -21,7 +20,6 @@
 
 - (BOOL) saveOnMainThread;
 - (BOOL) saveOnBackgroundThread;
-//- (void) setNotifiesMainContextOnSave:(BOOL)enabled;
 
 + (void) resetDefaultContext;
 + (NSManagedObjectContext *) defaultContext;
