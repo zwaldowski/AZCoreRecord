@@ -171,44 +171,7 @@ static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
     shouldAutoCreateDefaultPersistentStoreCoordinator_ = shouldAutoCreate;
 }
 
-#ifdef NS_BLOCKS_AVAILABLE
-#pragma mark DEPRECATED_METHOD
-
-+ (void) performSaveDataOperationWithBlock:(CoreDataBlock)block;
-{
-    [MRCoreDataAction saveDataWithBlock:block];
-}
-
-+ (void) performSaveDataOperationInBackgroundWithBlock:(CoreDataBlock)block;
-{
-    [MRCoreDataAction saveDataWithBlock:block];
-}
-
-+ (void) performLookupOperationWithBlock:(CoreDataBlock)block;
-{
-    [MRCoreDataAction lookupWithBlock:block];
-}
-
-+ (void) performSaveDataOperationInBackgroundWithBlock:(CoreDataBlock)block completion:(void(^)(void))callback;
-{
-    [MRCoreDataAction saveDataInBackgroundWithBlock:block completion:callback];
-}
-
-#endif
-
 @end
-
-NSString * attributeNameFromString(NSString *value)
-{
-    NSString *firstCharacter = [[value substringToIndex:1] capitalizedString];
-    return [firstCharacter stringByAppendingString:[value substringFromIndex:1]];
-}
-
-NSString * primaryKeyNameFromString(NSString *value)
-{
-    NSString *firstCharacter = [[value substringToIndex:1] lowercaseString];
-    return [firstCharacter stringByAppendingFormat:@"%@ID", [value substringFromIndex:1]];
-}
 
 NSDate * adjustDateForDST(NSDate *date)
 {

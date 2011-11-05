@@ -17,6 +17,18 @@ static NSString * const kMagicalRecordImportClassNameKey = @"className";
 static NSString * const kMagicalRecordImportPrimaryAttributeKey = @"primaryAttribute";
 static NSString * const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 
+static NSString * attributeNameFromString(NSString *value)
+{
+    NSString *firstCharacter = [[value substringToIndex:1] capitalizedString];
+    return [firstCharacter stringByAppendingString:[value substringFromIndex:1]];
+}
+
+static NSString *primaryKeyNameFromString(NSString *value)
+{
+    NSString *firstCharacter = [[value substringToIndex:1] lowercaseString];
+    return [firstCharacter stringByAppendingFormat:@"%@ID", [value substringFromIndex:1]];
+}
+
 @implementation NSManagedObject (MagicalRecord_DataImport)
 
 - (NSManagedObject *)_createInstanceForEntity:(NSEntityDescription *)entityDescription withDictionary:(id)objectData

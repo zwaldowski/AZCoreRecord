@@ -47,34 +47,18 @@ typedef void (^CoreDataBlock)(NSManagedObjectContext *context);
 + (void) setupCoreDataStackWithStoreNamed:(NSString *)storeName;
 + (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName;
 
-#ifdef NS_BLOCKS_AVAILABLE
-#pragma mark DEPRECATED_METHOD
-
-+ (void) performSaveDataOperationWithBlock:(CoreDataBlock)block;
-+ (void) performSaveDataOperationInBackgroundWithBlock:(CoreDataBlock)block;
-+ (void) performLookupOperationWithBlock:(CoreDataBlock)block;
-+ (void) performSaveDataOperationInBackgroundWithBlock:(CoreDataBlock)block completion:(void(^)(void))callback;
-
-#endif
-
 @end
 
-
+#pragma mark - Helper Functions
 
 //Helper Functions
 NSDate * adjustDateForDST(NSDate *date);
 NSDate * dateFromString(NSString *value, NSString *format);
-NSString * attributeNameFromString(NSString *value);
-NSString * primaryKeyNameFromString(NSString *value);
 
 #if TARGET_OS_IPHONE
-
 UIColor * UIColorFromString(NSString *serializedColor);
-
 #else
-
 NSColor * NSColorFromString(NSString *serializedColor);
-
 #endif
 id (*colorFromString)(NSString *);
 
