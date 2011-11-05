@@ -8,13 +8,10 @@
 
 #import <CoreData/CoreData.h>
 
-extern NSString * const kMagicalRecordImportCustomDateFormatKey;
-extern NSString * const kMagicalRecordImportDefaultDateFormatString;
-extern NSString * const kMagicalRecordImportAttributeKeyMapKey;
-extern NSString * const kMagicalRecordImportAttributeValueClassNameKey;
+extern NSString *const kMagicalRecordImportMapKey;
+extern NSString *const kMagicalRecordImportClassNameKey;
 
-extern NSString * const kMagicalRecordImportRelationshipMapKey;
-extern NSString * const kMagicalRecordImportRelationshipClassKey;
+extern NSString * const kMagicalRecordImportPrimaryAttributeKey;
 extern NSString * const kMagicalRecordImportRelationshipPrimaryKey;
 extern NSString * const kMagicalRecordImportRelationshipTypeKey;
 
