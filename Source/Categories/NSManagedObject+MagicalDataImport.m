@@ -126,7 +126,10 @@ static NSString *primaryKeyNameFromString(NSString *value)
             
             @try 
             {
-                objc_msgSend(self, NSSelectorFromString(addRelatedObjectToSetMessage), relatedObject);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+                [self performSelector:NSSelectorFromString(addRelatedObjectToSetMessage) withObject:relatedObject];
+#pragma clank diagnostic pop
             }
             @catch (NSException *exception) 
             {

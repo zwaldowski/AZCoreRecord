@@ -7,7 +7,6 @@
 //
 
 #import "CoreData+MagicalRecord.h"
-#import <objc/message.h>
 
 static id errorHandlerTarget = nil;
 static SEL errorHandlerAction = nil;
@@ -75,7 +74,10 @@ static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
         // If a custom error handler is set, call that
         if (errorHandlerTarget != nil && errorHandlerAction != nil) 
 		{
-            objc_msgSend(errorHandlerTarget, @selector(errorHandlerAction), error);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+            [errorHandlerTarget performSelector:errorHandlerAction withObject:error];
+#pragma clank diagnostic pop
         }
 		else
 		{

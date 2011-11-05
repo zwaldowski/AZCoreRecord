@@ -31,6 +31,7 @@ static __strong NSString const * kMagicalRecordManagedObjectContextKey = @"Magic
 
 + (void) setDefaultContext:(NSManagedObjectContext *)moc
 {
+    defaultManageObjectContext_ = nil;
     defaultManageObjectContext_ = moc;
 }
 

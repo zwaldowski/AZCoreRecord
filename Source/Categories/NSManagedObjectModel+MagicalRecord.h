@@ -11,6 +11,7 @@
 + (NSManagedObjectModel *)defaultManagedObjectModel;
 + (void)setDefaultManagedObjectModel:(NSManagedObjectModel *)newDefaultModel;
 
++ (NSManagedObjectModel *)newManagedObjectModel;
 + (NSManagedObjectModel *)newManagedObjectModelNamed:(NSString *)modelFileName NS_RETURNS_RETAINED;
 + (NSManagedObjectModel *)managedObjectModelNamed:(NSString *)modelFileName;
 + (NSManagedObjectModel *)newModelNamed:(NSString *) modelName inBundleNamed:(NSString *) bundleName NS_RETURNS_RETAINED;

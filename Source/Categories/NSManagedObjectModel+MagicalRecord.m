@@ -23,12 +23,17 @@ static __strong NSManagedObjectModel *defaultManagedObjectModel_ = nil;
 
 + (void) setDefaultManagedObjectModel:(NSManagedObjectModel *)newDefaultModel
 {
+    defaultManagedObjectModel_ = nil;
     defaultManagedObjectModel_ = newDefaultModel;
 }
 
 + (NSManagedObjectModel *)mergedObjectModelFromMainBundle;
 {
     return [self mergedModelFromBundles:nil];
+}
+
++ (NSManagedObjectModel *)newManagedObjectModel {
+    return [self mergedObjectModelFromMainBundle];
 }
 
 + (NSManagedObjectModel *)newModelNamed:(NSString *) modelName inBundleNamed:(NSString *) bundleName
