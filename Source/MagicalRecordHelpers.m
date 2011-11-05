@@ -24,7 +24,7 @@ static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
 	[MRCoreDataAction cleanUp];
 	[NSManagedObjectContext setDefaultContext:nil];
 	[NSManagedObjectModel setDefaultManagedObjectModel:nil];
-	[NSPersistentStoreCoordinator MR_setDefaultStoreCoordinator:nil];
+	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:nil];
 	[NSPersistentStore setDefaultPersistentStore:nil];
 }
 
@@ -34,7 +34,7 @@ static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
     
     [status appendFormat:@"Context:     %@\n", [NSManagedObjectContext defaultContext]];
     [status appendFormat:@"Model:       %@\n", [NSManagedObjectModel defaultManagedObjectModel]];
-    [status appendFormat:@"Coordinator: %@\n", [NSPersistentStoreCoordinator MR_defaultStoreCoordinator]];
+    [status appendFormat:@"Coordinator: %@\n", [NSPersistentStoreCoordinator defaultStoreCoordinator]];
     [status appendFormat:@"Store:       %@\n", [NSPersistentStore defaultPersistentStore]];
     
     return status;
@@ -128,8 +128,8 @@ static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
 
 + (void) setupCoreDataStackWithStoreNamed:(NSString *)storeName
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator MR_coordinatorWithSqliteStoreNamed:storeName];
-	[NSPersistentStoreCoordinator MR_setDefaultStoreCoordinator:coordinator];
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreNamed:storeName];
+	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
 	
 	NSManagedObjectContext *context = [NSManagedObjectContext contextWithStoreCoordinator:coordinator];
 	[NSManagedObjectContext setDefaultContext:context];
@@ -137,8 +137,8 @@ static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
 
 + (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName
 {
-    NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator MR_coordinatorWithAutoMigratingSqliteStoreNamed:storeName];
-    [NSPersistentStoreCoordinator MR_setDefaultStoreCoordinator:coordinator];
+    NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreNamed:storeName];
+    [NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
     
     NSManagedObjectContext *context = [NSManagedObjectContext contextWithStoreCoordinator:coordinator];
     [NSManagedObjectContext setDefaultContext:context];
@@ -146,8 +146,8 @@ static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
 
 + (void) setupCoreDataStackWithInMemoryStore
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator MR_coordinatorWithInMemoryStore];
-	[NSPersistentStoreCoordinator MR_setDefaultStoreCoordinator:coordinator];
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
+	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
 	
 	NSManagedObjectContext *context = [NSManagedObjectContext contextWithStoreCoordinator:coordinator];
 	[NSManagedObjectContext setDefaultContext:context];

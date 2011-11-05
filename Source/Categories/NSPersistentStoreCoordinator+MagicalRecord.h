@@ -7,34 +7,17 @@
 
 @interface NSPersistentStoreCoordinator (MagicalRecord)
 
-+ (NSPersistentStoreCoordinator *) MR_defaultStoreCoordinator;
-+ (void) MR_setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;
++ (NSPersistentStoreCoordinator *)defaultStoreCoordinator;
++ (void)setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;
 
-+ (NSPersistentStoreCoordinator *) MR_coordinatorWithInMemoryStore;
++ (NSPersistentStoreCoordinator *)coordinatorWithInMemoryStore;
 
-+ (NSPersistentStoreCoordinator *) MR_newPersistentStoreCoordinator NS_RETURNS_RETAINED;
++ (NSPersistentStoreCoordinator *)newPersistentStoreCoordinator;
 
-+ (NSPersistentStoreCoordinator *) MR_coordinatorWithSqliteStoreNamed:(NSString *)storeFileName;
-+ (NSPersistentStoreCoordinator *) MR_coordinatorWithAutoMigratingSqliteStoreNamed:(NSString *) storeFileName;
-+ (NSPersistentStoreCoordinator *) MR_coordinatorWithPersitentStore:(NSPersistentStore *)persistentStore;
++ (NSPersistentStoreCoordinator *)coordinatorWithSqliteStoreNamed:(NSString *)storeFileName;
++ (NSPersistentStoreCoordinator *)coordinatorWithAutoMigratingSqliteStoreNamed:(NSString *) storeFileName;
++ (NSPersistentStoreCoordinator *)coordinatorWithPersitentStore:(NSPersistentStore *)persistentStore;
 
-- (NSPersistentStore *) MR_addInMemoryStore;
+- (NSPersistentStore *)addInMemoryStore;
 
 @end
-
-
-#ifdef MR_SHORTHAND
-
-#define defautlStoreCoordinator         MR_defaultStoreCoordinator
-#define setDefaultStoreCoordinator      MR_setDefaultStoreCoordinator
-
-#define coordinatorWithInMemoryStore        MR_coordinatorWithInMemoryStore
-#define newPersistentStoreCoordinator       MR_newPersistentStoreCoordinator
-
-#define coordinatorWithSqliteStoreNamed                     MR_coordinatorWithSqliteStoreNamed
-#define coordinatorWithAutoMigratingSqliteStoreNamed        MR_coordinatorWithAutoMigratingSqliteStoreNamed
-#define coordinatorWithPersitentStore                       MR_coordinatorWithPersitentStore
-
-#define addInMemoryStore                MR_addInMemoryStore
-
-#endif
