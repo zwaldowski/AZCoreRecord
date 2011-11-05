@@ -10,7 +10,7 @@
 
 NSString *const kMagicalRecordDefaultStoreFileName = @"CoreDataStore.sqlite";
 
-static NSPersistentStore *defaultPersistentStore_ = nil;
+static __strong NSPersistentStore *defaultPersistentStore_ = nil;
 
 @implementation NSPersistentStore (MagicalRecord)
 
@@ -21,8 +21,6 @@ static NSPersistentStore *defaultPersistentStore_ = nil;
 
 + (void) setDefaultPersistentStore:(NSPersistentStore *) store
 {
-    [store retain];
-    [defaultPersistentStore_ release];
 	defaultPersistentStore_ = store;
 }
 
@@ -50,7 +48,7 @@ static NSPersistentStore *defaultPersistentStore_ = nil;
 + (NSURL *)URLForStoreName:(NSString *)storeFileName
 {
 	NSArray *paths = [NSArray arrayWithObjects:[self _applicationDocumentsDirectory], [self _applicationLibraryDirectory], nil];
-    NSFileManager *fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager *fm = [NSFileManager new];
 
     for (NSString *path in paths) 
     {
