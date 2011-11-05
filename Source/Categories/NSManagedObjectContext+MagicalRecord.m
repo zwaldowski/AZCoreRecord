@@ -9,8 +9,8 @@
 #import "NSManagedObjectContext+MagicalRecord.h"
 #import <objc/runtime.h>
 
-static NSManagedObjectContext *defaultManageObjectContext_ = nil;
-static NSString const * kMagicalRecordManagedObjectContextKey = @"MagicalRecord_NSManagedObjectContextForThreadKey";
+static __strong NSManagedObjectContext *defaultManageObjectContext_ = nil;
+static __strong NSString const * kMagicalRecordManagedObjectContextKey = @"MagicalRecord_NSManagedObjectContextForThreadKey";
 
 @interface NSManagedObjectContext ()
 
@@ -31,18 +31,14 @@ static NSString const * kMagicalRecordManagedObjectContextKey = @"MagicalRecord_
 
 + (void) setDefaultContext:(NSManagedObjectContext *)moc
 {
-    [moc retain];
-    [defaultManageObjectContext_ release];
     defaultManageObjectContext_ = moc;
 }
 
 + (void) resetDefaultContext
 {
-    void (^resetBlock)(void) = ^{
+    dispatch_async(dispatch_get_main_queue(),  ^{
         [[NSManagedObjectContext defaultContext] reset];        
-    };
-    
-    dispatch_async(dispatch_get_main_queue(), resetBlock);
+    });
 }
 
 + (void) resetContextForCurrentThread 
@@ -191,9 +187,11 @@ static NSString const * kMagicalRecordManagedObjectContextKey = @"MagicalRecord_
     NSManagedObjectContext *mainContext = [[self class] defaultContext];
     if (self != mainContext) 
     {
-        SEL selector = enabled ? @selector(observeContextOnMainThread:) : @selector(stopObservingContext:);
         objc_setAssociatedObject(self, @"notifiesMainContext", [NSNumber numberWithBool:enabled], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        [mainContext performSelector:selector withObject:self];
+        if (enabled)
+            [mainContext observeContextOnMainThread:self];
+        else
+            [mainContext stopObservingContext:self];
     }
 }
 
@@ -203,7 +201,7 @@ static NSString const * kMagicalRecordManagedObjectContextKey = @"MagicalRecord_
     if (coordinator != nil)
 	{
         ARLog(@"Creating MOContext %@", [NSThread isMainThread] ? @" *** On Main Thread ***" : @"");
-        context = [[[NSManagedObjectContext alloc] init] autorelease];
+        context = [NSManagedObjectContext new];
         [context setPersistentStoreCoordinator:coordinator];
     }
     return context;

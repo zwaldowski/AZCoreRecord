@@ -6,8 +6,6 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-@interface NSPersistentStore (MagicalRecord)
-
 @interface NSManagedObjectModel (MagicalRecord)
 
 + (NSManagedObjectModel *)defaultManagedObjectModel;
