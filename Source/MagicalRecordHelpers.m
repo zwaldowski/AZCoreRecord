@@ -7,6 +7,7 @@
 //
 
 #import "CoreData+MagicalRecord.h"
+#import <objc/message.h>
 
 static id errorHandlerTarget = nil;
 static SEL errorHandlerAction = nil;
@@ -74,7 +75,7 @@ static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
         // If a custom error handler is set, call that
         if (errorHandlerTarget != nil && errorHandlerAction != nil) 
 		{
-            [errorHandlerTarget performSelector:errorHandlerAction withObject:error];
+            objc_msgSend(errorHandlerTarget, @selector(errorHandlerAction), error);
         }
 		else
 		{
@@ -182,16 +183,16 @@ NSDate * adjustDateForDST(NSDate *date)
     return actualDate;
 }
 
+static __strong NSDateFormatter *helperFormatter = nil;
+
 NSDate * dateFromString(NSString *value, NSString *format)
 {
-    NSDateFormatter *formatter = [[[NSDateFormatter alloc] init] autorelease];
-    [formatter setTimeZone:[NSTimeZone localTimeZone]];
-    [formatter setLocale:[NSLocale currentLocale]];
-    [formatter setDateFormat:format];
-    
-    NSDate *parsedDate = [formatter dateFromString:value];
-    
-    return parsedDate;
+    if (!helperFormatter)
+        helperFormatter = [NSDateFormatter new];
+    [helperFormatter setTimeZone:[NSTimeZone localTimeZone]];
+    [helperFormatter setLocale:[NSLocale currentLocale]];
+    [helperFormatter setDateFormat:format];
+    return [helperFormatter dateFromString:value];
 }
 
 NSInteger* newColorComponentsFromString(NSString *serializedColor);
