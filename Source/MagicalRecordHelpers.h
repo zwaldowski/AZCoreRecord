@@ -6,25 +6,20 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-#if TARGET_OS_IPHONE == 0
-#define MAC_PLATFORM_ONLY YES
-#endif
-
-#ifdef NS_BLOCKS_AVAILABLE
-
 @class NSManagedObjectContext;
 typedef void (^CoreDataBlock)(NSManagedObjectContext *context);
+typedef void (^CoreDataError)(NSError *error);
 
-#endif
-
-@interface MagicalRecordHelpers : NSObject {}
+@interface MagicalRecordHelpers : NSObject
 
 + (NSString *) currentStack;
 
 + (void) cleanUp;
 
 + (void) handleErrors:(NSError *)error;
-- (void) handleErrors:(NSError *)error;
+
++ (void)setErrorHandler:(CoreDataError)block;
++ (CoreDataError)errorHandler;
 
 + (void) setErrorHandlerTarget:(id)target action:(SEL)action;
 + (SEL) errorHandlerAction;
@@ -39,7 +34,6 @@ typedef void (^CoreDataBlock)(NSManagedObjectContext *context);
 + (void) setShouldAutoCreateManagedObjectModel:(BOOL)shouldAutoCreate;
 + (BOOL) shouldAutoCreateDefaultPersistentStoreCoordinator;
 + (void) setShouldAutoCreateDefaultPersistentStoreCoordinator:(BOOL)shouldAutoCreate;
-
 
 + (void) setupCoreDataStack;
 + (void) setupCoreDataStackWithInMemoryStore;

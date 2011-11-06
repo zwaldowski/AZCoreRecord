@@ -7,19 +7,18 @@
 //
 
 #import "CoreData+MagicalRecord.h"
+#import <objc/runtime.h>
 
-static id errorHandlerTarget = nil;
-static SEL errorHandlerAction = nil;
-
-static BOOL shouldAutoCreateManagedObjectModel_;
-static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
+static char *kErrorHandlerTargetKey = "errorHandlerTarget_";
+static char *kErrorHandlerActionKey = "errorHandlerAction_";
+static char *kErrorHandlerBlockKey = "errorHandlern_";
+static char *kShouldAutoCreateMOMKey = "shouldAutoCreateManagedObjectModel_";
+static char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentStoreCoordinator_";
 
 @implementation MagicalRecordHelpers
 
 + (void) cleanUp
 {
-    errorHandlerTarget = nil;
-    errorHandlerAction = nil;
 	[MRCoreDataAction cleanUp];
 	[NSManagedObjectContext setDefaultContext:nil];
 	[NSManagedObjectModel setDefaultManagedObjectModel:nil];
@@ -39,73 +38,80 @@ static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
     return status;
 }
 
-+ (void) defaultErrorHandler:(NSError *)error
++ (void) handleErrors:(NSError *)error
 {
-    NSDictionary *userInfo = [error userInfo];
-    for (NSArray *detailedError in [userInfo allValues])
+    if (!error)
+        return;
+    
+    id target = [self errorHandlerTarget];
+    SEL action = [self errorHandlerAction];
+    CoreDataError block = [self errorHandler];
+    
+    // If a custom error handler is set, call that
+    if (target && action) 
     {
-        if ([detailedError isKindOfClass:[NSArray class]])
-        {
-            for (NSError *e in detailedError)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        [target performSelector:action withObject:error];
+#pragma clank diagnostic pop
+    }
+    else if (block)
+    {
+        block(error);	
+    }
+}
+
++ (void)setErrorHandler:(CoreDataError)block {
+    if (!block) {
+        block = ^(NSError *error){
+            NSDictionary *userInfo = [error userInfo];
+            for (NSArray *detailedError in [userInfo allValues])
             {
-                if ([e respondsToSelector:@selector(userInfo)])
+                if ([detailedError isKindOfClass:[NSArray class]])
                 {
-                    ARLog(@"Error Details: %@", [e userInfo]);
+                    for (NSError *e in detailedError)
+                    {
+                        if ([e respondsToSelector:@selector(userInfo)])
+                        {
+                            ARLog(@"Error Details: %@", [e userInfo]);
+                        }
+                        else
+                        {
+                            ARLog(@"Error Details: %@", e);
+                        }
+                    }
                 }
                 else
                 {
-                    ARLog(@"Error Details: %@", e);
+                    ARLog(@"Error: %@", detailedError);
                 }
             }
-        }
-        else
-        {
-            ARLog(@"Error: %@", detailedError);
-        }
+            ARLog(@"Error Domain: %@", [error domain]);
+            ARLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
+        };
     }
-    ARLog(@"Error Domain: %@", [error domain]);
-    ARLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
+    
+    objc_setAssociatedObject(self, kErrorHandlerBlockKey, block, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-+ (void) handleErrors:(NSError *)error
-{
-	if (error)
-	{
-        // If a custom error handler is set, call that
-        if (errorHandlerTarget != nil && errorHandlerAction != nil) 
-		{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-            [errorHandlerTarget performSelector:errorHandlerAction withObject:error];
-#pragma clank diagnostic pop
-        }
-		else
-		{
-	        // Otherwise, fall back to the default error handling
-	        [self defaultErrorHandler:error];			
-		}
-    }
++ (CoreDataError)errorHandler {
+    return objc_getAssociatedObject(self, kErrorHandlerBlockKey);
 }
 
 + (id) errorHandlerTarget
 {
-    return errorHandlerTarget;
+    return objc_getAssociatedObject(self, kErrorHandlerTargetKey);
 }
 
 + (SEL) errorHandlerAction
 {
-    return errorHandlerAction;
+    return NSSelectorFromString(objc_getAssociatedObject(self, kErrorHandlerActionKey));
 }
 
 + (void) setErrorHandlerTarget:(id)target action:(SEL)action
 {
-    errorHandlerTarget = target;    /* Deliberately don't retain to avoid potential retain cycles */
-    errorHandlerAction = action;
-}
-
-- (void) handleErrors:(NSError *)error
-{
-	[[self class] handleErrors:error];
+    objc_setAssociatedObject(self, kErrorHandlerActionKey, NSStringFromSelector(action), OBJC_ASSOCIATION_COPY_NONATOMIC);
+    objc_setAssociatedObject(self, kErrorHandlerTargetKey, target, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 + (void) initialize
@@ -157,22 +163,22 @@ static BOOL shouldAutoCreateDefaultPersistentStoreCoordinator_;
 
 + (BOOL) shouldAutoCreateManagedObjectModel;
 {
-    return shouldAutoCreateManagedObjectModel_;
+    return [objc_getAssociatedObject(self, kShouldAutoCreateMOMKey) boolValue];
 }
 
 + (void) setShouldAutoCreateManagedObjectModel:(BOOL)shouldAutoCreate;
 {
-    shouldAutoCreateManagedObjectModel_ = shouldAutoCreate;
+    objc_setAssociatedObject(self, kShouldAutoCreateMOMKey, [NSNumber numberWithBool:shouldAutoCreate], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 + (BOOL) shouldAutoCreateDefaultPersistentStoreCoordinator;
 {
-    return shouldAutoCreateDefaultPersistentStoreCoordinator_;
+    return [objc_getAssociatedObject(self, kShouldAutoCreatePSCKey) boolValue];
 }
 
 + (void) setShouldAutoCreateDefaultPersistentStoreCoordinator:(BOOL)shouldAutoCreate;
 {
-    shouldAutoCreateDefaultPersistentStoreCoordinator_ = shouldAutoCreate;
+    objc_setAssociatedObject(self, kShouldAutoCreatePSCKey, [NSNumber numberWithBool:shouldAutoCreate], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end
