@@ -239,7 +239,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
     NSAssert3(primaryAttribute != nil, @"Unable to determine primary attribute for %@. Specify either an attribute named %@ or the primary key in userInfo named '%@'", entity.name, primaryKeyNameFromString(entity.name), kMagicalRecordImportPrimaryAttributeKey);
     
     NSString *lookupKey = [primaryAttribute.userInfo valueForKey:kMagicalRecordImportMapKey] ?: primaryAttribute.name;
-    NSString *lookupKeyPath = [self valueForKeyPath:lookupKey];
+    NSString *lookupKeyPath = [objectData valueForKeyPath:lookupKey];
     id value = [objectData valueForKeyPath:lookupKeyPath];
     
     NSManagedObject *manageObject = [self findFirstByAttribute:lookupKey withValue:value inContext:context];
