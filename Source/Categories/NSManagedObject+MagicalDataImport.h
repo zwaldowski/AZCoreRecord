@@ -158,7 +158,7 @@
  @see importValuesFromDictionary:
  @param context A managed object context.
  @param listOfObjectData An array of dictionaries.
- @return An array of new objects.
+ @return An array of updated managed objects.
  */
 + (NSArray *)importFromArray:(NSArray *)listOfObjectData inContext:(NSManagedObjectContext *)context;
 
@@ -175,8 +175,9 @@
  @see updateFromArray:inContext:
  @see updateValuesFromDictionary:
  @see updateFromDictionary:
+ @return An array of updated managed objects.
  */
-+ (void)updateFromArray:(NSArray *)listOfObjectData;
++ (NSArray *)updateFromArray:(NSArray *)listOfObjectData;
 
 /** Updates a Core Data model with an array of
  dictionary objects by locating objects, and creating
@@ -191,7 +192,8 @@
  @see updateFromArray:
  @see updateValuesFromDictionary:
  @see updateFromDictionary:inContext:
+ @return An array of updated managed objects.
  */
-+ (void)updateFromArray:(NSArray *)listOfObjectData inContext:(NSManagedObjectContext *)localContext;
++ (NSArray *)updateFromArray:(NSArray *)listOfObjectData inContext:(NSManagedObjectContext *)localContext;
 
 @end

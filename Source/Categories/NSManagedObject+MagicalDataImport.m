@@ -266,16 +266,25 @@ static NSString *primaryKeyNameFromString(NSString *value)
     return [self findAllWithPredicate:[NSPredicate predicateWithFormat:@"self IN %@", objectIDs] inContext:context];
 }
 
-+ (void)updateFromArray:(NSArray *)listOfObjectData {
-    [self updateFromArray:listOfObjectData inContext:[NSManagedObjectContext defaultContext]];
++ (NSArray *)updateFromArray:(NSArray *)listOfObjectData {
+    return [self updateFromArray:listOfObjectData inContext:[NSManagedObjectContext defaultContext]];
 }
 
-+ (void)updateFromArray:(NSArray *)listOfObjectData inContext:(NSManagedObjectContext *)localContext {
++ (NSArray *)updateFromArray:(NSArray *)listOfObjectData inContext:(NSManagedObjectContext *)context {
+    __block NSArray *objectIDs = nil;
+    
     [MRCoreDataAction saveDataWithBlock:^(NSManagedObjectContext *localContext) {
+        NSMutableArray *objects = [NSMutableArray array];
+        
         for (NSDictionary *objectData in listOfObjectData) {
-            [self updateFromDictionary:objectData inContext:localContext];
+            [objects addObject:[self updateFromDictionary:objectData inContext:localContext]];
         }
+        
+        if ([context obtainPermanentIDsForObjects:objects error:nil])
+            objectIDs = [objects valueForKey:@"objectID"];
     }];
+    
+    return [self findAllWithPredicate:[NSPredicate predicateWithFormat:@"self IN %@", objectIDs] inContext:context];
 }
 
 @end
