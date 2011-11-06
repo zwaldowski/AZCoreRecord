@@ -8,7 +8,7 @@
 
 #import "NSManagedObjectModel+MagicalRecord.h"
 
-static __strong NSManagedObjectModel *defaultManagedObjectModel_ = nil;
+static NSManagedObjectModel *defaultManagedObjectModel_ = nil;
 
 @implementation NSManagedObjectModel (MagicalRecord)
 

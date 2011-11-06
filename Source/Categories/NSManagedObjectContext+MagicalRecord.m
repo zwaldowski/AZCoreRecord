@@ -9,8 +9,8 @@
 #import "NSManagedObjectContext+MagicalRecord.h"
 #import <objc/runtime.h>
 
-static __strong NSManagedObjectContext *defaultManageObjectContext_ = nil;
-static __strong NSString const * kMagicalRecordManagedObjectContextKey = @"MagicalRecord_NSManagedObjectContextForThreadKey";
+static NSManagedObjectContext *defaultManageObjectContext_ = nil;
+static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordManagedObjectContexts";
 
 @interface NSManagedObjectContext ()
 
