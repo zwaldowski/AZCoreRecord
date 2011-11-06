@@ -65,7 +65,6 @@ static NSString *primaryKeyNameFromString(NSString *value)
     }
     
     id relatedValue = nil;
-    NSManagedObject *objectForRelationship = nil;
     
     if ([singleRelatedObjectData isKindOfClass:[NSNumber class]] || [singleRelatedObjectData isKindOfClass:[NSString class]])
         relatedValue = singleRelatedObjectData;
@@ -76,18 +75,13 @@ static NSString *primaryKeyNameFromString(NSString *value)
         NSString *lookupKey = [[primaryKeyAttribute userInfo] valueForKey:kMagicalRecordImportMapKey] ?: [primaryKeyAttribute name];
         relatedValue = [singleRelatedObjectData valueForKeyPath:lookupKey];
     }
+    
+    if (!relatedValue)
+        return nil;
 
-    if (relatedValue) 
-    {
-        NSManagedObjectContext *context = [self managedObjectContext];
-        Class managedObjectClass = NSClassFromString([destination managedObjectClassName]);
-        NSString *primaryKeyName = [relationshipInfo.userInfo valueForKey:kMagicalRecordImportRelationshipPrimaryKey] ?: primaryKeyNameFromString(relationshipInfo.destinationEntity.name);
-        objectForRelationship = [managedObjectClass findFirstByAttribute:primaryKeyName
-                                                               withValue:relatedValue
-                                                               inContext:context];
-    }
-
-    return objectForRelationship;
+    Class managedObjectClass = NSClassFromString([destination managedObjectClassName]);
+    NSString *primaryKeyName = [relationshipInfo.userInfo valueForKey:kMagicalRecordImportRelationshipPrimaryKey] ?: primaryKeyNameFromString(relationshipInfo.destinationEntity.name);
+    return [managedObjectClass findFirstByAttribute:primaryKeyName withValue:relatedValue inContext:self.managedObjectContext];
 }
 
 - (void)_setAttributes:(NSDictionary *)attributes forDictionary:(NSDictionary *)objectData {
@@ -119,6 +113,30 @@ static NSString *primaryKeyNameFromString(NSString *value)
     }];
 }
 
+- (void)_addObject:(NSManagedObject *)relatedObject forRelationship:(NSRelationshipDescription *)relationshipInfo {
+    NSAssert2(relatedObject, @"Cannot add nil to %@ for attribute %@", NSStringFromClass([self class]), relationshipInfo.name);
+    NSAssert2([relationshipInfo.destinationEntity isKindOfEntity:[relatedObject entity]], @"related object entity %@ not same as destination entity %@", [relatedObject entity], [relationshipInfo destinationEntity]);
+    
+    //add related object to set
+    NSString *addRelationMessageFormat = [relationshipInfo isToMany] ? @"add%@Object:" : @"set%@:";
+    NSString *addRelatedObjectToSetMessage = [NSString stringWithFormat:addRelationMessageFormat, attributeNameFromString([relationshipInfo name])];
+    
+    @try 
+    {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        [self performSelector:NSSelectorFromString(addRelatedObjectToSetMessage) withObject:relatedObject];
+#pragma clank diagnostic pop
+    }
+    @catch (NSException *exception) 
+    {
+        ARLog(@"Adding object for relationship failed: %@\n", relationshipInfo);
+        ARLog(@"relatedObject.entity %@", [relatedObject entity]);
+        ARLog(@"relationshipInfo.destinationEntity %@", [relationshipInfo destinationEntity]);
+        ARLog(@"perform selector error: %@", exception);
+    }
+}
+
 - (void)_setRelationships:(NSDictionary *)relationships forDictionary:(NSDictionary *)relationshipData withBlock:(NSManagedObject *(^)(NSRelationshipDescription *,id))setRelationship
 {
     [relationships enumerateKeysAndObjectsUsingBlock:^(NSString *relationshipName, NSRelationshipDescription *relationshipInfo, BOOL *stop) {
@@ -128,38 +146,14 @@ static NSString *primaryKeyNameFromString(NSString *value)
         if (!relatedObjectData || [relatedObjectData isEqual:[NSNull null]]) 
             return;
         
-        void (^addObject)(NSManagedObject *) = ^(NSManagedObject *relatedObject){
-            NSAssert2(relatedObject, @"Cannot add nil to %@ for attribute %@", NSStringFromClass([self class]), relationshipInfo.name);
-            NSAssert2([relationshipInfo.destinationEntity isKindOfEntity:[relatedObject entity]], @"related object entity %@ not same as destination entity %@", [relatedObject entity], [relationshipInfo destinationEntity]);
-            
-            //add related object to set
-            NSString *addRelationMessageFormat = [relationshipInfo isToMany] ? @"add%@Object:" : @"set%@:";
-            NSString *addRelatedObjectToSetMessage = [NSString stringWithFormat:addRelationMessageFormat, attributeNameFromString([relationshipInfo name])];
-            
-            @try 
-            {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-                [self performSelector:NSSelectorFromString(addRelatedObjectToSetMessage) withObject:relatedObject];
-#pragma clank diagnostic pop
-            }
-            @catch (NSException *exception) 
-            {
-                ARLog(@"Adding object for relationship failed: %@\n", relationshipInfo);
-                ARLog(@"relatedObject.entity %@", [relatedObject entity]);
-                ARLog(@"relationshipInfo.destinationEntity %@", [relationshipInfo destinationEntity]);
-                ARLog(@"perform selector error: %@", exception);
-            }
-        };
-        
         if (relationshipInfo.isToMany) {
             for (id singleRelatedObjectData in relatedObjectData)  {
                 NSManagedObject *obj = setRelationship(relationshipInfo, singleRelatedObjectData);
-                addObject(obj);
+                [self _addObject:obj forRelationship:relationshipInfo];
             }
         } else {
             NSManagedObject *obj = setRelationship(relationshipInfo, relatedObjectData);
-            addObject(obj);
+            [self _addObject:obj forRelationship:relationshipInfo];
         }
     }];
 }
@@ -195,8 +189,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
 {
     @autoreleasepool {
         [self _setAttributes:self.entity.attributesByName forDictionary:objectData];
-        NSManagedObjectContext *context = self.managedObjectContext;
-        __block id safeSelf = self;
+        __block NSManagedObject *safeSelf = self;
         [self _setRelationships:self.entity.relationshipsByName forDictionary:objectData withBlock:^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData){
             NSManagedObject *relatedObject = [safeSelf _findObjectForRelationship:relationshipInfo withData:objectData];
             
@@ -208,7 +201,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
             NSString *destinationName = [objectData objectForKey:kMagicalRecordImportClassNameKey];
             NSEntityDescription *destination = [relationshipInfo destinationEntity];
             if (destinationName) {
-                NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:context];
+                NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:safeSelf.managedObjectContext];
                 if ([customDestination isKindOfEntity:destination])
                     destination = customDestination;
             }
@@ -236,19 +229,18 @@ static NSString *primaryKeyNameFromString(NSString *value)
     NSEntityDescription *entity = [self entityDescription];
     NSString *attributeKey = [entity.userInfo valueForKey:kMagicalRecordImportPrimaryAttributeKey] ?: primaryKeyNameFromString(entity.name);
     NSAttributeDescription *primaryAttribute = [entity.attributesByName valueForKey:attributeKey];
-    NSAssert3(primaryAttribute != nil, @"Unable to determine primary attribute for %@. Specify either an attribute named %@ or the primary key in userInfo named '%@'", entity.name, primaryKeyNameFromString(entity.name), kMagicalRecordImportPrimaryAttributeKey);
+    NSAssert3(primaryAttribute, @"Unable to determine primary attribute for %@. Specify either an attribute named %@ or the primary key in userInfo named '%@'", entity.name, attributeKey, kMagicalRecordImportPrimaryAttributeKey);
     
     NSString *lookupKey = [primaryAttribute.userInfo valueForKey:kMagicalRecordImportMapKey] ?: primaryAttribute.name;
-    NSString *lookupKeyPath = [objectData valueForKeyPath:lookupKey];
-    id value = [objectData valueForKeyPath:lookupKeyPath];
+    NSString *lookupKeyPath = [objectData valueForKey:lookupKey];
+    id value = [objectData valueForKey:lookupKeyPath];
     
-    NSManagedObject *manageObject = [self findFirstByAttribute:lookupKey withValue:value inContext:context];
-    if (!manageObject)  {
-        manageObject = [self createInContext:context];
-    }
-    [manageObject updateValuesFromDictionary:objectData];
+    NSManagedObject *managedObject = [self findFirstByAttribute:lookupKeyPath withValue:value inContext:context];
+    if (!managedObject)
+        managedObject = [self createInContext:context];
+    [managedObject updateValuesFromDictionary:objectData];
     
-    return manageObject;
+    return managedObject;
 }
 
 + (NSArray *)importFromArray:(NSArray *)listOfObjectData
@@ -258,33 +250,31 @@ static NSString *primaryKeyNameFromString(NSString *value)
 
 + (NSArray *)importFromArray:(NSArray *)listOfObjectData inContext:(NSManagedObjectContext *)context
 {
-    NSMutableArray *objectIDs = [NSMutableArray array];
-    [MRCoreDataAction saveDataWithBlock:^(NSManagedObjectContext *localContext) {    
-         [listOfObjectData enumerateObjectsWithOptions:0 usingBlock:^(id obj, NSUInteger idx, BOOL *stop) 
-          {
-              NSDictionary *objectData = (NSDictionary *)obj;
-              
-              NSManagedObject *dataObject = [self importFromDictionary:objectData inContext:localContext];
-              
-              if ([context obtainPermanentIDsForObjects:[NSArray arrayWithObject:dataObject] error:nil])
-              {
-                  [objectIDs addObject:[dataObject objectID]];
-              }
-          }];
-     }];
+    __block NSArray *objectIDs = nil;
+    
+    [MRCoreDataAction saveDataWithBlock:^(NSManagedObjectContext *localContext) {
+        NSMutableArray *objects = [NSMutableArray array];
+        
+        for (NSDictionary *objectData in listOfObjectData) {
+            [objects addObject:[self importFromDictionary:objectData inContext:localContext]];
+        }
+        
+        if ([context obtainPermanentIDsForObjects:objects error:nil])
+            objectIDs = [objects valueForKey:@"objectID"];
+    }];
     
     return [self findAllWithPredicate:[NSPredicate predicateWithFormat:@"self IN %@", objectIDs] inContext:context];
 }
 
 + (void)updateFromArray:(NSArray *)listOfObjectData {
-    [MRCoreDataAction saveDataInBackgroundWithBlock:^(NSManagedObjectContext *localContext) {
-        [self updateFromArray:listOfObjectData inContext:localContext];
-    }];
+    [self updateFromArray:listOfObjectData inContext:[NSManagedObjectContext defaultContext]];
 }
 
 + (void)updateFromArray:(NSArray *)listOfObjectData inContext:(NSManagedObjectContext *)localContext {
-    [listOfObjectData enumerateObjectsUsingBlock:^(NSDictionary *objectData, NSUInteger idx, BOOL *stop) {
-        [self updateFromDictionary:objectData inContext:localContext];
+    [MRCoreDataAction saveDataWithBlock:^(NSManagedObjectContext *localContext) {
+        for (NSDictionary *objectData in listOfObjectData) {
+            [self updateFromDictionary:objectData inContext:localContext];
+        }
     }];
 }
 
