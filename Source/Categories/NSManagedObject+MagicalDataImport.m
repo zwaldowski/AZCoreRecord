@@ -52,6 +52,18 @@ static NSString *primaryKeyNameFromString(NSString *value)
             destination = customDestination;
     }
     
+    
+    if ([singleRelatedObjectData isKindOfClass:[NSURL class]]) {
+        NSManagedObjectID *objectID = [self.managedObjectContext.persistentStoreCoordinator managedObjectIDForURIRepresentation:singleRelatedObjectData];
+        return [self.managedObjectContext existingObjectWithID:objectID error:nil];
+    } else if ([singleRelatedObjectData isKindOfClass:[NSManagedObjectID class]]) {
+        return [self.managedObjectContext existingObjectWithID:singleRelatedObjectData error:nil];
+    } else if ([singleRelatedObjectData isKindOfClass:[NSManagedObject class]]) {
+        if (![[singleRelatedObjectData entity] isKindOfEntity:relationshipInfo.destinationEntity])
+            return nil;
+        return singleRelatedObjectData;
+    }
+    
     id relatedValue = nil;
     NSManagedObject *objectForRelationship = nil;
     
@@ -118,7 +130,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
         
         void (^addObject)(NSManagedObject *) = ^(NSManagedObject *relatedObject){
             NSAssert2(relatedObject, @"Cannot add nil to %@ for attribute %@", NSStringFromClass([self class]), relationshipInfo.name);
-            NSAssert2([relatedObject entity] == [relationshipInfo destinationEntity], @"related object entity %@ not same as destination entity %@", [relatedObject entity], [relationshipInfo destinationEntity]);
+            NSAssert2([relationshipInfo.destinationEntity isKindOfEntity:[relatedObject entity]], @"related object entity %@ not same as destination entity %@", [relatedObject entity], [relationshipInfo destinationEntity]);
             
             //add related object to set
             NSString *addRelationMessageFormat = [relationshipInfo isToMany] ? @"add%@Object:" : @"set%@:";
@@ -158,18 +170,10 @@ static NSString *primaryKeyNameFromString(NSString *value)
         [self _setAttributes:self.entity.attributesByName forDictionary:objectData];
         NSManagedObjectContext *context = self.managedObjectContext;
         __block id safeSelf = self;
-        [self _setRelationships:self.entity.relationshipsByName forDictionary:objectData  withBlock:^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData) {
-            if ([objectData isKindOfClass:[NSURL class]]) {
-                NSManagedObjectID *objectID = [context.persistentStoreCoordinator managedObjectIDForURIRepresentation:objectData];
-                return [context existingObjectWithID:objectID error:nil];
-            } else if ([objectData isKindOfClass:[NSManagedObjectID class]]) {
-                return [context existingObjectWithID:objectData error:nil];
-            } else if ([objectData isKindOfClass:[NSManagedObject class]]) {
-                if (![[objectData entity] isKindOfEntity:relationshipInfo.destinationEntity])
-                    return nil;
-                
-                return objectData;
-            } else if ([objectData isKindOfClass:[NSDictionary class]])  {
+        [self _setRelationships:self.entity.relationshipsByName forDictionary:objectData withBlock:^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData) {            
+            NSManagedObject *relatedObject = nil;
+            
+            if ([objectData isKindOfClass:[NSDictionary class]])  {
                 NSString *destinationName = [objectData objectForKey:kMagicalRecordImportClassNameKey];
                 NSEntityDescription *destination = [relationshipInfo destinationEntity];
                 if (destinationName) {
@@ -177,12 +181,12 @@ static NSString *primaryKeyNameFromString(NSString *value)
                     if ([customDestination isKindOfEntity:destination])
                         destination = customDestination;
                 }
-                return [safeSelf _createInstanceForEntity:destination withDictionary:objectData];
+                relatedObject = [safeSelf _createInstanceForEntity:destination withDictionary:objectData];
             } else {
-                NSManagedObject *relatedObject = [safeSelf _findObjectForRelationship:relationshipInfo withData:objectData];
+                relatedObject = [safeSelf _findObjectForRelationship:relationshipInfo withData:objectData];
                 [relatedObject importValuesFromDictionary:objectData];
-                return relatedObject;
             }
+            return relatedObject;
         }];
     }
 }
@@ -195,19 +199,20 @@ static NSString *primaryKeyNameFromString(NSString *value)
         __block id safeSelf = self;
         [self _setRelationships:self.entity.relationshipsByName forDictionary:objectData withBlock:^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData){
             NSManagedObject *relatedObject = [safeSelf _findObjectForRelationship:relationshipInfo withData:objectData];
-
-            if (!relatedObject) {
-                NSString *destinationName = [objectData objectForKey:kMagicalRecordImportClassNameKey];
-                NSEntityDescription *destination = [relationshipInfo destinationEntity];
-                if (destinationName) {
-                    NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:context];
-                    if ([customDestination isKindOfEntity:destination])
-                        destination = customDestination;
-                }
-                return [safeSelf _createInstanceForEntity:destination withDictionary:objectData];
+            
+            if (relatedObject) {
+                [relatedObject importValuesFromDictionary:objectData];
+                return relatedObject;
             }
-            [relatedObject importValuesFromDictionary:objectData];
-            return relatedObject;
+
+            NSString *destinationName = [objectData objectForKey:kMagicalRecordImportClassNameKey];
+            NSEntityDescription *destination = [relationshipInfo destinationEntity];
+            if (destinationName) {
+                NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:context];
+                if ([customDestination isKindOfEntity:destination])
+                    destination = customDestination;
+            }
+            return [safeSelf _createInstanceForEntity:destination withDictionary:objectData];
          }];
     }
 }
