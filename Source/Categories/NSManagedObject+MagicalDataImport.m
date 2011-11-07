@@ -81,7 +81,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
 
     Class managedObjectClass = NSClassFromString([destination managedObjectClassName]);
     NSString *primaryKeyName = [relationshipInfo.userInfo valueForKey:kMagicalRecordImportRelationshipPrimaryKey] ?: primaryKeyNameFromString(relationshipInfo.destinationEntity.name);
-    return [managedObjectClass findFirstByAttribute:primaryKeyName withValue:relatedValue inContext:self.managedObjectContext];
+    return [managedObjectClass findFirstWhere:primaryKeyName isEqualTo:relatedValue inContext:self.managedObjectContext];
 }
 
 - (void)_setAttributes:(NSDictionary *)attributes forDictionary:(NSDictionary *)objectData {
@@ -235,7 +235,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
     NSString *lookupKeyPath = [objectData valueForKey:lookupKey];
     id value = [objectData valueForKey:lookupKeyPath];
     
-    NSManagedObject *managedObject = [self findFirstByAttribute:lookupKeyPath withValue:value inContext:context];
+    NSManagedObject *managedObject = [self findFirstWhere:lookupKeyPath isEqualTo:value inContext:context];
     if (!managedObject)
         managedObject = [self createInContext:context];
     [managedObject updateValuesFromDictionary:objectData];
