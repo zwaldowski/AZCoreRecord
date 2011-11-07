@@ -187,18 +187,18 @@ NSDate * adjustDateForDST(NSDate *date)
 {
     NSTimeInterval dstOffset = [[NSTimeZone localTimeZone] daylightSavingTimeOffsetForDate:date];
     NSDate *actualDate = [date dateByAddingTimeInterval:dstOffset];
-
     return actualDate;
 }
 
-static __strong NSDateFormatter *helperFormatter = nil;
+static NSDateFormatter *helperFormatter = nil;
 
 NSDate * dateFromString(NSString *value, NSString *format)
 {
-    if (!helperFormatter)
+    if (!helperFormatter) {
         helperFormatter = [NSDateFormatter new];
-    [helperFormatter setTimeZone:[NSTimeZone localTimeZone]];
-    [helperFormatter setLocale:[NSLocale currentLocale]];
+        [helperFormatter setTimeZone:[NSTimeZone localTimeZone]];
+        [helperFormatter setLocale:[NSLocale currentLocale]];
+    }
     [helperFormatter setDateFormat:format];
     return [helperFormatter dateFromString:value];
 }

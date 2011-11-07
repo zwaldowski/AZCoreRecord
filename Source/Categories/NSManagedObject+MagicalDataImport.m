@@ -44,15 +44,6 @@ static NSString *primaryKeyNameFromString(NSString *value)
 
 - (NSManagedObject *)_findObjectForRelationship:(NSRelationshipDescription *)relationshipInfo withData:(id)singleRelatedObjectData
 {
-    NSString *destinationName = [singleRelatedObjectData objectForKey:kMagicalRecordImportClassNameKey];
-    NSEntityDescription *destination = [relationshipInfo destinationEntity];
-    if (destinationName) {
-        NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
-        if ([customDestination isKindOfEntity:destination])
-            destination = customDestination;
-    }
-    
-    
     if ([singleRelatedObjectData isKindOfClass:[NSURL class]]) {
         NSManagedObjectID *objectID = [self.managedObjectContext.persistentStoreCoordinator managedObjectIDForURIRepresentation:singleRelatedObjectData];
         return [self.managedObjectContext existingObjectWithID:objectID error:nil];
@@ -65,6 +56,14 @@ static NSString *primaryKeyNameFromString(NSString *value)
     }
     
     id relatedValue = nil;
+    
+    NSString *destinationName = [singleRelatedObjectData objectForKey:kMagicalRecordImportClassNameKey];
+    NSEntityDescription *destination = [relationshipInfo destinationEntity];
+    if (destinationName) {
+        NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
+        if ([customDestination isKindOfEntity:destination])
+            destination = customDestination;
+    }
     
     if ([singleRelatedObjectData isKindOfClass:[NSNumber class]] || [singleRelatedObjectData isKindOfClass:[NSString class]])
         relatedValue = singleRelatedObjectData;
@@ -87,12 +86,10 @@ static NSString *primaryKeyNameFromString(NSString *value)
 - (void)_setAttributes:(NSDictionary *)attributes forDictionary:(NSDictionary *)objectData {
     [attributes enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, NSAttributeDescription *attributeInfo, BOOL *stop) {
         NSString *key = [attributeInfo.userInfo valueForKey:kMagicalRecordImportMapKey] ?: attributeInfo.name;
-        NSString *keyPath = [objectData valueForKeyPath:key];
-        
-        if (!keyPath.length)
+        if (!key.length)
             return;
         
-        id value = [objectData valueForKeyPath:keyPath];
+        id value = [objectData valueForKeyPath:key];
         
         NSAttributeType attributeType = [attributeInfo attributeType];
         NSString *desiredAttributeType = [[attributeInfo userInfo] valueForKey:kMagicalRecordImportClassNameKey];
@@ -103,7 +100,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
             if (![value isKindOfClass:[NSDate class]]) 
             {
                 NSString *dateFormat = [[attributeInfo userInfo] valueForKey:kMagicalRecordImportCustomDateFormat];
-                value = dateFromString([value description], dateFormat ?: kMagicalRecordImportDefaultDateFormat);
+                value = dateFromString(value, dateFormat ?: kMagicalRecordImportDefaultDateFormat);
             }
             value = adjustDateForDST(value);
         }
@@ -232,10 +229,9 @@ static NSString *primaryKeyNameFromString(NSString *value)
     NSAssert3(primaryAttribute, @"Unable to determine primary attribute for %@. Specify either an attribute named %@ or the primary key in userInfo named '%@'", entity.name, attributeKey, kMagicalRecordImportPrimaryAttributeKey);
     
     NSString *lookupKey = [primaryAttribute.userInfo valueForKey:kMagicalRecordImportMapKey] ?: primaryAttribute.name;
-    NSString *lookupKeyPath = [objectData valueForKey:lookupKey];
-    id value = [objectData valueForKey:lookupKeyPath];
+    id value = [objectData valueForKey:lookupKey];
     
-    NSManagedObject *managedObject = [self findFirstWhere:lookupKeyPath isEqualTo:value inContext:context];
+    NSManagedObject *managedObject = [self findFirstWhere:lookupKey isEqualTo:value inContext:context];
     if (!managedObject)
         managedObject = [self createInContext:context];
     [managedObject updateValuesFromDictionary:objectData];
