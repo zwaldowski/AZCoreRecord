@@ -44,15 +44,15 @@ static NSString *primaryKeyNameFromString(NSString *value)
 
 - (NSManagedObject *)_findObjectForRelationship:(NSRelationshipDescription *)relationshipInfo withData:(id)singleRelatedObjectData
 {
-    if ([singleRelatedObjectData isKindOfClass:[NSURL class]]) {
+    if ([singleRelatedObjectData isKindOfClass:[NSManagedObject class]]) {
+        if (!([[singleRelatedObjectData entity] isKindOfEntity:relationshipInfo.destinationEntity] || [[singleRelatedObjectData entity] isEqual:relationshipInfo.destinationEntity]))
+            return nil;
+        return singleRelatedObjectData;
+    } else if ([singleRelatedObjectData isKindOfClass:[NSURL class]]) {
         NSManagedObjectID *objectID = [self.managedObjectContext.persistentStoreCoordinator managedObjectIDForURIRepresentation:singleRelatedObjectData];
         return [self.managedObjectContext existingObjectWithID:objectID error:nil];
     } else if ([singleRelatedObjectData isKindOfClass:[NSManagedObjectID class]]) {
         return [self.managedObjectContext existingObjectWithID:singleRelatedObjectData error:nil];
-    } else if ([singleRelatedObjectData isKindOfClass:[NSManagedObject class]]) {
-        if (![[singleRelatedObjectData entity] isKindOfEntity:relationshipInfo.destinationEntity])
-            return nil;
-        return singleRelatedObjectData;
     }
     
     id relatedValue = nil;
@@ -74,6 +74,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
         NSAttributeDescription *primaryKeyAttribute = [destinationEntity.attributesByName valueForKey:primaryKeyName];
         NSString *lookupKey = [[primaryKeyAttribute userInfo] valueForKey:kMagicalRecordImportMapKey] ?: [primaryKeyAttribute name];
         relatedValue = [singleRelatedObjectData valueForKeyPath:lookupKey];
+        
     }
     
     if (!relatedValue)
@@ -81,7 +82,10 @@ static NSString *primaryKeyNameFromString(NSString *value)
 
     Class managedObjectClass = NSClassFromString([destination managedObjectClassName]);
     NSString *primaryKeyName = [relationshipInfo.userInfo valueForKey:kMagicalRecordImportRelationshipPrimaryKey] ?: primaryKeyNameFromString(relationshipInfo.destinationEntity.name);
-    return [managedObjectClass findFirstWhere:primaryKeyName isEqualTo:relatedValue inContext:self.managedObjectContext];
+    id object = [managedObjectClass findFirstWhere:primaryKeyName isEqualTo:relatedValue inContext:self.managedObjectContext];
+    if ([singleRelatedObjectData isKindOfClass:[NSDictionary class]])
+        [object updateValuesFromDictionary:singleRelatedObjectData];
+    return object;
 }
 
 - (void)_setAttributes:(NSDictionary *)attributes forDictionary:(NSDictionary *)objectData {
@@ -235,8 +239,9 @@ static NSString *primaryKeyNameFromString(NSString *value)
     id value = [objectData valueForKey:lookupKey];
     
     NSManagedObject *managedObject = [self findFirstWhere:lookupKey isEqualTo:value inContext:context];
-    if (!managedObject)
+    if (!managedObject) {
         managedObject = [self createInContext:context];
+    }
     [managedObject updateValuesFromDictionary:objectData];
     
     return managedObject;
