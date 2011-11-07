@@ -57,8 +57,9 @@ static NSString *primaryKeyNameFromString(NSString *value)
     
     id relatedValue = nil;
     
-    NSString *destinationName = [singleRelatedObjectData objectForKey:kMagicalRecordImportClassNameKey];
     NSEntityDescription *destination = [relationshipInfo destinationEntity];
+    NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
+    NSString *destinationName = [singleRelatedObjectData objectForKey:destinationKey];
     if (destinationName) {
         NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
         if ([customDestination isKindOfEntity:destination])
@@ -112,7 +113,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
 
 - (void)_addObject:(NSManagedObject *)relatedObject forRelationship:(NSRelationshipDescription *)relationshipInfo {
     NSAssert2(relatedObject, @"Cannot add nil to %@ for attribute %@", NSStringFromClass([self class]), relationshipInfo.name);
-    NSAssert2([relationshipInfo.destinationEntity isKindOfEntity:[relatedObject entity]], @"related object entity %@ not same as destination entity %@", [relatedObject entity], [relationshipInfo destinationEntity]);
+    NSAssert2([[relatedObject entity] isKindOfEntity:relationshipInfo.destinationEntity], @"related object entity %@ not same as destination entity %@", [[relatedObject entity] name], [[relationshipInfo destinationEntity] name]);
     
     //add related object to set
     NSString *addRelationMessageFormat = [relationshipInfo isToMany] ? @"add%@Object:" : @"set%@:";
@@ -165,8 +166,9 @@ static NSString *primaryKeyNameFromString(NSString *value)
             NSManagedObject *relatedObject = nil;
             
             if ([objectData isKindOfClass:[NSDictionary class]])  {
-                NSString *destinationName = [objectData objectForKey:kMagicalRecordImportClassNameKey];
                 NSEntityDescription *destination = [relationshipInfo destinationEntity];
+                NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
+                NSString *destinationName = [objectData objectForKey:destinationKey];
                 if (destinationName) {
                     NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:context];
                     if ([customDestination isKindOfEntity:destination])
@@ -175,7 +177,6 @@ static NSString *primaryKeyNameFromString(NSString *value)
                 relatedObject = [safeSelf _createInstanceForEntity:destination withDictionary:objectData];
             } else {
                 relatedObject = [safeSelf _findObjectForRelationship:relationshipInfo withData:objectData];
-                [relatedObject importValuesFromDictionary:objectData];
             }
             return relatedObject;
         }];
@@ -191,12 +192,14 @@ static NSString *primaryKeyNameFromString(NSString *value)
             NSManagedObject *relatedObject = [safeSelf _findObjectForRelationship:relationshipInfo withData:objectData];
             
             if (relatedObject) {
-                [relatedObject importValuesFromDictionary:objectData];
+                if ([objectData isKindOfClass:[NSDictionary class]])
+                    [relatedObject importValuesFromDictionary:objectData];
                 return relatedObject;
             }
 
-            NSString *destinationName = [objectData objectForKey:kMagicalRecordImportClassNameKey];
             NSEntityDescription *destination = [relationshipInfo destinationEntity];
+            NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
+            NSString *destinationName = [objectData objectForKey:destinationKey];
             if (destinationName) {
                 NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:safeSelf.managedObjectContext];
                 if ([customDestination isKindOfEntity:destination])
