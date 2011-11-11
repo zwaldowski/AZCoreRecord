@@ -120,14 +120,13 @@ static NSString *primaryKeyNameFromString(NSString *value)
     NSAssert2([[relatedObject entity] isKindOfEntity:relationshipInfo.destinationEntity], @"related object entity %@ not same as destination entity %@", [[relatedObject entity] name], [[relationshipInfo destinationEntity] name]);
     
     //add related object to set
-    NSString *addRelationMessageFormat = [relationshipInfo isToMany] ? @"add%@Object:" : @"set%@:";
-    NSString *addRelatedObjectToSetMessage = [NSString stringWithFormat:addRelationMessageFormat, attributeNameFromString([relationshipInfo name])];
+    SEL selector = NSSelectorFromString([NSString stringWithFormat:@"add%@Object:", attributeNameFromString([relationshipInfo name])]);
     
     @try 
     {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        [self performSelector:NSSelectorFromString(addRelatedObjectToSetMessage) withObject:relatedObject];
+        [self performSelector:selector withObject:relatedObject];
 #pragma clank diagnostic pop
     }
     @catch (NSException *exception) 
