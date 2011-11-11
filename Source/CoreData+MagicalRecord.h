@@ -11,7 +11,18 @@
 #endif
 
 #define kCreateNewCoordinatorOnBackgroundOperations     0
+
+#ifdef MR_LOGGING
 #define ENABLE_ACTIVE_RECORD_LOGGING
+#endif
+
+#ifdef DEBUG
+#define ENABLE_ACTIVE_RECORD_LOGGING
+#endif
+
+#ifdef MR_NO_LOGGING
+#undef ENABLE_ACTIVE_RECORD_LOGGING
+#endif
 
 #ifdef ENABLE_ACTIVE_RECORD_LOGGING
     #define ARLog(...) NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat:__VA_ARGS__])
