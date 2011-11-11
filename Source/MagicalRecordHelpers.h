@@ -10,6 +10,14 @@
 typedef void (^CoreDataBlock)(NSManagedObjectContext *context);
 typedef void (^CoreDataError)(NSError *error);
 
+@protocol MRErrorHandler <NSObject>
+
+@optional
+- (void)handleErrors:(NSError *)error;
++ (void)handleErrors:(NSError *)error;
+
+@end
+
 @interface MagicalRecordHelpers : NSObject
 
 + (NSString *) currentStack;
@@ -21,9 +29,8 @@ typedef void (^CoreDataError)(NSError *error);
 + (void)setErrorHandler:(CoreDataError)block;
 + (CoreDataError)errorHandler;
 
-+ (void) setErrorHandlerTarget:(id)target action:(SEL)action;
-+ (SEL) errorHandlerAction;
-+ (id) errorHandlerTarget;
++ (void)setErrorHandlerTarget:(id <MRErrorHandler>)target;
++ (id <MRErrorHandler>)errorHandlerTarget;
 
 //global options
 // enable/disable logging

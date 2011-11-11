@@ -10,8 +10,8 @@
 #import <objc/runtime.h>
 
 static char *kErrorHandlerTargetKey = "errorHandlerTarget_";
-static char *kErrorHandlerActionKey = "errorHandlerAction_";
-static char *kErrorHandlerBlockKey = "errorHandlern_";
+static char *kErrorHandlerIsClassKey = "errorHandlerIsClass_";
+static char *kErrorHandlerBlockKey = "errorHandler_";
 static char *kShouldAutoCreateMOMKey = "shouldAutoCreateManagedObjectModel_";
 static char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentStoreCoordinator_";
 
@@ -38,26 +38,21 @@ static char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentStoreCo
     return status;
 }
 
-+ (void) handleErrors:(NSError *)error
++ (void)handleErrors:(NSError *)error
 {
     if (!error)
         return;
     
     id target = [self errorHandlerTarget];
-    SEL action = [self errorHandlerAction];
     CoreDataError block = [self errorHandler];
     
-    // If a custom error handler is set, call that
-    if (target && action) 
-    {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        [target performSelector:action withObject:error];
-#pragma clank diagnostic pop
+    if (block) {
+        block(error);
     }
-    else if (block)
-    {
-        block(error);	
+    
+    if (target) {
+        BOOL isClassSelector = [objc_getAssociatedObject(self, kErrorHandlerIsClassKey) boolValue];
+        [(isClassSelector ? [target class] : target) performSelector:@selector(handleErrors:) withObject:error];
     }
 }
 
@@ -98,19 +93,21 @@ static char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentStoreCo
     return objc_getAssociatedObject(self, kErrorHandlerBlockKey);
 }
 
-+ (id) errorHandlerTarget
++ (id <MRErrorHandler>) errorHandlerTarget
 {
     return objc_getAssociatedObject(self, kErrorHandlerTargetKey);
 }
 
-+ (SEL) errorHandlerAction
++ (void) setErrorHandlerTarget:(id <MRErrorHandler>)target
 {
-    return NSSelectorFromString(objc_getAssociatedObject(self, kErrorHandlerActionKey));
-}
-
-+ (void) setErrorHandlerTarget:(id)target action:(SEL)action
-{
-    objc_setAssociatedObject(self, kErrorHandlerActionKey, NSStringFromSelector(action), OBJC_ASSOCIATION_COPY_NONATOMIC);
+    BOOL isClassMethod;
+    if ([target respondsToSelector:@selector(handleErrors:)])
+        isClassMethod = NO;
+    else if ([[target class] respondsToSelector:@selector(handleErrors:)])
+        isClassMethod = YES;
+    else
+        return;
+    objc_setAssociatedObject(self, kErrorHandlerIsClassKey, [NSNumber numberWithBool:isClassMethod], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     objc_setAssociatedObject(self, kErrorHandlerTargetKey, target, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
