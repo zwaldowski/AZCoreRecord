@@ -11,10 +11,12 @@
 + (NSManagedObjectModel *)defaultManagedObjectModel;
 + (void)setDefaultManagedObjectModel:(NSManagedObjectModel *)newDefaultModel;
 
-+ (NSManagedObjectModel *)newManagedObjectModel;
-+ (NSManagedObjectModel *)newManagedObjectModelNamed:(NSString *)modelFileName NS_RETURNS_RETAINED;
-+ (NSManagedObjectModel *)managedObjectModelNamed:(NSString *)modelFileName;
-+ (NSManagedObjectModel *)newModelNamed:(NSString *) modelName inBundleNamed:(NSString *) bundleName NS_RETURNS_RETAINED;
-+ (NSManagedObjectModel *)mergedObjectModelFromMainBundle;
++ (NSManagedObjectModel *)managedObjectModel;
++ (NSManagedObjectModel *)newManagedObjectModelNamed:(NSString *)modelFileName;
++ (NSManagedObjectModel *)newModelNamed:(NSString *) modelName inBundleNamed:(NSString *) bundleName;
+
++ (NSManagedObjectModel *)newManagedObjectModel DEPRECATED_ATTRIBUTE;
++ (NSManagedObjectModel *)mergedObjectModelFromMainBundle DEPRECATED_ATTRIBUTE;
++ (NSManagedObjectModel *)managedObjectModelNamed:(NSString *)modelFileName DEPRECATED_ATTRIBUTE;
 
 @end
