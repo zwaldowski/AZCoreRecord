@@ -8,33 +8,23 @@
 
 #import "NSManagedObjectContext+MagicalRecord.h"
 
-typedef enum
-{
-    MRCoreDataSaveOptionInBackground        = 1 << 0,
-    MRCoreDataSaveOptionWithNewContext      = 1 << 1
+typedef enum {
+    MRCoreDataSaveOptionNone               = 0,
+    MRCoreDataSaveOptionInBackground       = 1 << 0,
+    MRCoreDataSaveOptionWithNewContext     = 1 << 1
 } MRCoreDataSaveOption;
 
-typedef enum
-{
-    MRCoreDataLookupOptionWithNewContext    = 1 << 0
-} MRCoreDataLookupOption;
+@interface MRCoreDataAction : NSObject
 
-@interface MRCoreDataAction : NSObject {}
++ (void) saveDataWithBlock:(void(^)(NSManagedObjectContext *))block;
++ (void) saveDataWithBlock:(void(^)(NSManagedObjectContext *))block errorHandler:(void (^)(NSError *))errorHandler;
 
-+ (void) cleanUp;
++ (void) saveDataInBackgroundWithBlock:(void(^)(NSManagedObjectContext *))block;
++ (void) saveDataInBackgroundWithBlock:(void(^)(NSManagedObjectContext *))block completion:(void(^)())callback;
++ (void) saveDataInBackgroundWithBlock:(void(^)(NSManagedObjectContext *))block completion:(void(^)())callback errorHandler:(void (^)(NSError *))errorHandler;
 
-#ifdef NS_BLOCKS_AVAILABLE
-
-+ (void) saveDataWithBlock:(void(^)(NSManagedObjectContext *localContext))block;
-
-+ (void) saveDataInBackgroundWithBlock:(void(^)(NSManagedObjectContext *localContext))block;
-+ (void) saveDataInBackgroundWithBlock:(void(^)(NSManagedObjectContext *localContext))block completion:(void(^)(void))callback;
-
-+ (void) saveDataWithOptions:(MRCoreDataSaveOption)options withBlock:(void(^)(NSManagedObjectContext *localContext))block;
-+ (void) saveDataWithOptions:(MRCoreDataSaveOption)options withBlock:(void(^)(NSManagedObjectContext *localContext))block completion:(void(^)(void))callback;
-
-+ (void) lookupWithBlock:(void(^)(NSManagedObjectContext *localContext))block;
-
-#endif
++ (void) saveDataWithOptions:(MRCoreDataSaveOption)options withBlock:(void(^)(NSManagedObjectContext *))block;
++ (void) saveDataWithOptions:(MRCoreDataSaveOption)options withBlock:(void(^)(NSManagedObjectContext *))block completion:(void(^)(void))callback;
++ (void) saveDataWithOptions:(MRCoreDataSaveOption)options withBlock:(void (^)(NSManagedObjectContext *))block completion:(void (^)(void))callback errorHandler:(void(^)(NSError *))errorCallback;
 
 @end
