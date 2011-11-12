@@ -100,14 +100,14 @@ static NSString *primaryKeyNameFromString(NSString *value)
         NSString *desiredAttributeType = [[attributeInfo userInfo] valueForKey:kMagicalRecordImportClassNameKey];
         
         if (desiredAttributeType && [desiredAttributeType hasSuffix:@"Color"]) {
-            value = colorFromString(value);
+            value = MRColorFromString(value);
         } else if (!desiredAttributeType && attributeType == NSDateAttributeType) {
             if (![value isKindOfClass:[NSDate class]]) 
             {
                 NSString *dateFormat = [[attributeInfo userInfo] valueForKey:kMagicalRecordImportCustomDateFormat];
-                value = dateFromString(value, dateFormat ?: kMagicalRecordImportDefaultDateFormat);
+                value = MRDateFromString(value, dateFormat ?: kMagicalRecordImportDefaultDateFormat);
             }
-            value = adjustDateForDST(value);
+            value = MRDateAdjustForDST(value);
         }
         
         value = value != [NSNull null] ? value : nil;

@@ -60,13 +60,6 @@ typedef void (^CoreDataError)(NSError *error);
 #pragma mark - Helper Functions
 
 //Helper Functions
-NSDate * adjustDateForDST(NSDate *date);
-NSDate * dateFromString(NSString *value, NSString *format);
-
-#if TARGET_OS_IPHONE
-UIColor * UIColorFromString(NSString *serializedColor);
-#else
-NSColor * NSColorFromString(NSString *serializedColor);
-#endif
-id (*colorFromString)(NSString *);
-
+extern NSDate *MRDateAdjustForDST(NSDate *date);
+extern NSDate *MRDateFromString(NSString *value, NSString *format);
+extern id MRColorFromString(NSString *serializedColor);

@@ -179,38 +179,35 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
 
 @end
 
-NSDate * adjustDateForDST(NSDate *date)
-{
+NSDate * MRDateAdjustForDST(NSDate *date) {
     NSTimeInterval dstOffset = [[NSTimeZone localTimeZone] daylightSavingTimeOffsetForDate:date];
     NSDate *actualDate = [date dateByAddingTimeInterval:dstOffset];
     return actualDate;
 }
 
-static NSDateFormatter *helperFormatter = nil;
-
-NSDate * dateFromString(NSString *value, NSString *format)
+NSDate * MRDateFromString(NSString *value, NSString *format)
 {
-    if (!helperFormatter) {
+    static dispatch_once_t onceToken;
+    static NSDateFormatter *helperFormatter;
+    dispatch_once(&onceToken, ^{
         helperFormatter = [NSDateFormatter new];
         [helperFormatter setTimeZone:[NSTimeZone localTimeZone]];
         [helperFormatter setLocale:[NSLocale currentLocale]];
-    }
+    });
     [helperFormatter setDateFormat:format];
     return [helperFormatter dateFromString:value];
 }
 
-NSInteger* newColorComponentsFromString(NSString *serializedColor);
-NSInteger* newColorComponentsFromString(NSString *serializedColor)
-{
+id MRColorFromString(NSString *serializedColor) {
     NSScanner *colorScanner = [NSScanner scannerWithString:serializedColor];
     NSString *colorType;
     [colorScanner scanUpToString:@"(" intoString:&colorType];
     
-    NSInteger *componentValues = malloc(4 * sizeof(NSInteger));
+    NSInteger *componentValues = calloc(4, sizeof(NSInteger));
     if ([colorType hasPrefix:@"rgba"])
     {
         NSCharacterSet *rgbaCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"(,)"];
-
+        
         NSInteger *componentValue = componentValues;
         while (![colorScanner isAtEnd]) 
         {
@@ -219,37 +216,19 @@ NSInteger* newColorComponentsFromString(NSString *serializedColor)
             componentValue++;
         }
     }
-    return componentValues;
-}
-
+    
+    id color = nil;
 #if TARGET_OS_IPHONE
-
-UIColor * UIColorFromString(NSString *serializedColor)
-{
-    NSInteger *componentValues = newColorComponentsFromString(serializedColor);
-    UIColor *color = [UIColor colorWithRed:(componentValues[0] / 255.)
+    color = [UIColor colorWithRed:(componentValues[0] / 255.)
                                      green:(componentValues[1] / 255.)
                                       blue:(componentValues[2] / 255.)
                                      alpha:componentValues[3]];
-    
-    free(componentValues);
-    return color;
-}
-id (*colorFromString)(NSString *) = UIColorFromString;
-
 #else
-
-NSColor * NSColorFromString(NSString *serializedColor)
-{
-    NSInteger *componentValues = newColorComponentsFromString(serializedColor);
-    NSColor *color = [NSColor colorWithDeviceRed:(componentValues[0] / 255.)
-                                      green:(componentValues[1] / 255.)
-                                       blue:(componentValues[2] / 255.)
-                                      alpha:componentValues[3]];
+    color = [NSColor colorWithDeviceRed:(componentValues[0] / 255.)
+                                           green:(componentValues[1] / 255.)
+                                            blue:(componentValues[2] / 255.)
+                                           alpha:componentValues[3]];
+#endif
     free(componentValues);
     return color;
 }
-id (*colorFromString)(NSString *) = NSColorFromString;
-
-
-#endif
