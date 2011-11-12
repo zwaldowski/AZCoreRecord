@@ -6,8 +6,6 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-#import "NSManagedObjectContext+MagicalRecord.h"
-
 typedef enum {
     MRCoreDataSaveOptionNone               = 0,
     MRCoreDataSaveOptionInBackground       = 1 << 0,

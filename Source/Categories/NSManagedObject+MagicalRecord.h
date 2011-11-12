@@ -6,8 +6,6 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-#define kMagicalRecordDefaultBatchSize 20
-
 @interface NSManagedObject (MagicalRecord)
 
 /** @name Instance methods */

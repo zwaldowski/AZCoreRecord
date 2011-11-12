@@ -8,9 +8,9 @@
 
 #import "NSManagedObject+MagicalRecord.h"
 
-static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
+static NSUInteger defaultBatchSize = 20;
 
-@interface NSManagedObject (MOGenerator)
+@interface NSManagedObject (MOGenerator_)
 + (NSEntityDescription *)entityInManagedObjectContext:(NSManagedObjectContext *)context;
 + (id)insertInManagedObjectContext:(NSManagedObjectContext *)context;
 @end

@@ -26,9 +26,15 @@ typedef void (^CoreDataError)(NSError *error);
 
 @interface MagicalRecordHelpers : NSObject
 
-+ (NSString *) currentStack;
++ (void) setupCoreDataStack;
++ (void) setupCoreDataStackWithStoreNamed:(NSString *)storeName;
++ (void) setupAutoMigratingCoreDataStack;
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName;
++ (void) setupCoreDataStackWithInMemoryStore;
 
 + (void) cleanUp;
+
++ (NSString *) currentStack;
 
 + (void) handleErrors:(NSError *)error;
 
@@ -38,22 +44,10 @@ typedef void (^CoreDataError)(NSError *error);
 + (void)setErrorHandlerTarget:(id <MRErrorHandler>)target;
 + (id <MRErrorHandler>)errorHandlerTarget;
 
-//global options
-// enable/disable logging
-// add logging provider
-// autocreate new PSC per Store
-// autoassign new instances to default store
 + (BOOL) shouldAutoCreateManagedObjectModel;
 + (void) setShouldAutoCreateManagedObjectModel:(BOOL)shouldAutoCreate;
 + (BOOL) shouldAutoCreateDefaultPersistentStoreCoordinator;
 + (void) setShouldAutoCreateDefaultPersistentStoreCoordinator:(BOOL)shouldAutoCreate;
-
-+ (void) setupCoreDataStack;
-+ (void) setupCoreDataStackWithInMemoryStore;
-+ (void) setupAutoMigratingCoreDataStack;
-
-+ (void) setupCoreDataStackWithStoreNamed:(NSString *)storeName;
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName;
 
 @end
 
@@ -63,3 +57,5 @@ typedef void (^CoreDataError)(NSError *error);
 extern NSDate *MRDateAdjustForDST(NSDate *date);
 extern NSDate *MRDateFromString(NSString *value, NSString *format);
 extern id MRColorFromString(NSString *serializedColor);
+
+@compatibility_alias MagicalRecord MagicalRecordHelpers;

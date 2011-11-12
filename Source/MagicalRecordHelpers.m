@@ -53,38 +53,36 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
         BOOL isClassSelector = [objc_getAssociatedObject(self, kErrorHandlerIsClassKey) boolValue];
         [(isClassSelector ? [target class] : target) performSelector:@selector(handleErrors:) withObject:error];
     }
+    
+    if (!block && !target) {
+        NSDictionary *userInfo = [error userInfo];
+        for (NSArray *detailedError in [userInfo allValues])
+        {
+            if ([detailedError isKindOfClass:[NSArray class]])
+            {
+                for (NSError *e in detailedError)
+                {
+                    if ([e respondsToSelector:@selector(userInfo)])
+                    {
+                        ARLog(@"Error Details: %@", [e userInfo]);
+                    }
+                    else
+                    {
+                        ARLog(@"Error Details: %@", e);
+                    }
+                }
+            }
+            else
+            {
+                ARLog(@"Error: %@", detailedError);
+            }
+        }
+        ARLog(@"Error Domain: %@", [error domain]);
+        ARLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
+    }
 }
 
 + (void)setErrorHandler:(CoreDataError)block {
-    if (!block) {
-        block = ^(NSError *error){
-            NSDictionary *userInfo = [error userInfo];
-            for (NSArray *detailedError in [userInfo allValues])
-            {
-                if ([detailedError isKindOfClass:[NSArray class]])
-                {
-                    for (NSError *e in detailedError)
-                    {
-                        if ([e respondsToSelector:@selector(userInfo)])
-                        {
-                            ARLog(@"Error Details: %@", [e userInfo]);
-                        }
-                        else
-                        {
-                            ARLog(@"Error Details: %@", e);
-                        }
-                    }
-                }
-                else
-                {
-                    ARLog(@"Error: %@", detailedError);
-                }
-            }
-            ARLog(@"Error Domain: %@", [error domain]);
-            ARLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
-        };
-    }
-    
     objc_setAssociatedObject(self, kErrorHandlerBlockKey, block, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
@@ -92,13 +90,11 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
     return objc_getAssociatedObject(self, kErrorHandlerBlockKey);
 }
 
-+ (id <MRErrorHandler>) errorHandlerTarget
-{
++ (id <MRErrorHandler>) errorHandlerTarget {
     return objc_getAssociatedObject(self, kErrorHandlerTargetKey);
 }
 
-+ (void) setErrorHandlerTarget:(id <MRErrorHandler>)target
-{
++ (void) setErrorHandlerTarget:(id <MRErrorHandler>)target {
     BOOL isClassMethod;
     if ([target respondsToSelector:@selector(handleErrors:)])
         isClassMethod = NO;
