@@ -12,11 +12,9 @@
 - (void) stopObservingContext:(NSManagedObjectContext *)otherContext;
 - (void) observeContextOnMainThread:(NSManagedObjectContext *)otherContext;
 
-- (BOOL) save;
 
-#ifdef NS_BLOCKS_AVAILABLE
+- (BOOL) save;
 - (BOOL) saveWithErrorHandler:(void(^)(NSError *))errorCallback;
-#endif
 
 - (BOOL) saveOnMainThread;
 - (BOOL) saveOnBackgroundThread;

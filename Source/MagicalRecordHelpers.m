@@ -9,17 +9,16 @@
 #import "CoreData+MagicalRecord.h"
 #import <objc/runtime.h>
 
-static char *kErrorHandlerTargetKey = "errorHandlerTarget_";
-static char *kErrorHandlerIsClassKey = "errorHandlerIsClass_";
-static char *kErrorHandlerBlockKey = "errorHandler_";
-static char *kShouldAutoCreateMOMKey = "shouldAutoCreateManagedObjectModel_";
-static char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentStoreCoordinator_";
+static const char *kErrorHandlerTargetKey = "errorHandlerTarget_";
+static const char *kErrorHandlerIsClassKey = "errorHandlerIsClass_";
+static const char *kErrorHandlerBlockKey = "errorHandler_";
+static const char *kShouldAutoCreateMOMKey = "shouldAutoCreateManagedObjectModel_";
+static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentStoreCoordinator_";
 
 @implementation MagicalRecordHelpers
 
 + (void) cleanUp
 {
-	[MRCoreDataAction cleanUp];
 	[NSManagedObjectContext setDefaultContext:nil];
 	[NSManagedObjectModel setDefaultManagedObjectModel:nil];
 	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:nil];

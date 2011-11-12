@@ -1,22 +1,9 @@
 //
-//  MagicalRecord for Core Data.
+//  MagicalRecord for Core Data
 //
 //  Created by Saul Mora.
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
-
-// enable to use caches for the fetchedResultsControllers (iOS only)
-#if TARGET_OS_IPHONE
-#define STORE_USE_CACHE
-#endif
-
-#define kCreateNewCoordinatorOnBackgroundOperations     0
-
-#ifdef MR_LOGGING
-    #define ARLog(...) NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat:__VA_ARGS__])
-#else
-    #define ARLog(...)
-#endif
 
 #import <CoreData/CoreData.h>
 

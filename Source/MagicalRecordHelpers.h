@@ -6,6 +6,12 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
+#ifdef MR_LOGGING
+#define ARLog(...) NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat:__VA_ARGS__])
+#else
+#define ARLog(...)
+#endif
+
 @class NSManagedObjectContext;
 typedef void (^CoreDataBlock)(NSManagedObjectContext *context);
 typedef void (^CoreDataError)(NSError *error);

@@ -718,10 +718,7 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 + (NSFetchedResultsController *) fetchRequest:(NSFetchRequest *)request groupedBy:(NSString *)group inContext:(NSManagedObjectContext *)context
 {
-	NSString *cacheName = nil;
-#ifdef STORE_USE_CACHE
-	cacheName = [NSString stringWithFormat:@"MagicalRecord-Cache-%@", NSStringFromClass([self class])];
-#endif
+	NSString *cacheName = TARGET_OS_IPHONE ? [NSString stringWithFormat:@"MagicalRecord-Cache-%@", NSStringFromClass([self class])] : nil;
 	NSFetchedResultsController *controller = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:group cacheName:cacheName];
     [self performFetch:controller];
 	return controller;
@@ -734,11 +731,8 @@ static NSUInteger defaultBatchSize = kMagicalRecordDefaultBatchSize;
 
 + (NSFetchedResultsController *) fetchRequestAllGroupedBy:(NSString *)group withPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context
 {
-	NSString *cacheName = nil;
-	#ifdef STORE_USE_CACHE
-	cacheName = [NSString stringWithFormat:@"MagicalRecord-Cache-%@", NSStringFromClass(self)];
-	#endif
-	
+	NSString *cacheName = TARGET_OS_IPHONE ? [NSString stringWithFormat:@"MagicalRecord-Cache-%@", NSStringFromClass(self)] : nil;
+
 	NSFetchRequest *request = [self requestAllSortedBy:sortTerm 
 											 ascending:ascending 
 										 withPredicate:searchTerm

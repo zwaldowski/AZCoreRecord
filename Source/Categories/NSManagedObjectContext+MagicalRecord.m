@@ -37,9 +37,7 @@ static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordMa
 
 + (void) resetDefaultContext
 {
-    dispatch_async(dispatch_get_main_queue(),  ^{
-        [[NSManagedObjectContext defaultContext] reset];        
-    });
+    [[NSManagedObjectContext defaultContext] performSelectorOnMainThread:@selector(reset) withObject:nil waitUntilDone:NO];
 }
 
 + (void) resetContextForCurrentThread 
@@ -50,20 +48,17 @@ static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordMa
 + (NSManagedObjectContext *) contextForCurrentThread
 {
 	if ([NSThread isMainThread])
-	{
 		return [self defaultContext];
-	}
-	else
-	{
-		NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
-		NSManagedObjectContext *threadContext = [threadDict objectForKey:kMagicalRecordManagedObjectContextKey];
-		if (threadContext == nil)
-		{
-			threadContext = [self contextThatNotifiesDefaultContextOnMainThread];
-			[threadDict setObject:threadContext forKey:kMagicalRecordManagedObjectContextKey];
-		}
-		return threadContext;
-	}
+
+    NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
+    NSManagedObjectContext *threadContext = [threadDict objectForKey:kMagicalRecordManagedObjectContextKey];
+    if (threadContext == nil)
+    {
+        threadContext = [self contextThatNotifiesDefaultContextOnMainThread];
+        [threadDict setObject:threadContext forKey:kMagicalRecordManagedObjectContextKey];
+    }
+    return threadContext;
+
 }
 
 - (void) observeContext:(NSManagedObjectContext *)otherContext
@@ -117,7 +112,6 @@ static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordMa
 	return [self saveWithErrorHandler:nil];
 }
 
-#ifdef NS_BLOCKS_AVAILABLE
 - (BOOL) saveWithErrorHandler:(void(^)(NSError *))errorCallback
 {
 	NSError *error = nil;
@@ -151,7 +145,6 @@ static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordMa
     }
 	return saved && error == nil;
 }
-#endif
 
 - (void) saveWrapper
 {
@@ -169,10 +162,7 @@ static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordMa
 
 - (BOOL) saveOnMainThread
 {
-	@synchronized(self)
-	{
-		[self performSelectorOnMainThread:@selector(saveWrapper) withObject:nil waitUntilDone:YES];
-	}
+	[self performSelectorOnMainThread:@selector(saveWrapper) withObject:nil waitUntilDone:YES];
 
 	return YES;
 }
