@@ -23,7 +23,6 @@ static NSManagedObjectModel *defaultManagedObjectModel_ = nil;
 
 + (void) setDefaultManagedObjectModel:(NSManagedObjectModel *)newDefaultModel
 {
-    defaultManagedObjectModel_ = nil;
     defaultManagedObjectModel_ = newDefaultModel;
 }
 

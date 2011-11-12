@@ -12,17 +12,17 @@
 - (void) stopObservingContext:(NSManagedObjectContext *)otherContext;
 - (void) observeContextOnMainThread:(NSManagedObjectContext *)otherContext;
 
-
 - (BOOL) save;
 - (BOOL) saveWithErrorHandler:(void(^)(NSError *))errorCallback;
 
 - (BOOL) saveOnMainThread;
 - (BOOL) saveOnBackgroundThread;
 
-+ (void) resetDefaultContext;
 + (NSManagedObjectContext *) defaultContext;
 + (void) setDefaultContext:(NSManagedObjectContext *)moc;
-+ (void) resetContextForCurrentThread;
+
++ (void)resetDefaultContext;
++ (void)resetContextForCurrentThread;
 
 + (NSManagedObjectContext *) context;
 + (NSManagedObjectContext *) contextForCurrentThread;
@@ -31,6 +31,6 @@
 + (NSManagedObjectContext *) contextThatNotifiesDefaultContextOnMainThreadWithCoordinator:(NSPersistentStoreCoordinator *)coordinator;
 + (NSManagedObjectContext *) contextWithStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;
 
-@property (nonatomic, assign) BOOL notifiesMainContextOnSave;
+@property (nonatomic) BOOL notifiesMainContextOnSave;
 
 @end

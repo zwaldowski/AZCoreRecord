@@ -11,6 +11,7 @@
 
 static NSManagedObjectContext *defaultManageObjectContext_ = nil;
 static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordManagedObjectContexts";
+static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 
 @interface NSManagedObjectContext ()
 
@@ -23,16 +24,14 @@ static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordMa
 
 + (NSManagedObjectContext *)defaultContext
 {
-	@synchronized (self)
-	{
-        return defaultManageObjectContext_;
-	}
+    return defaultManageObjectContext_;
 }
 
 + (void) setDefaultContext:(NSManagedObjectContext *)moc
 {
-    defaultManageObjectContext_ = nil;
-    defaultManageObjectContext_ = moc;
+    @synchronized(self) {
+        defaultManageObjectContext_ = moc;
+    }
 }
 
 + (void) resetDefaultContext
@@ -169,8 +168,8 @@ static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordMa
 
 - (BOOL) notifiesMainContextOnSave
 {
-    NSNumber *notifies = objc_getAssociatedObject(self, @"notifiesMainContext");
-    return notifies ? [notifies boolValue] : NO;
+    NSNumber *notifies = objc_getAssociatedObject(self, kNotfiesMainContextKey);
+    return [notifies boolValue];
 }
 
 - (void) setNotifiesMainContextOnSave:(BOOL)enabled
@@ -178,7 +177,7 @@ static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordMa
     NSManagedObjectContext *mainContext = [[self class] defaultContext];
     if (self != mainContext) 
     {
-        objc_setAssociatedObject(self, @"notifiesMainContext", [NSNumber numberWithBool:enabled], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        objc_setAssociatedObject(self, kNotfiesMainContextKey, [NSNumber numberWithBool:enabled], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         if (enabled)
             [mainContext observeContextOnMainThread:self];
         else
@@ -188,13 +187,12 @@ static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordMa
 
 + (NSManagedObjectContext *) contextWithStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator
 {
-	NSManagedObjectContext *context = nil;
-    if (coordinator != nil)
-	{
-        ARLog(@"Creating MOContext %@", [NSThread isMainThread] ? @" *** On Main Thread ***" : @"");
-        context = [NSManagedObjectContext new];
-        [context setPersistentStoreCoordinator:coordinator];
-    }
+    if (!coordinator)
+        return nil;
+    
+    ARLog(@"Creating MOContext %@", [NSThread isMainThread] ? @" *** On Main Thread ***" : @"");
+    NSManagedObjectContext *context = [NSManagedObjectContext new];
+    [context setPersistentStoreCoordinator:coordinator];
     return context;
 }
 

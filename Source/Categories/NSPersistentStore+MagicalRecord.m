@@ -21,7 +21,6 @@ static NSPersistentStore *defaultPersistentStore_ = nil;
 
 + (void) setDefaultPersistentStore:(NSPersistentStore *) store
 {
-	defaultPersistentStore_ = nil;
 	defaultPersistentStore_ = store;
 }
 
