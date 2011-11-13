@@ -55,22 +55,21 @@
 
 - (void) testCreateSqliteStackWithCustomName
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    
-    NSString *testStoreName = @"MyTestDataStore.sqlite";
-    
-    NSURL *testStoreURL = [NSPersistentStore URLForStoreName:testStoreName];
-    [[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
-    
-    [MagicalRecordHelpers setupCoreDataStackWithStoreNamed:testStoreName];
-    
-    [self assertDefaultStack];
-    
-    NSPersistentStore *defaultStore = [NSPersistentStore defaultPersistentStore];
-    assertThat([defaultStore type], is(equalTo(NSSQLiteStoreType)));
-    assertThat([[defaultStore URL] absoluteString], endsWith(testStoreName));
-    
-    [pool drain];
+	@autoreleasepool
+	{
+		NSString *testStoreName = @"MyTestDataStore.sqlite";
+		
+		NSURL *testStoreURL = [NSPersistentStore URLForStoreName:testStoreName];
+		[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
+		
+		[MagicalRecordHelpers setupCoreDataStackWithStoreNamed:testStoreName];
+		
+		[self assertDefaultStack];
+		
+		NSPersistentStore *defaultStore = [NSPersistentStore defaultPersistentStore];
+		assertThat([defaultStore type], is(equalTo(NSSQLiteStoreType)));
+		assertThat([[defaultStore URL] absoluteString], endsWith(testStoreName));
+	}
 }
 
 - (void) testCanSetAUserSpecifiedErrorHandler

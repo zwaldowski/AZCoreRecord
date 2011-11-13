@@ -54,10 +54,9 @@
     assertThatBool(fileWasCreated, is(equalToBool(YES)));
     
     NSURL *expectedFoundStoreUrl = [NSURL fileURLWithPath:testStorePath];
-    NSURL *foundStoreUrl = [[NSPersistentStore URLForStoreName:storeFileName] retain];
+    NSURL *foundStoreUrl = [NSPersistentStore URLForStoreName:storeFileName];
     
     assertThat(foundStoreUrl, is(equalTo(expectedFoundStoreUrl)));
-    [foundStoreUrl release];
     
     [[NSFileManager defaultManager] removeItemAtPath:testStorePath error:nil];
 }
