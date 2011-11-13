@@ -15,30 +15,30 @@
 
 - (void) setUp
 {
-    [NSManagedObjectModel setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
-    [MagicalRecordHelpers setupCoreDataStackWithInMemoryStore];
-    
-    if ([self respondsToSelector:@selector(setupTestData)])
-    {
-        [self performSelector:@selector(setupTestData)];
-    }
-    
-    self.testEntityData = [self dataFromJSONFixture];
+	[NSManagedObjectModel setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
+	[MagicalRecordHelpers setupCoreDataStackWithInMemoryStore];
+	
+	if ([self respondsToSelector:@selector(setupTestData)])
+	{
+		[self performSelector:@selector(setupTestData)];
+	}
+	
+	self.testEntityData = [self dataFromJSONFixture];
 }
 
 - (void) tearDown
 {
-    [MagicalRecordHelpers cleanUp];
+	[MagicalRecordHelpers cleanUp];
 }
 
 - (Class) testEntityClass;
 {
-    return [NSManagedObject class];
+	return [NSManagedObject class];
 }
 
 -(BOOL)shouldRunOnMainThread
 {
-    return YES;
+	return YES;
 }
 
 @end

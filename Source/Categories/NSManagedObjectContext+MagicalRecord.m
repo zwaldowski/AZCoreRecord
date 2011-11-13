@@ -24,24 +24,24 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 
 + (NSManagedObjectContext *)defaultContext
 {
-    return defaultManageObjectContext_;
+	return defaultManageObjectContext_;
 }
 
 + (void) setDefaultContext:(NSManagedObjectContext *)moc
 {
-    @synchronized(self) {
-        defaultManageObjectContext_ = moc;
-    }
+	@synchronized(self) {
+		defaultManageObjectContext_ = moc;
+	}
 }
 
 + (void) resetDefaultContext
 {
-    [[NSManagedObjectContext defaultContext] performSelectorOnMainThread:@selector(reset) withObject:nil waitUntilDone:NO];
+	[[NSManagedObjectContext defaultContext] performSelectorOnMainThread:@selector(reset) withObject:nil waitUntilDone:NO];
 }
 
 + (void) resetContextForCurrentThread 
 {
-    [[NSManagedObjectContext contextForCurrentThread] reset];
+	[[NSManagedObjectContext contextForCurrentThread] reset];
 }
 
 + (NSManagedObjectContext *) contextForCurrentThread
@@ -49,14 +49,14 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 	if ([NSThread isMainThread])
 		return [self defaultContext];
 
-    NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
-    NSManagedObjectContext *threadContext = [threadDict objectForKey:kMagicalRecordManagedObjectContextKey];
-    if (threadContext == nil)
-    {
-        threadContext = [self contextThatNotifiesDefaultContextOnMainThread];
-        [threadDict setObject:threadContext forKey:kMagicalRecordManagedObjectContextKey];
-    }
-    return threadContext;
+	NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
+	NSManagedObjectContext *threadContext = [threadDict objectForKey:kMagicalRecordManagedObjectContextKey];
+	if (threadContext == nil)
+	{
+		threadContext = [self contextThatNotifiesDefaultContextOnMainThread];
+		[threadDict setObject:threadContext forKey:kMagicalRecordManagedObjectContextKey];
+	}
+	return threadContext;
 
 }
 
@@ -70,7 +70,7 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 
 - (void) observeContextOnMainThread:(NSManagedObjectContext *)otherContext
 {
-    //	ARLog(@"Start Observing on Main Thread");
+	//	ARLog(@"Start Observing on Main Thread");
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(mergeChangesOnMainThread:)
 												 name:NSManagedObjectContextDidSaveNotification
@@ -79,7 +79,7 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 
 - (void) stopObservingContext:(NSManagedObjectContext *)otherContext
 {
-    //	ARLog(@"Stop Observing Context");
+	//	ARLog(@"Stop Observing Context");
 	[[NSNotificationCenter defaultCenter] removeObserver:self
 													name:NSManagedObjectContextDidSaveNotification
 												  object:otherContext];
@@ -88,9 +88,9 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 - (void) mergeChangesFromNotification:(NSNotification *)notification
 {
 	ARLog(@"Merging changes to %@context%@", 
-          self == [NSManagedObjectContext defaultContext] ? @"*** DEFAULT *** " : @"",
-          ([NSThread isMainThread] ? @" *** on Main Thread ***" : @""));
-    
+		  self == [NSManagedObjectContext defaultContext] ? @"*** DEFAULT *** " : @"",
+		  ([NSThread isMainThread] ? @" *** on Main Thread ***" : @""));
+	
 	[self mergeChangesFromContextDidSaveNotification:notification];
 }
 
@@ -119,9 +119,9 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 	@try
 	{
 		ARLog(@"Saving %@Context%@", 
-              self == [[self class] defaultContext] ? @" *** Default *** ": @"", 
-              ([NSThread isMainThread] ? @" *** on Main Thread ***" : @""));
-        
+			  self == [[self class] defaultContext] ? @" *** Default *** ": @"", 
+			  ([NSThread isMainThread] ? @" *** on Main Thread ***" : @""));
+		
 		saved = [self save:&error];
 	}
 	@catch (NSException *exception)
@@ -129,27 +129,27 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 		ARLog(@"Problem saving: %@", (id)[exception userInfo] ?: (id)[exception reason]);	
 	}
 	@finally 
-    {
-        if (!saved)
-        {
-            if (errorCallback)
-            {
-                errorCallback(error);
-            }
-            else if (error)
-            {
-                [MagicalRecordHelpers handleErrors:error];
-            }
-        }
-    }
+	{
+		if (!saved)
+		{
+			if (errorCallback)
+			{
+				errorCallback(error);
+			}
+			else if (error)
+			{
+				[MagicalRecordHelpers handleErrors:error];
+			}
+		}
+	}
 	return saved && error == nil;
 }
 
 - (void) saveWrapper
 {
-    @autoreleasepool {
-        [self save];
-    }
+	@autoreleasepool {
+		[self save];
+	}
 }
 
 - (BOOL) saveOnBackgroundThread
@@ -168,39 +168,39 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 
 - (BOOL) notifiesMainContextOnSave
 {
-    NSNumber *notifies = objc_getAssociatedObject(self, kNotfiesMainContextKey);
-    return [notifies boolValue];
+	NSNumber *notifies = objc_getAssociatedObject(self, kNotfiesMainContextKey);
+	return [notifies boolValue];
 }
 
 - (void) setNotifiesMainContextOnSave:(BOOL)enabled
 {
-    NSManagedObjectContext *mainContext = [[self class] defaultContext];
-    if (self != mainContext) 
-    {
-        objc_setAssociatedObject(self, kNotfiesMainContextKey, [NSNumber numberWithBool:enabled], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        if (enabled)
-            [mainContext observeContextOnMainThread:self];
-        else
-            [mainContext stopObservingContext:self];
-    }
+	NSManagedObjectContext *mainContext = [[self class] defaultContext];
+	if (self != mainContext) 
+	{
+		objc_setAssociatedObject(self, kNotfiesMainContextKey, [NSNumber numberWithBool:enabled], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+		if (enabled)
+			[mainContext observeContextOnMainThread:self];
+		else
+			[mainContext stopObservingContext:self];
+	}
 }
 
 + (NSManagedObjectContext *) contextWithStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator
 {
-    if (!coordinator)
-        return nil;
-    
-    ARLog(@"Creating MOContext %@", [NSThread isMainThread] ? @" *** On Main Thread ***" : @"");
-    NSManagedObjectContext *context = [NSManagedObjectContext new];
-    [context setPersistentStoreCoordinator:coordinator];
-    return context;
+	if (!coordinator)
+		return nil;
+	
+	ARLog(@"Creating MOContext %@", [NSThread isMainThread] ? @" *** On Main Thread ***" : @"");
+	NSManagedObjectContext *context = [NSManagedObjectContext new];
+	[context setPersistentStoreCoordinator:coordinator];
+	return context;
 }
 
 + (NSManagedObjectContext *) contextThatNotifiesDefaultContextOnMainThreadWithCoordinator:(NSPersistentStoreCoordinator *)coordinator;
 {
-    NSManagedObjectContext *context = [self contextWithStoreCoordinator:coordinator];
-    context.notifiesMainContextOnSave = YES;
-    return context;
+	NSManagedObjectContext *context = [self contextWithStoreCoordinator:coordinator];
+	context.notifiesMainContextOnSave = YES;
+	return context;
 }
 
 + (NSManagedObjectContext *)context
@@ -210,9 +210,9 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 
 + (NSManagedObjectContext *) contextThatNotifiesDefaultContextOnMainThread
 {
-    NSManagedObjectContext *context = [self context];
-    context.notifiesMainContextOnSave = YES;
-    return context;
+	NSManagedObjectContext *context = [self context];
+	context.notifiesMainContextOnSave = YES;
+	return context;
 }
 
 @end

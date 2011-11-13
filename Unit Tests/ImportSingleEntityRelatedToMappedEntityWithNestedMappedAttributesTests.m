@@ -19,17 +19,17 @@
 
 - (Class) testEntityClass
 {
-    return [SingleEntityRelatedToMappedEntityWithNestedMappedAttributes class];
+	return [SingleEntityRelatedToMappedEntityWithNestedMappedAttributes class];
 }
 
 - (void) testDataImport
 {
-    SingleEntityRelatedToMappedEntityWithNestedMappedAttributes *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
-    [[NSManagedObjectContext defaultContext] save];
-    
-    assertThat(entity.mappedEntity, is(notNilValue()));
-    assertThat(entity.mappedEntity.mappedEntityID, is(equalToInteger(42)));
-    assertThat(entity.mappedEntity.nestedAttribute, containsString(@"nested value"));
+	SingleEntityRelatedToMappedEntityWithNestedMappedAttributes *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
+	[[NSManagedObjectContext defaultContext] save];
+	
+	assertThat(entity.mappedEntity, is(notNilValue()));
+	assertThat(entity.mappedEntity.mappedEntityID, is(equalToInteger(42)));
+	assertThat(entity.mappedEntity.nestedAttribute, containsString(@"nested value"));
 }
 
 @end

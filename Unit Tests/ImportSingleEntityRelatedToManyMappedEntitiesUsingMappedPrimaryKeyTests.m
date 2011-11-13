@@ -17,16 +17,16 @@
 
 - (Class) testEntityClass
 {
-    return [SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey class];
+	return [SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey class];
 }
 
 - (void) testImportData
 {
-    SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
-    [[NSManagedObjectContext defaultContext] save];
-    
-    assertThat(entity, is(notNilValue()));
-    assertThat(entity.mappedEntities, hasCountOf(4));
+	SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
+	[[NSManagedObjectContext defaultContext] save];
+	
+	assertThat(entity, is(notNilValue()));
+	assertThat(entity.mappedEntities, hasCountOf(4));
 }
 
 @end

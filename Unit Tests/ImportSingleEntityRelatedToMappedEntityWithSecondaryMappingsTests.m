@@ -17,16 +17,16 @@
 
 - (Class) testEntityClass
 {
-    return [SingleEntityRelatedToMappedEntityWithSecondaryMappings class];
+	return [SingleEntityRelatedToMappedEntityWithSecondaryMappings class];
 }
 
 - (void) testImportMappedAttributeUsingSecondaryMappedKeyName
 {
-    SingleEntityRelatedToMappedEntityWithSecondaryMappings *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
-    [[NSManagedObjectContext defaultContext] save];
-    
-    assertThat(entity, is(notNilValue()));
-    assertThat([entity secondaryMappedAttribute], containsString(@"sample json file"));
+	SingleEntityRelatedToMappedEntityWithSecondaryMappings *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
+	[[NSManagedObjectContext defaultContext] save];
+	
+	assertThat(entity, is(notNilValue()));
+	assertThat([entity secondaryMappedAttribute], containsString(@"sample json file"));
 }
 
 @end

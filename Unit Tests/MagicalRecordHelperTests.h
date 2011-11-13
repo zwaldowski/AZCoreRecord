@@ -8,7 +8,7 @@
 
 @interface MagicalRecordHelperTests : GHTestCase <MRErrorHandler>
 {
-    BOOL errorHandlerWasCalled_;
+	BOOL errorHandlerWasCalled_;
 }
 
 @end
