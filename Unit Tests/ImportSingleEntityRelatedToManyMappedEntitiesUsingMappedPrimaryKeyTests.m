@@ -1,6 +1,6 @@
 //
 //  Import SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKeyTests.m
-//  Magical Record
+//  MagicalRecord
 //
 //  Created by Saul Mora on 8/16/11.
 //  Copyright 2011 Magical Panda Software LLC. All rights reserved.
@@ -17,16 +17,16 @@
 
 - (Class) testEntityClass
 {
-    return [SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey class];
+	return [SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey class];
 }
 
 - (void) testImportData
 {
-    SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *entity = [[self testEntityClass] MR_importFromDictionary:self.testEntityData];
-    [[NSManagedObjectContext defaultContext] save];
-    
-    assertThat(entity, is(notNilValue()));
-    assertThat(entity.mappedEntities, hasCountOf(4));
+	SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
+	[[NSManagedObjectContext defaultContext] save];
+	
+	assertThat(entity, is(notNilValue()));
+	assertThat(entity.mappedEntities, hasCountOf(4));
 }
 
 @end

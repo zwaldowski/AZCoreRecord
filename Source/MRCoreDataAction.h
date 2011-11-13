@@ -7,9 +7,9 @@
 //
 
 typedef enum {
-    MRCoreDataSaveOptionNone               = 0,
-    MRCoreDataSaveOptionInBackground       = 1 << 0,
-    MRCoreDataSaveOptionWithNewContext     = 1 << 1
+	MRCoreDataSaveOptionNone			   = 0,
+	MRCoreDataSaveOptionInBackground	   = 1 << 0,
+	MRCoreDataSaveOptionWithNewContext	 = 1 << 1
 } MRCoreDataSaveOption;
 
 @interface MRCoreDataAction : NSObject
