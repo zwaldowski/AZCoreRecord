@@ -1,6 +1,6 @@
 //
 //  ImportSingleEntityRelatedToMappedEntityWithSecondaryMappingsTests.m
-//  Magical Record
+//  MagicalRecord
 //
 //  Created by Saul Mora on 8/18/11.
 //  Copyright (c) 2011 Magical Panda Software LLC. All rights reserved.
