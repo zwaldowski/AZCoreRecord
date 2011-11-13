@@ -82,19 +82,23 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
     }
 }
 
-+ (void)setErrorHandler:(CoreDataError)block {
++ (void)setErrorHandler:(CoreDataError)block
+{
     objc_setAssociatedObject(self, kErrorHandlerBlockKey, block, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-+ (CoreDataError)errorHandler {
++ (CoreDataError)errorHandler
+{
     return objc_getAssociatedObject(self, kErrorHandlerBlockKey);
 }
 
-+ (id <MRErrorHandler>) errorHandlerTarget {
++ (id <MRErrorHandler>) errorHandlerTarget
+{
     return objc_getAssociatedObject(self, kErrorHandlerTargetKey);
 }
 
-+ (void) setErrorHandlerTarget:(id <MRErrorHandler>)target {
++ (void) setErrorHandlerTarget:(id <MRErrorHandler>)target
+{
     BOOL isClassMethod;
     if ([target respondsToSelector:@selector(handleErrors:)])
         isClassMethod = NO;
@@ -175,7 +179,8 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
 
 @end
 
-NSDate * MRDateAdjustForDST(NSDate *date) {
+NSDate * MRDateAdjustForDST(NSDate *date)
+{
     NSTimeInterval dstOffset = [[NSTimeZone localTimeZone] daylightSavingTimeOffsetForDate:date];
     NSDate *actualDate = [date dateByAddingTimeInterval:dstOffset];
     return actualDate;
@@ -194,7 +199,8 @@ NSDate * MRDateFromString(NSString *value, NSString *format)
     return [helperFormatter dateFromString:value];
 }
 
-id MRColorFromString(NSString *serializedColor) {
+id MRColorFromString(NSString *serializedColor)
+{
     NSScanner *colorScanner = [NSScanner scannerWithString:serializedColor];
     NSString *colorType;
     [colorScanner scanUpToString:@"(" intoString:&colorType];
