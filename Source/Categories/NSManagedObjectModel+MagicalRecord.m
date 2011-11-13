@@ -16,39 +16,39 @@ static NSManagedObjectModel *defaultManagedObjectModel_ = nil;
 {
 	if (defaultManagedObjectModel_ == nil && [MagicalRecordHelpers shouldAutoCreateManagedObjectModel])
 	{
-        [self setDefaultManagedObjectModel:[self managedObjectModel]];
+		[self setDefaultManagedObjectModel:[self managedObjectModel]];
 	}
 	return defaultManagedObjectModel_;
 }
 
 + (void) setDefaultManagedObjectModel:(NSManagedObjectModel *)newDefaultModel
 {
-    defaultManagedObjectModel_ = newDefaultModel;
+	defaultManagedObjectModel_ = newDefaultModel;
 }
 
 + (NSManagedObjectModel *)managedObjectModel {
-    return [self mergedModelFromBundles:nil];
+	return [self mergedModelFromBundles:nil];
 }
 
 + (NSManagedObjectModel *)mergedObjectModelFromMainBundle;
 {
-    return [self managedObjectModel];
+	return [self managedObjectModel];
 }
 
 + (NSManagedObjectModel *)newManagedObjectModel {
-    return [self managedObjectModel];
+	return [self managedObjectModel];
 }
 
 + (NSManagedObjectModel *)newModelNamed:(NSString *) modelName inBundleNamed:(NSString *) bundleName
 {
-    NSString *path = [[NSBundle mainBundle] pathForResource:[modelName stringByDeletingPathExtension] 
-                                                     ofType:[modelName pathExtension] 
-                                                inDirectory:bundleName];
-    NSURL *modelUrl = [NSURL fileURLWithPath:path];
-    
-    NSManagedObjectModel *mom = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelUrl];
-    
-    return mom;
+	NSString *path = [[NSBundle mainBundle] pathForResource:[modelName stringByDeletingPathExtension] 
+													 ofType:[modelName pathExtension] 
+												inDirectory:bundleName];
+	NSURL *modelUrl = [NSURL fileURLWithPath:path];
+	
+	NSManagedObjectModel *mom = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelUrl];
+	
+	return mom;
 }
 
 + (NSManagedObjectModel *)newManagedObjectModelNamed:(NSString *)modelFileName

@@ -25,8 +25,8 @@ static NSPersistentStore *defaultPersistentStore_ = nil;
 }
 
 + (NSString *)_directory:(NSSearchPathDirectory) type
-{    
-    return [NSSearchPathForDirectoriesInDomains(type, NSUserDomainMask, YES) lastObject];
+{	
+	return [NSSearchPathForDirectoriesInDomains(type, NSUserDomainMask, YES) lastObject];
 }
 
 + (NSString *)_applicationDocumentsDirectory 
@@ -37,9 +37,9 @@ static NSPersistentStore *defaultPersistentStore_ = nil;
 + (NSString *)_applicationLibraryDirectory
 {
 #if !TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR
-    NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
-    return [[self _directory:NSApplicationSupportDirectory] stringByAppendingPathComponent:applicationName];
-    
+	NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
+	return [[self _directory:NSApplicationSupportDirectory] stringByAppendingPathComponent:applicationName];
+	
 #else
 	return [self _directory:NSLibraryDirectory];
 #endif
@@ -48,23 +48,23 @@ static NSPersistentStore *defaultPersistentStore_ = nil;
 + (NSURL *)URLForStoreName:(NSString *)storeFileName
 {
 	NSArray *paths = [NSArray arrayWithObjects:[self _applicationDocumentsDirectory], [self _applicationLibraryDirectory], nil];
-    NSFileManager *fm = [NSFileManager new];
+	NSFileManager *fm = [NSFileManager new];
 
-    for (NSString *path in paths) 
-    {
-        NSString *filepath = [path stringByAppendingPathComponent:storeFileName];
-        if ([fm fileExistsAtPath:filepath])
-        {
-            return [NSURL fileURLWithPath:filepath];
-        }
-    }
+	for (NSString *path in paths) 
+	{
+		NSString *filepath = [path stringByAppendingPathComponent:storeFileName];
+		if ([fm fileExistsAtPath:filepath])
+		{
+			return [NSURL fileURLWithPath:filepath];
+		}
+	}
 
-    //set default url
-    return [NSURL fileURLWithPath:[[self _applicationDocumentsDirectory] stringByAppendingPathComponent:storeFileName]];
+	//set default url
+	return [NSURL fileURLWithPath:[[self _applicationDocumentsDirectory] stringByAppendingPathComponent:storeFileName]];
 }
 
 + (NSURL *)defaultLocalStoreURL {
-    return [self URLForStoreName:kMagicalRecordDefaultStoreFileName];
+	return [self URLForStoreName:kMagicalRecordDefaultStoreFileName];
 }
 
 @end
