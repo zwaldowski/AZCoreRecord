@@ -43,7 +43,7 @@
 
 - (void) testDataImport
 {
-    SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity = [[self testEntityClass] MR_importFromDictionary:self.testEntityData];
+    SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity = [[self testEntityClass] importFromDictionary:self.testEntityData];
     [[NSManagedObjectContext defaultContext] save];
     
     assertThat(testEntity.mappedEntities, hasCountOf(4));
@@ -58,7 +58,7 @@
 
 - (void) testDataUpdateWithLookupInfoInDataSet
 {
-    SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity = [[self testEntityClass] MR_updateFromDictionary:self.testEntityData];
+    SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity = [[self testEntityClass] updateFromDictionary:self.testEntityData];
     [[NSManagedObjectContext defaultContext] save];
 
     assertThat([SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey numberOfEntities], is(equalToInteger(1)));
@@ -72,11 +72,11 @@
 - (void) testDataUpdateWithoutLookupData
 {
     SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity =
-    [SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey findFirstByAttribute:@"testPrimaryKey" withValue:[NSNumber numberWithInt:84]];
+    [SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey findFirstWhere:@"testPrimaryKey" isEqualTo:[NSNumber numberWithInt:84]];
     
     assertThat(testEntity, is(notNilValue()));
     
-    [testEntity MR_updateValuesForKeysWithDictionary:self.testEntityData];
+    [testEntity updateValuesFromDictionary:self.testEntityData];
 }
 
 @end

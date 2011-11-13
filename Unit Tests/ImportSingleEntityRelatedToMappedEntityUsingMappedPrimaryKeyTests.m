@@ -34,7 +34,7 @@
 
 - (void) testImportMappedEntityRelatedViaToOneRelationship
 {
-    SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey *entity = [[self testEntityClass] MR_importFromDictionary:self.testEntityData];
+    SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
     [[NSManagedObjectContext defaultContext] save];
     
     id testRelatedEntity = entity.mappedEntity;
@@ -42,7 +42,7 @@
     //verify mapping in relationship description userinfo
     NSEntityDescription *mappedEntity = [entity entity];
     NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
-    assertThat([[testRelationship userInfo] valueForKey:kMagicalRecordImportRelationshipMapKey], is(equalTo(@"someRandomAttributeName")));
+    assertThat([[testRelationship userInfo] valueForKey:kMagicalRecordImportMapKey], is(equalTo(@"someRandomAttributeName")));
     
     assertThat([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey numberOfEntities], is(equalToInteger(1)));
     assertThat([MappedEntity numberOfEntities], is(equalToInteger(2)));
@@ -53,7 +53,7 @@
 - (void) testUpdateMappedEntityRelatedViaToOneRelationship
 {
     SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey *entity = [SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey createEntity];
-    [entity MR_updateValuesForKeysWithDictionary:self.testEntityData];
+    [entity updateValuesFromDictionary:self.testEntityData];
     [[NSManagedObjectContext defaultContext] save];
     
     id testRelatedEntity = entity.mappedEntity;
@@ -61,7 +61,7 @@
     //verify mapping in relationship description userinfo
     NSEntityDescription *mappedEntity = [entity entity];
     NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
-    assertThat([[testRelationship userInfo] valueForKey:kMagicalRecordImportRelationshipMapKey], is(equalTo(@"someRandomAttributeName")));
+    assertThat([[testRelationship userInfo] valueForKey:kMagicalRecordImportMapKey], is(equalTo(@"someRandomAttributeName")));
     
     assertThat([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey numberOfEntities], is(equalToInteger(1)));
     assertThat([MappedEntity numberOfEntities], is(equalToInteger(1)));
@@ -71,7 +71,7 @@
 
 - (void) testImportMappedEntityUsingPrimaryRelationshipKey
 {
-    SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey *entity = [[self testEntityClass] MR_importFromDictionary:self.testEntityData];
+    SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
     [[NSManagedObjectContext defaultContext] save];
     
     id testRelatedEntity = entity.mappedEntity;
@@ -90,7 +90,7 @@
 - (void) testUpdateMappedEntityUsingPrimaryRelationshipKey
 {
     SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey *entity = [SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey createEntity];
-    [entity MR_updateValuesForKeysWithDictionary:self.testEntityData];
+    [entity updateValuesFromDictionary:self.testEntityData];
     [[NSManagedObjectContext defaultContext] save];
     
     id testRelatedEntity = entity.mappedEntity;

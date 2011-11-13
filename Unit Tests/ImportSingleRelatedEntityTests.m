@@ -36,7 +36,7 @@
 - (void) setUp
 {
     [super setUp];
-    self.testEntity = [SingleRelatedEntity MR_importFromDictionary:self.testEntityData];
+    self.testEntity = [SingleRelatedEntity importFromDictionary:self.testEntityData];
     [[NSManagedObjectContext defaultContext] save];
 }
 

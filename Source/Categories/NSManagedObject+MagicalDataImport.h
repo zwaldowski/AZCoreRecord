@@ -8,57 +8,66 @@
 
 /** Importing for Core Data.
  
- These utilities do their best to safely, securely, and
- efficiently import Core Data objects using NSDictionary and
- NSArray to do the bulk of the work. This allows you to simply
- import to your data model from JSON, XML, or HTTP requests
- without worrying about finding and keeping track of
- existing objects yourself.
+ These utilities do their best to safely, securely, and efficiently import Core
+ Data objects using NSDictionary and NSArray to do the bulk of the work. This
+ allows you to simply import to your data model from JSON, XML, or HTTP requests
+ without worrying about finding and keeping track of existing objects yourself.
  
- On the whole, the update methods are slower because they
- always look for existing objects for relationships.  However,
- it is only recommended to import when you are sure the new
- objects (and all relationships they contain) aren't already
- in the model, unless you plan on writing yourself a grand
- old garbage collection/duplicate resolution algorithm.
+ On the whole, the update methods are slower because they always look for
+ existing objects for relationships. However, it is only recommended to import
+ when you are sure the new objects (and all relationships they contain) aren't
+ already in the model, unless you plan on writing yourself a grand old garbage
+ collection/duplicate resolution algorithm.
  
- Magical Record will use a number of user info keys on your
- entities, their attributes, and their relationships to import.
- They are as follows:
+ MagicalRecord will use a number of user info keys on your entities, their
+ attributes, and their relationships to import. They are as follows:
  
  *Entities*
  
- - `className`.  The value of this is used to determine what key in
- the dictionary should be used to determine the class name/entity name
- of the model the dictionary correlates to.  This is especially useful
- for importing sub-entities in relationships.
- - `primaryAttribute`.  The value for this key is used for comparing
- and locating model objects.  If no value is provided for this key,
- Magical Record will search for a property with the name xID, where
- x is the first letter of the entity name in lowercase.
+ - `className` (`kMagicalRecordImportClassNameKey`): The value of this is used
+ to determine what key in the dictionary should be used to determine the class
+ name/entity name of the model the dictionary correlates to. This is especially
+ useful for importing sub-entities in relationships.
+ - `primaryAttribute` (`kMagicalRecordImportPrimaryAttributeKey`): The value for
+ this key is used for comparing and locating model objects. If no value is
+ provided for this key, MagicalRecord will search for a property with the name
+ `xID`, where `x` is the first letter of the entity name in lowercase.
  
  *Attributes*
  
- - `mappedKey`.  The value of this is used to determine what a key
- in the dictionary should be inserted into the model as.  To set the
- property "lastModify" on an entity using a dictionary that has a key
+ - `mappedKey` (`kMagicalRecordImportMapKey`): The value of this is used to
+ determine what a key in the dictionary should be inserted into the model as. To
+ set the property "lastModify" on an entity using a dictionary that has a key
  "lastModifiedDate", set `mappedKey` to "lastModifiedDate" on that attribute.
- - `className`.  Similar to its use at the entity level, this forces the
- class of the imported object into that of the value for this key.  Note
- that it is recommended to use value transformers instead.
- - `dateFormat`.  For a date attribute, Magical Record can automatically
- format a string into a date object.  The value of this key is used in
- the date formatter.  If it is not set, "yyyy-MM-dd'T'HH:mm:ss'Z'" is
- used by default.
+ - `className` (`kMagicalRecordImportClassNameKey`): Similar to its use at the
+ entity level, this forces the class of the imported object into that of the
+ value for this key. Note that it is recommended to use value transformers
+ instead.
+ - `dateFormat` (`kMagicalRecordImportCustomDateFormat`): For a date attribute,
+ MagicalRecord can automatically format a string into a date object. The value
+ of this key is used in the date formatter. If it is not set,
+ "yyyy-MM-dd'T'HH:mm:ss'Z'" (`kMagicalRecordImportDefaultDateFormat`) is used by
+ default.
  
  *Relationships*
  
- - `mappedKey`.  Same as for an attribute. 
- - `primaryKey`.  Compare to `primaryAttribute`.  This
- key is used in relationships to define what objects
- to search for when associating different model objects
- using relationships in imported dictionaries.
- */
+ - `mappedKey` (`kMagicalRecordImportMapKey`): Same as for an attribute. 
+ - `primaryKey` (`kMagicalRecordImportRelationshipPrimaryKey`): Compare to
+ `primaryAttribute`. This key is used in relationships to define what objects to
+ search for when associating different model objects using relationships in
+ imported dictionaries.
+ 
+ **/
+
+extern NSString * const kMagicalRecordImportCustomDateFormat;
+extern NSString * const kMagicalRecordImportDefaultDateFormat;
+
+extern NSString * const kMagicalRecordImportMapKey;
+extern NSString * const kMagicalRecordImportClassNameKey;
+
+extern NSString * const kMagicalRecordImportPrimaryAttributeKey;
+extern NSString * const kMagicalRecordImportRelationshipPrimaryKey;
+
 @interface NSManagedObject (MagicalDataImport)
 
 /** Imports values into a managed object by using

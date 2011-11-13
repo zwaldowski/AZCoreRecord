@@ -9,14 +9,14 @@
 #import "CoreData+MagicalRecord.h"
 #import <objc/message.h>
 
-static NSString * const kMagicalRecordImportCustomDateFormat = @"dateFormat";
-static NSString * const kMagicalRecordImportDefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ss'Z'";
+NSString * const kMagicalRecordImportCustomDateFormat = @"dateFormat";
+NSString * const kMagicalRecordImportDefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ss'Z'";
 
-static NSString * const kMagicalRecordImportMapKey = @"mappedKey";
-static NSString * const kMagicalRecordImportClassNameKey = @"className";
+NSString * const kMagicalRecordImportMapKey = @"mappedKey";
+NSString * const kMagicalRecordImportClassNameKey = @"className";
 
-static NSString * const kMagicalRecordImportPrimaryAttributeKey = @"primaryAttribute";
-static NSString * const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
+NSString * const kMagicalRecordImportPrimaryAttributeKey = @"primaryAttribute";
+NSString * const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 
 static NSString * attributeNameFromString(NSString *value)
 {

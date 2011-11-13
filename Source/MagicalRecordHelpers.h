@@ -7,9 +7,9 @@
 //
 
 #ifdef MR_LOGGING
-#define ARLog(...) NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat:__VA_ARGS__])
+	#define ARLog(...) NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat:__VA_ARGS__])
 #else
-#define ARLog(...)
+	#define ARLog(...)
 #endif
 
 @class NSManagedObjectContext;

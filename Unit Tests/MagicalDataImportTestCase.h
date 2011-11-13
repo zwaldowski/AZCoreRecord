@@ -6,7 +6,11 @@
 //  Copyright (c) 2011 Magical Panda Software LLC. All rights reserved.
 //
 
-#import <GHUnitIOS/GHUnit.h>
+#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
+	#import <GHUnit/GHUnit.h>
+#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
+	#import <GHUnitIOS/GHUnit.h>
+#endif
 
 @interface MagicalDataImportTestCase : GHTestCase
 

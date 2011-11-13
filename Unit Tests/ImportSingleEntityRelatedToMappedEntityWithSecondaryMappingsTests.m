@@ -22,7 +22,7 @@
 
 - (void) testImportMappedAttributeUsingSecondaryMappedKeyName
 {
-    SingleEntityRelatedToMappedEntityWithSecondaryMappings *entity = [[self testEntityClass] MR_importFromDictionary:self.testEntityData];
+    SingleEntityRelatedToMappedEntityWithSecondaryMappings *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
     [[NSManagedObjectContext defaultContext] save];
     
     assertThat(entity, is(notNilValue()));

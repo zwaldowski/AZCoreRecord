@@ -13,7 +13,7 @@
 
 - (void) setUpClass
 {
-    [NSManagedObjectModel MR_setDefaultManagedObjectModel:[NSManagedObjectModel MR_managedObjectModelNamed:@"TestModel.momd"]];   
+    [NSManagedObjectModel setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];   
 }
 
 - (void) setUp
@@ -52,8 +52,8 @@
 
 - (void) testCreateRequestForFirstEntity
 {
-    NSFetchRequest *testRequest = [SingleRelatedEntity requestFirstByAttribute:@"mappedStringAttribute" withValue:nil];
-    
+	NSFetchRequest *testRequest = [SingleRelatedEntity requestFirstWhere:@"mappedStringAttribute" isEqualTo:nil];
+	
     assertThat([[testRequest entity] name], is(equalTo(NSStringFromClass([SingleRelatedEntity class]))));
     assertThatInteger([testRequest fetchLimit], is(equalToInteger(1)));
     assertThatInteger([testRequest fetchOffset], is(equalToInteger(0)));

@@ -37,7 +37,7 @@
 
 - (void) testImportMappedEntityViaToOneRelationship
 {
-    SingleEntityRelatedToMappedEntityUsingDefaults *entity = [[self testEntityClass] MR_importFromDictionary:self.testEntityData];
+    SingleEntityRelatedToMappedEntityUsingDefaults *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
     
     [[NSManagedObjectContext defaultContext] save];
 
@@ -52,9 +52,9 @@
 - (void) testUpdateMappedEntity
 {
     SingleEntityRelatedToMappedEntityUsingDefaults *testEntity = 
-    [SingleEntityRelatedToMappedEntityUsingDefaults findFirstByAttribute:@"singleEntityRelatedToMappedEntityUsingDefaultsID" withValue:[NSNumber numberWithInt:24]];
+    [SingleEntityRelatedToMappedEntityUsingDefaults findFirstWhere:@"singleEntityRelatedToMappedEntityUsingDefaultsID" isEqualTo:[NSNumber numberWithInt:24]];
     
-    [testEntity MR_updateValuesForKeysWithDictionary:self.testEntityData];
+    [testEntity updateValuesFromDictionary:self.testEntityData];
     
     assertThat([MappedEntity numberOfEntities], is(equalToInteger(1)));
     

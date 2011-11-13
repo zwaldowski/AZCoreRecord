@@ -8,18 +8,11 @@
 
 #import "MagicalRecordHelperTests.h"
 
-
-@protocol MagicalRecordErrorHandlerProtocol <NSObject>
-
-- (void) testHandlingError:(NSError *)error;
-
-@end
-
 @implementation MagicalRecordHelperTests
 
 - (void) setUp
 {
-    [NSManagedObjectModel MR_setDefaultManagedObjectModel:[NSManagedObjectModel MR_managedObjectModelNamed:@"TestModel.momd"]];
+    [NSManagedObjectModel setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
 }
 
 - (void) tearDown
@@ -31,21 +24,21 @@
 - (void) assertDefaultStack
 {
     assertThat([NSManagedObjectContext defaultContext], is(notNilValue()));
-    assertThat([NSManagedObjectModel MR_defaultManagedObjectModel], is(notNilValue()));
-    assertThat([NSPersistentStoreCoordinator MR_defaultStoreCoordinator], is(notNilValue()));
-    assertThat([NSPersistentStore MR_defaultPersistentStore], is(notNilValue()));    
+    assertThat([NSManagedObjectModel defaultManagedObjectModel], is(notNilValue()));
+    assertThat([NSPersistentStoreCoordinator defaultStoreCoordinator], is(notNilValue()));
+    assertThat([NSPersistentStore defaultPersistentStore], is(notNilValue()));    
 }
 
 - (void) testCreateDefaultCoreDataStack
 {
-    NSURL *testStoreURL = [NSPersistentStore MR_urlForStoreName:kMagicalRecordDefaultStoreFileName];
+    NSURL *testStoreURL = [NSPersistentStore URLForStoreName:kMagicalRecordDefaultStoreFileName];
     [[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
     
     [MagicalRecordHelpers setupCoreDataStack];
     
     [self assertDefaultStack];
     
-    NSPersistentStore *defaultStore = [NSPersistentStore MR_defaultPersistentStore];
+    NSPersistentStore *defaultStore = [NSPersistentStore defaultPersistentStore];
     assertThat([[defaultStore URL] absoluteString], endsWith(kMagicalRecordDefaultStoreFileName));
     assertThat([defaultStore type], is(equalTo(NSSQLiteStoreType)));
 }
@@ -56,7 +49,7 @@
     
     [self assertDefaultStack];
     
-    NSPersistentStore *defaultStore = [NSPersistentStore MR_defaultPersistentStore];
+    NSPersistentStore *defaultStore = [NSPersistentStore defaultPersistentStore];
     assertThat([defaultStore type], is(equalTo(NSInMemoryStoreType)));
 }
 
@@ -66,30 +59,28 @@
     
     NSString *testStoreName = @"MyTestDataStore.sqlite";
     
-    NSURL *testStoreURL = [NSPersistentStore MR_urlForStoreName:testStoreName];
+    NSURL *testStoreURL = [NSPersistentStore URLForStoreName:testStoreName];
     [[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
     
     [MagicalRecordHelpers setupCoreDataStackWithStoreNamed:testStoreName];
     
     [self assertDefaultStack];
     
-    NSPersistentStore *defaultStore = [NSPersistentStore MR_defaultPersistentStore];
+    NSPersistentStore *defaultStore = [NSPersistentStore defaultPersistentStore];
     assertThat([defaultStore type], is(equalTo(NSSQLiteStoreType)));
     assertThat([[defaultStore URL] absoluteString], endsWith(testStoreName));
     
     [pool drain];
 }
 
-
 - (void) testCanSetAUserSpecifiedErrorHandler
 {
-    [MagicalRecordHelpers setErrorHandlerTarget:self action:@selector(customErrorHandler:)];
+    [MagicalRecordHelpers setErrorHandlerTarget:self];
     
     assertThat([MagicalRecordHelpers errorHandlerTarget], is(equalTo(self)));
-    assertThat(NSStringFromSelector([MagicalRecordHelpers errorHandlerAction]), is(equalTo(NSStringFromSelector(@selector(customErrorHandler:)))));
 }
 
-- (void) magicalRecordErrorHandlerTest:(NSError *)error
+- (void) handleErrors:(NSError *)error
 {
     assertThat(error, is(notNilValue()));
     assertThat([error domain], is(equalTo(@"MRTests")));
@@ -97,10 +88,18 @@
     errorHandlerWasCalled_ = YES;
 }
 
-- (void) testUserSpecifiedErrorHandlersAreTriggeredOnError
+- (void) testCanSetAUserSpecifiedErrorHandlerBlock
+{
+	CoreDataError handler = ^(NSError *error) { };
+	[MagicalRecordHelpers setErrorHandler: handler];
+	
+	assertThat([MagicalRecordHelpers errorHandler], is(notNilValue()));
+}
+
+- (void) testUserSpecifiedErrorHandlerIsTriggeredOnError
 {
     errorHandlerWasCalled_ = NO;
-    [MagicalRecordHelpers setErrorHandlerTarget:self action:@selector(magicalRecordErrorHandlerTest:)];
+    [MagicalRecordHelpers setErrorHandlerTarget:self];
     
     NSError *testError = [NSError errorWithDomain:@"MRTests" code:1000 userInfo:nil];
     [MagicalRecordHelpers handleErrors:testError];
@@ -108,15 +107,26 @@
     assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
 }
 
+- (void) testUserSpecifiedErrorHandlerBlockIsTriggeredOnError
+{
+	errorHandlerWasCalled_ = NO;
+	[MagicalRecordHelpers setErrorHandler: ^(NSError *error) {
+		[self handleErrors: error];
+	}];
+	
+	NSError *testError = [NSError errorWithDomain:@"MRTests" code:1000 userInfo:nil];
+	[MagicalRecordHelpers handleErrors: testError];
+	
+	assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
+}
+
 - (void) testLogsErrorsToLogger
 {
     NSError *testError = [NSError errorWithDomain:@"Cocoa" code:1000 userInfo:nil];
-    id mockErrorHandler = [OCMockObject mockForProtocol:@protocol(MagicalRecordErrorHandlerProtocol)];
-    [[mockErrorHandler expect] testHandlingError:testError];
+    id mockErrorHandler = [OCMockObject mockForProtocol:@protocol(MRErrorHandler)];
+    [[mockErrorHandler expect] handleErrors:testError];
     
-    //    [[mockErrorHandler expect] performSelector:@selector(testErrorHandler:) withObject:[OCMArg any]];
-    
-    [MagicalRecordHelpers setErrorHandlerTarget:mockErrorHandler action:@selector(testHandlingError:)];
+    [MagicalRecordHelpers setErrorHandlerTarget:mockErrorHandler];
     [MagicalRecordHelpers handleErrors:testError];
 
     [mockErrorHandler verify];
