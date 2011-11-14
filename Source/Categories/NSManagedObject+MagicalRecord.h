@@ -6,7 +6,7 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-@interface NSManagedObject (MagicalRecord)
+@interface NSManagedObject (MagicalRecord) <NSCoding>
 
 /** @name Instance methods */
 
@@ -18,6 +18,8 @@
 
 - (id)objectWithMinValueFor:(NSString *)property;
 - (id)objectWithMinValueFor:(NSString *)property inContext:(NSManagedObjectContext *)context;
+
+@property (nonatomic, readonly) NSURL *uri;
 
 /** @name Default batch size */
 

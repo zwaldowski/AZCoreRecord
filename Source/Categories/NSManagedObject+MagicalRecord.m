@@ -9,6 +9,7 @@
 #import "NSManagedObject+MagicalRecord.h"
 
 static NSUInteger defaultBatchSize = 20;
+static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 @interface NSManagedObject (MOGenerator_)
 + (NSEntityDescription *)entityInManagedObjectContext:(NSManagedObjectContext *)context;
@@ -16,6 +17,20 @@ static NSUInteger defaultBatchSize = 20;
 @end
 
 @implementation NSManagedObject (MagicalRecord)
+
+#pragma mark - NSCoding
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    NSManagedObjectContext *context = [NSManagedObjectContext defaultContext];
+    NSPersistentStoreCoordinator *psc = [NSPersistentStoreCoordinator defaultStoreCoordinator];
+    NSURL *uri = [aDecoder decodeObjectForKey:kURICodingKey];
+    NSManagedObjectID *moi = [psc managedObjectIDForURIRepresentation:uri];
+    return [context objectWithID:moi];
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeObject:self.uri forKey:kURICodingKey];
+}
 
 #pragma mark - Instance methods
 
@@ -48,17 +63,29 @@ static NSUInteger defaultBatchSize = 20;
 
 - (id) objectWithMinValueFor:(NSString *)property inContext:(NSManagedObjectContext *)context
 {
-	NSFetchRequest *request = [[self class] createFetchRequestInContext:context];
-	
 	NSPredicate *searchFor = [NSPredicate predicateWithFormat:@"SELF = %@ AND %K = min(%@)", self, property, property];
-	[request setPredicate:searchFor];
-	
-	return [[self class] executeFetchRequestAndReturnFirstObject:request inContext:context];
+    return [[self class] findFirstWithPredicate:searchFor inContext:context];
 }
 
 - (id) objectWithMinValueFor:(NSString *)property 
 {
 	return [self objectWithMinValueFor:property inContext:[self  managedObjectContext]];
+}
+
+- (NSURL *)uri {
+    NSManagedObjectID *objectID = self.objectID;
+    
+    if (objectID.isTemporaryID) {
+        if ([self.managedObjectContext obtainPermanentIDsForObjects:[NSArray arrayWithObject:self] error:NULL])
+            objectID = self.objectID;
+        else
+            return nil;
+    }
+    
+    if (!objectID)
+        return nil;
+    
+    return objectID.URIRepresentation;
 }
 
 #pragma mark - Default batch size
