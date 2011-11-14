@@ -13,7 +13,6 @@
 static const char *kErrorHandlerTargetKey = "errorHandlerTarget_";
 static const char *kErrorHandlerIsClassKey = "errorHandlerIsClass_";
 static const char *kErrorHandlerBlockKey = "errorHandler_";
-static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentStoreCoordinator_";
 
 @implementation MagicalRecordHelpers
 
@@ -110,14 +109,6 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
 	objc_setAssociatedObject(self, kErrorHandlerTargetKey, target, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-+ (void) initialize
-{
-	if (self == [MagicalRecordHelpers class]) 
-	{
-		[self setShouldAutoCreateDefaultPersistentStoreCoordinator:YES];
-	}
-}
-
 + (void) setupAutoMigratingCoreDataStack
 {
 	[self setupCoreDataStackWithAutoMigratingSqliteStoreNamed:kMagicalRecordDefaultStoreFileName];
@@ -139,16 +130,6 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
 {
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
 	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
-}
-
-+ (BOOL) shouldAutoCreateDefaultPersistentStoreCoordinator;
-{
-	return [objc_getAssociatedObject(self, kShouldAutoCreatePSCKey) boolValue];
-}
-
-+ (void) setShouldAutoCreateDefaultPersistentStoreCoordinator:(BOOL)shouldAutoCreate;
-{
-	objc_setAssociatedObject(self, kShouldAutoCreatePSCKey, [NSNumber numberWithBool:shouldAutoCreate], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

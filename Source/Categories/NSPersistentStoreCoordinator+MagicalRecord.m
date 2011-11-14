@@ -14,7 +14,7 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 
 + (NSPersistentStoreCoordinator *)defaultStoreCoordinator
 {
-	if (defaultCoordinator_ == nil && [MagicalRecordHelpers shouldAutoCreateDefaultPersistentStoreCoordinator])
+	if (!defaultCoordinator_)
 	{
 		defaultCoordinator_ = [self newPersistentStoreCoordinator];
 	}

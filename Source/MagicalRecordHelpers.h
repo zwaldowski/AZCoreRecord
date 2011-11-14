@@ -43,9 +43,6 @@ typedef void (^CoreDataError)(NSError *error);
 + (void)setErrorHandlerTarget:(id <MRErrorHandler>)target;
 + (id <MRErrorHandler>)errorHandlerTarget;
 
-+ (BOOL) shouldAutoCreateDefaultPersistentStoreCoordinator;
-+ (void) setShouldAutoCreateDefaultPersistentStoreCoordinator:(BOOL)shouldAutoCreate;
-
 @end
 
 #pragma mark - Helper Functions
