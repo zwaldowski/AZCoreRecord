@@ -48,7 +48,7 @@
 + (void) saveDataWithOptions:(MRCoreDataSaveOption)options withBlock:(void (^)(NSManagedObjectContext *))block completion:(void (^)(void))callback errorHandler:(void(^)(NSError *))errorCallback
 {
 	BOOL wantsBackground = (options & MRCoreDataSaveOptionInBackground);
-	BOOL wantsNewContext = (options & MRCoreDataSaveOptionWithNewContext);
+	BOOL wantsNewContext = (options & MRCoreDataSaveOptionWithNewContext) || ![NSThread isMainThread];
 	
 	static dispatch_once_t onceToken;
 	static dispatch_queue_t MRBackgroundSaveQueue;
@@ -56,7 +56,7 @@
 		MRBackgroundSaveQueue = dispatch_queue_create("com.magicalpanda.magicalrecord.backgroundsaves", 0);
 	});
 	
-	dispatch_queue_t queue = wantsBackground ? MRBackgroundSaveQueue : dispatch_get_main_queue();	
+	dispatch_queue_t queue = wantsBackground ? MRBackgroundSaveQueue : dispatch_get_current_queue();	
 	dispatch_async(queue, ^{
 		NSManagedObjectContext *mainContext  = [NSManagedObjectContext defaultContext];
 		NSManagedObjectContext *localContext = mainContext;
