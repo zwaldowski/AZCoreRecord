@@ -14,7 +14,7 @@
 
 - (void) testDefaultStoreFolderForiOSDevicesIsTheLibraryFolder
 {
-	NSString *applicationLibraryDirectory = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
+	NSString *applicationLibraryDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
 	NSString *defaultStoreName = kMagicalRecordDefaultStoreFileName;
 	
 	NSURL *expectedStoreUrl = [NSURL fileURLWithPath:[applicationLibraryDirectory stringByAppendingPathComponent:defaultStoreName]];
