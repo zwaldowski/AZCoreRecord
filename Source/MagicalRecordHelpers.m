@@ -12,14 +12,12 @@
 static const char *kErrorHandlerTargetKey = "errorHandlerTarget_";
 static const char *kErrorHandlerIsClassKey = "errorHandlerIsClass_";
 static const char *kErrorHandlerBlockKey = "errorHandler_";
-static const char *kShouldAutoCreateMOMKey = "shouldAutoCreateManagedObjectModel_";
 static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentStoreCoordinator_";
 
 @implementation MagicalRecordHelpers
 
 + (void) cleanUp
 {
-	[NSManagedObjectModel setDefaultManagedObjectModel:nil];
 	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:nil];
 	[NSPersistentStore setDefaultPersistentStore:nil];
 }
@@ -113,7 +111,6 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
 {
 	if (self == [MagicalRecordHelpers class]) 
 	{
-		[self setShouldAutoCreateManagedObjectModel:YES];
 		[self setShouldAutoCreateDefaultPersistentStoreCoordinator:YES];
 	}
 }
@@ -139,16 +136,6 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
 {
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
 	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
-}
-
-+ (BOOL) shouldAutoCreateManagedObjectModel;
-{
-	return [objc_getAssociatedObject(self, kShouldAutoCreateMOMKey) boolValue];
-}
-
-+ (void) setShouldAutoCreateManagedObjectModel:(BOOL)shouldAutoCreate;
-{
-	objc_setAssociatedObject(self, kShouldAutoCreateMOMKey, [NSNumber numberWithBool:shouldAutoCreate], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 + (BOOL) shouldAutoCreateDefaultPersistentStoreCoordinator;

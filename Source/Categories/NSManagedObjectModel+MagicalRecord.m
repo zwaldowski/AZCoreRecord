@@ -8,22 +8,16 @@
 
 #import "NSManagedObjectModel+MagicalRecord.h"
 
-static NSManagedObjectModel *defaultManagedObjectModel_ = nil;
-
 @implementation NSManagedObjectModel (MagicalRecord)
 
-+ (NSManagedObjectModel *) defaultManagedObjectModel
++ (NSManagedObjectModel *)defaultManagedObjectModel
 {
-	if (defaultManagedObjectModel_ == nil && [MagicalRecordHelpers shouldAutoCreateManagedObjectModel])
-	{
-		[self setDefaultManagedObjectModel:[self managedObjectModel]];
-	}
+    static dispatch_once_t onceToken;
+    static NSManagedObjectModel *defaultManagedObjectModel_ = nil;
+    dispatch_once(&onceToken, ^{
+        defaultManagedObjectModel_ = [self mergedModelFromBundles:nil];
+    });
 	return defaultManagedObjectModel_;
-}
-
-+ (void) setDefaultManagedObjectModel:(NSManagedObjectModel *)newDefaultModel
-{
-	defaultManagedObjectModel_ = newDefaultModel;
 }
 
 + (NSManagedObjectModel *)managedObjectModel {

@@ -9,7 +9,6 @@
 @interface NSManagedObjectModel (MagicalRecord)
 
 + (NSManagedObjectModel *)defaultManagedObjectModel;
-+ (void)setDefaultManagedObjectModel:(NSManagedObjectModel *)newDefaultModel;
 
 + (NSManagedObjectModel *)managedObjectModel;
 + (NSManagedObjectModel *)newManagedObjectModelNamed:(NSString *)modelFileName;

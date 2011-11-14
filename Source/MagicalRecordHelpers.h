@@ -43,8 +43,6 @@ typedef void (^CoreDataError)(NSError *error);
 + (void)setErrorHandlerTarget:(id <MRErrorHandler>)target;
 + (id <MRErrorHandler>)errorHandlerTarget;
 
-+ (BOOL) shouldAutoCreateManagedObjectModel;
-+ (void) setShouldAutoCreateManagedObjectModel:(BOOL)shouldAutoCreate;
 + (BOOL) shouldAutoCreateDefaultPersistentStoreCoordinator;
 + (void) setShouldAutoCreateDefaultPersistentStoreCoordinator:(BOOL)shouldAutoCreate;
 
