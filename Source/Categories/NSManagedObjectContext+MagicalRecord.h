@@ -8,6 +8,12 @@
 
 @interface NSManagedObjectContext (MagicalRecord)
 
++ (NSManagedObjectContext *)defaultContext;
++ (NSManagedObjectContext *)contextForCurrentThread;
+
++ (void)resetDefaultContext;
++ (void)resetContextForCurrentThread;
+
 - (void) observeContext:(NSManagedObjectContext *)otherContext;
 - (void) stopObservingContext:(NSManagedObjectContext *)otherContext;
 - (void) observeContextOnMainThread:(NSManagedObjectContext *)otherContext;
@@ -18,15 +24,7 @@
 - (BOOL) saveOnMainThread;
 - (BOOL) saveOnBackgroundThread;
 
-+ (NSManagedObjectContext *) defaultContext;
-+ (void) setDefaultContext:(NSManagedObjectContext *)moc;
-
-+ (void)resetDefaultContext;
-+ (void)resetContextForCurrentThread;
-
 + (NSManagedObjectContext *) context;
-+ (NSManagedObjectContext *) contextForCurrentThread;
-
 + (NSManagedObjectContext *) contextThatNotifiesDefaultContextOnMainThread;
 + (NSManagedObjectContext *) contextThatNotifiesDefaultContextOnMainThreadWithCoordinator:(NSPersistentStoreCoordinator *)coordinator;
 + (NSManagedObjectContext *) contextWithStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;

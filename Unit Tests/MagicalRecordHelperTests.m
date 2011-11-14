@@ -34,8 +34,6 @@
 	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:kMagicalRecordDefaultStoreFileName];
 	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 	
-	[MagicalRecordHelpers setupCoreDataStack];
-	
 	[self assertDefaultStack];
 	
 	NSPersistentStore *defaultStore = [NSPersistentStore defaultPersistentStore];

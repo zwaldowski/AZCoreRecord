@@ -9,7 +9,7 @@
 #import "NSManagedObjectContext+MagicalRecord.h"
 #import <objc/runtime.h>
 
-static NSManagedObjectContext *defaultManageObjectContext_ = nil;
+static NSManagedObjectContext *defaultManagedObjectContext_ = nil;
 static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordManagedObjectContexts";
 static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 
@@ -22,16 +22,37 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 
 @implementation NSManagedObjectContext (MagicalRecord)
 
-+ (NSManagedObjectContext *)defaultContext
-{
-	return defaultManageObjectContext_;
++ (void)_resetDefaultStoreCoordinator {
+    if (!defaultManagedObjectContext_)
+        return;
+    
+    defaultManagedObjectContext_.persistentStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 }
 
-+ (void) setDefaultContext:(NSManagedObjectContext *)moc
++ (NSManagedObjectContext *)defaultContext
 {
-	@synchronized(self) {
-		defaultManageObjectContext_ = moc;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		defaultManagedObjectContext_ = [NSManagedObjectContext new];
+		[self _resetDefaultStoreCoordinator];
+	});
+	return defaultManagedObjectContext_;
+}
+
++ (NSManagedObjectContext *) contextForCurrentThread
+{
+	if ([NSThread isMainThread])
+		return [self defaultContext];
+    
+	NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
+	NSManagedObjectContext *threadContext = [threadDict objectForKey:kMagicalRecordManagedObjectContextKey];
+	if (threadContext == nil)
+	{
+		threadContext = [self contextThatNotifiesDefaultContextOnMainThread];
+		[threadDict setObject:threadContext forKey:kMagicalRecordManagedObjectContextKey];
 	}
+	return threadContext;
+    
 }
 
 + (void) resetDefaultContext
@@ -42,22 +63,6 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 + (void) resetContextForCurrentThread 
 {
 	[[NSManagedObjectContext contextForCurrentThread] reset];
-}
-
-+ (NSManagedObjectContext *) contextForCurrentThread
-{
-	if ([NSThread isMainThread])
-		return [self defaultContext];
-
-	NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
-	NSManagedObjectContext *threadContext = [threadDict objectForKey:kMagicalRecordManagedObjectContextKey];
-	if (threadContext == nil)
-	{
-		threadContext = [self contextThatNotifiesDefaultContextOnMainThread];
-		[threadDict setObject:threadContext forKey:kMagicalRecordManagedObjectContextKey];
-	}
-	return threadContext;
-
 }
 
 - (void) observeContext:(NSManagedObjectContext *)otherContext

@@ -19,7 +19,6 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
 
 + (void) cleanUp
 {
-	[NSManagedObjectContext setDefaultContext:nil];
 	[NSManagedObjectModel setDefaultManagedObjectModel:nil];
 	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:nil];
 	[NSPersistentStore setDefaultPersistentStore:nil];
@@ -119,12 +118,6 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
 	}
 }
 
-+ (void) setupCoreDataStack
-{
-	NSManagedObjectContext *context = [NSManagedObjectContext context];
-	[NSManagedObjectContext setDefaultContext:context];
-}
-
 + (void) setupAutoMigratingCoreDataStack
 {
 	[self setupCoreDataStackWithAutoMigratingSqliteStoreNamed:kMagicalRecordDefaultStoreFileName];
@@ -134,27 +127,18 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
 {
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreNamed:storeName];
 	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
-	
-	NSManagedObjectContext *context = [NSManagedObjectContext contextWithStoreCoordinator:coordinator];
-	[NSManagedObjectContext setDefaultContext:context];
 }
 
 + (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName
 {
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreNamed:storeName];
 	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
-	
-	NSManagedObjectContext *context = [NSManagedObjectContext contextWithStoreCoordinator:coordinator];
-	[NSManagedObjectContext setDefaultContext:context];
 }
 
 + (void) setupCoreDataStackWithInMemoryStore
 {
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
 	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
-	
-	NSManagedObjectContext *context = [NSManagedObjectContext contextWithStoreCoordinator:coordinator];
-	[NSManagedObjectContext setDefaultContext:context];
 }
 
 + (BOOL) shouldAutoCreateManagedObjectModel;
