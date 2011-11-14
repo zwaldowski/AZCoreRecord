@@ -42,7 +42,7 @@ static NSUInteger defaultBatchSize = 20;
 
 - (BOOL) deleteInContext:(NSManagedObjectContext *)context
 {
-	[context deleteObject:self];
+	[context deleteObject:[self inContext:context]];
 	return YES;
 }
 
