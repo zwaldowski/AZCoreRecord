@@ -7,6 +7,7 @@
 //
 
 #import "CoreData+MagicalRecord.h"
+#import "MagicalRecord+Private.h"
 #import <objc/runtime.h>
 
 static const char *kErrorHandlerTargetKey = "errorHandlerTarget_";
@@ -18,6 +19,9 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
 
 + (void) cleanUp
 {
+    objc_removeAssociatedObjects(self);
+    [NSManagedObjectContext _setDefaultContext:nil];
+	[NSManagedObjectModel _setDefaultManagedObjectModel:nil];
 	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:nil];
 	[NSPersistentStore setDefaultPersistentStore:nil];
 }

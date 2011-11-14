@@ -6,12 +6,9 @@
 //
 
 #import "NSPersistentStoreCoordinator+MagicalRecord.h"
+#import "MagicalRecord+Private.h"
 
 static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
-
-@interface NSManagedObjectContext(MagicalRecordPrivate)
-+ (void)_resetDefaultStoreCoordinator;
-@end
 
 @implementation NSPersistentStoreCoordinator (MagicalRecord)
 
@@ -35,7 +32,6 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 			[NSPersistentStore setDefaultPersistentStore:[persistentStores objectAtIndex:0]];
 		}
 	}
-    [NSManagedObjectContext _resetDefaultStoreCoordinator];
 }
 
 - (void)_createPathToStoreFileIfNeccessary:(NSURL *)urlForStore

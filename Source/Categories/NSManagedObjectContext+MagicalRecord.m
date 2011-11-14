@@ -22,21 +22,17 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 
 @implementation NSManagedObjectContext (MagicalRecord)
 
-+ (void)_resetDefaultStoreCoordinator {
-    if (!defaultManagedObjectContext_)
-        return;
-    
-    defaultManagedObjectContext_.persistentStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
-}
-
 + (NSManagedObjectContext *)defaultContext
 {
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-		defaultManagedObjectContext_ = [NSManagedObjectContext new];
-		[self _resetDefaultStoreCoordinator];
-	});
+    if (!defaultManagedObjectContext_) {
+        defaultManagedObjectContext_ = [NSManagedObjectContext new];
+		defaultManagedObjectContext_.persistentStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
+    }
 	return defaultManagedObjectContext_;
+}
+
++ (void)_setDefaultContext:(NSManagedObjectContext *)newDefault {
+    defaultManagedObjectContext_ = newDefault;
 }
 
 + (NSManagedObjectContext *) contextForCurrentThread
