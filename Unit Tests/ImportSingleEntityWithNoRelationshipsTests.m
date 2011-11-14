@@ -100,7 +100,7 @@
 
 - (void) testImportUIColorAttributeToEntity
 {
-	UIColor *actualColor = testEntity.colorTestAttribute;
+	id actualColor = testEntity.colorTestAttribute;
  
 	if ([actualColor respondsToSelector:@selector(getRed:green:blue:alpha:)]) 
 	{

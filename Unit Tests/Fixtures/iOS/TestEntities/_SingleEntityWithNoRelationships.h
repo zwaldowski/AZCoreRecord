@@ -6,7 +6,7 @@
 
 
 
-@class UIColor;
+@class NSObject;
 
 
 
@@ -44,7 +44,7 @@
 
 
 
-@property (nonatomic, retain) UIColor *colorTestAttribute;
+@property (nonatomic, retain) NSObject *colorTestAttribute;
 
 
 //- (BOOL)validateColorTestAttribute:(id*)value_ error:(NSError**)error_;
@@ -191,8 +191,8 @@
 
 
 
-- (UIColor*)primitiveColorTestAttribute;
-- (void)setPrimitiveColorTestAttribute:(UIColor*)value;
+- (NSObject*)primitiveColorTestAttribute;
+- (void)setPrimitiveColorTestAttribute:(NSObject*)value;
 
 
 
