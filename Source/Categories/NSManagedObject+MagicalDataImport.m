@@ -96,6 +96,13 @@ static NSString *primaryKeyNameFromString(NSString *value)
 			return;
 		
 		id value = [objectData valueForKeyPath:key];
+        
+        for (int i = 1; i < 10 && value == nil; i++)
+        {
+            NSString *attributeName = [NSString stringWithFormat:@"%@.%d", key, i];
+            key = [[attributeInfo userInfo] valueForKey:attributeName];
+            value = [objectData valueForKeyPath:key];
+        }
 		
 		NSAttributeType attributeType = [attributeInfo attributeType];
 		NSString *desiredAttributeType = [[attributeInfo userInfo] valueForKey:kMagicalRecordImportClassNameKey];
