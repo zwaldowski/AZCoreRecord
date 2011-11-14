@@ -70,7 +70,7 @@
 
 - (void) testCanCreateEntityInstance
 {
-	id testEntity = [SingleRelatedEntity createEntity];
+	id testEntity = [SingleRelatedEntity create];
 	
 	assertThat(testEntity, is(notNilValue()));
 }
@@ -79,7 +79,7 @@
 
 - (void) testCanDeleteEntityInstance
 {
-	id testEntity = [SingleRelatedEntity createEntity];
+	id testEntity = [SingleRelatedEntity create];
 	[[NSManagedObjectContext defaultContext] save];
 	
 	assertThatBool([testEntity isDeleted], is(equalToBool(NO)));
@@ -96,7 +96,7 @@
 {
 	for (NSInteger i = 0; i < numberOfTestEntitiesToCreate; i++) 
 	{
-		SingleRelatedEntity *testEntity = [SingleRelatedEntity createEntity];
+		SingleRelatedEntity *testEntity = [SingleRelatedEntity create];
 		testEntity.mappedStringAttribute = [NSString stringWithFormat:@"%d", i / 5];
 	}
 	

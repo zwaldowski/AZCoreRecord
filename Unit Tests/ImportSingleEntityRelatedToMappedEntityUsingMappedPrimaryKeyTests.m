@@ -52,7 +52,7 @@
 
 - (void) testUpdateMappedEntityRelatedViaToOneRelationship
 {
-	SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey *entity = [SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey createEntity];
+	SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey *entity = [SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey create];
 	[entity updateValuesFromDictionary:self.testEntityData];
 	[[NSManagedObjectContext defaultContext] save];
 	
@@ -89,7 +89,7 @@
 
 - (void) testUpdateMappedEntityUsingPrimaryRelationshipKey
 {
-	SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey *entity = [SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey createEntity];
+	SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey *entity = [SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey create];
 	[entity updateValuesFromDictionary:self.testEntityData];
 	[[NSManagedObjectContext defaultContext] save];
 	

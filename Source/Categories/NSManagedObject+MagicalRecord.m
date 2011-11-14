@@ -49,16 +49,17 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	return [weakSelf inContext:[NSManagedObjectContext contextForCurrentThread]];
 }
 
-- (BOOL) deleteEntity
-{
+- (BOOL)deleteEntity {
 	[self deleteInContext:[self managedObjectContext]];
 	return YES;
 }
 
-- (BOOL) deleteInContext:(NSManagedObjectContext *)context
-{
+- (void)delete {
+	[self deleteInContext:[self managedObjectContext]];
+}
+
+- (void)deleteInContext:(NSManagedObjectContext *)context {
 	[context deleteObject:[self inContext:context]];
-	return YES;
 }
 
 - (id) objectWithMinValueFor:(NSString *)property inContext:(NSManagedObjectContext *)context
@@ -221,9 +222,12 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 + (id)createEntity
 {	
-	NSManagedObject *newEntity = [self createInContext:[NSManagedObjectContext contextForCurrentThread]];
-	
-	return newEntity;
+	return [self createInContext:[NSManagedObjectContext contextForCurrentThread]];
+}
+
++ (id)create
+{	
+	return [self createInContext:[NSManagedObjectContext contextForCurrentThread]];
 }
 
 + (id) createInContext:(NSManagedObjectContext *)context

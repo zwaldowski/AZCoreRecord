@@ -13,8 +13,9 @@
 - (id) inContext:(NSManagedObjectContext *)otherContext;
 - (id) inThreadContext;
 
-- (BOOL) deleteEntity;
-- (BOOL) deleteInContext:(NSManagedObjectContext *)context;
+- (void)delete;
+- (BOOL)deleteEntity DEPRECATED_ATTRIBUTE;
+- (void)deleteInContext:(NSManagedObjectContext *)context;
 
 - (id)objectWithMinValueFor:(NSString *)property;
 - (id)objectWithMinValueFor:(NSString *)property inContext:(NSManagedObjectContext *)context;
@@ -47,7 +48,8 @@
 
 /** @name Entity creation */
 
-+ (id) createEntity;
++ (id) create;
++ (id) createEntity DEPRECATED_ATTRIBUTE;
 + (id) createInContext:(NSManagedObjectContext *)context;
 
 /** @name Entity deletion */
