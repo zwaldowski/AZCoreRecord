@@ -112,20 +112,6 @@ static NSString *primaryKeyNameFromString(NSString *value)
         }
         
         switch (attributeType) {
-            case NSInteger16AttributeType:
-            case NSInteger32AttributeType:
-            case NSInteger64AttributeType:
-            case NSDecimalAttributeType:
-            case NSDoubleAttributeType:
-            case NSFloatAttributeType:
-            case NSBooleanAttributeType:
-                if (!value) // if it just wasn't set, leave the default
-                    return;
-                
-                if (value == [NSNull null]) // if it was *explicitly* set to nil, set
-                    value = nil;
-                break;
-                
             case NSDateAttributeType:
                 if ([value isKindOfClass:[NSString class]]) {
                     NSString *dateFormat = [[attributeInfo userInfo] valueForKey:kMagicalRecordImportCustomDateFormat];
@@ -137,10 +123,12 @@ static NSString *primaryKeyNameFromString(NSString *value)
             default:
                 if (desiredAttributeType && [desiredAttributeType hasSuffix:@"Color"])
                     value = MRColorFromString(value);
-                break;
                 
-                if (value == [NSNull null])
+                if (!value) // if it just wasn't set, leave the default
                     return;
+                
+                if (value == [NSNull null]) // if it was *explicitly* set to nil, set
+                    value = nil;
                 break;
         }
 		
