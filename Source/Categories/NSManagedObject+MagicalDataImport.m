@@ -58,23 +58,24 @@ static NSString *primaryKeyNameFromString(NSString *value)
 	id relatedValue = nil;
 	
 	NSEntityDescription *destination = [relationshipInfo destinationEntity];
-	NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
-	NSString *destinationName = [singleRelatedObjectData objectForKey:destinationKey];
-	if (destinationName) {
-		NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
-		if ([customDestination isKindOfEntity:destination])
-			destination = customDestination;
-	}
 	
 	if ([singleRelatedObjectData isKindOfClass:[NSNumber class]] || [singleRelatedObjectData isKindOfClass:[NSString class]])
 		relatedValue = singleRelatedObjectData;
 	else if ([singleRelatedObjectData isKindOfClass:[NSDictionary class]]) {
+        
+        NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
+        NSString *destinationName = [singleRelatedObjectData objectForKey:destinationKey];
+        if (destinationName) {
+            NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
+            if ([customDestination isKindOfEntity:destination])
+                destination = customDestination;
+        }
+        
 		NSEntityDescription *destinationEntity = [relationshipInfo destinationEntity];
 		NSString *primaryKeyName = [relationshipInfo.userInfo valueForKey:kMagicalRecordImportRelationshipPrimaryKey] ?: primaryKeyNameFromString(relationshipInfo.destinationEntity.name);	
 		NSAttributeDescription *primaryKeyAttribute = [destinationEntity.attributesByName valueForKey:primaryKeyName];
 		NSString *lookupKey = [[primaryKeyAttribute userInfo] valueForKey:kMagicalRecordImportMapKey] ?: [primaryKeyAttribute name];
 		relatedValue = [singleRelatedObjectData valueForKeyPath:lookupKey];
-		
 	}
 	
 	if (!relatedValue)
@@ -201,13 +202,16 @@ static NSString *primaryKeyNameFromString(NSString *value)
 			}
 
 			NSEntityDescription *destination = [relationshipInfo destinationEntity];
-			NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
-			NSString *destinationName = [objectData objectForKey:destinationKey];
-			if (destinationName) {
-				NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:safeSelf.managedObjectContext];
-				if ([customDestination isKindOfEntity:destination])
-					destination = customDestination;
-			}
+            
+            if ([objectData isKindOfClass:[NSDictionary class]]) {
+                NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
+                NSString *destinationName = [objectData objectForKey:destinationKey];
+                if (destinationName) {
+                    NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:safeSelf.managedObjectContext];
+                    if ([customDestination isKindOfEntity:destination])
+                        destination = customDestination;
+                }
+            }
 			return [safeSelf _createInstanceForEntity:destination withDictionary:objectData];
 		 }];
 	}
