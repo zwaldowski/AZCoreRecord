@@ -7,12 +7,13 @@
 //
 
 #import "MagicalRecordHelperTests.h"
+#import "MagicalRecord+Private.h"
 
 @implementation MagicalRecordHelperTests
 
 - (void) setUp
 {
-	[NSManagedObjectModel setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
+	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
 }
 
 - (void) tearDown

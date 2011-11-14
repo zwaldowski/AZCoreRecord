@@ -8,12 +8,13 @@
 
 #import "NSManagedObjectHelperTests.h"
 #import "SingleRelatedEntity.h"
+#import "MagicalRecord+Private.h"
 
 @implementation NSManagedObjectHelperTests
 
 - (void) setUpClass
 {
-	[NSManagedObjectModel setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];   
+	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];   
 }
 
 - (void) setUp

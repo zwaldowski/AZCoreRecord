@@ -7,6 +7,7 @@
 //
 
 #import "MagicalDataImportTestCase.h"
+#import "MagicalRecord+Private.h"
 
 @implementation MagicalDataImportTestCase
 
@@ -15,7 +16,7 @@
 
 - (void) setUp
 {
-	[NSManagedObjectModel setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
+	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
 	[MagicalRecordHelpers setupCoreDataStackWithInMemoryStore];
 	
 	if ([self respondsToSelector:@selector(setupTestData)])

@@ -156,6 +156,7 @@
 /* Begin PBXFileReference section */
 		00310178146F758F00AA9A2F /* NSManagedObject+MagicalDataImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+MagicalDataImport.h"; sourceTree = "<group>"; };
 		00310179146F758F00AA9A2F /* NSManagedObject+MagicalDataImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+MagicalDataImport.m"; sourceTree = "<group>"; };
+		6C7E3DBD1471800700E8A65E /* MagicalRecord+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MagicalRecord+Private.h"; sourceTree = "<group>"; };
 		C70B6E6F13D0F62500709450 /* NSPersisentStoreHelperTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSPersisentStoreHelperTests.h; path = "Unit Tests/NSPersisentStoreHelperTests.h"; sourceTree = "<group>"; };
 		C70B6E7013D0F62500709450 /* NSPersisentStoreHelperTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSPersisentStoreHelperTests.m; path = "Unit Tests/NSPersisentStoreHelperTests.m"; sourceTree = "<group>"; };
 		C70B6E7213D0F64000709450 /* NSPersistentStoreCoordinatorHelperTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSPersistentStoreCoordinatorHelperTests.h; path = "Unit Tests/NSPersistentStoreCoordinatorHelperTests.h"; sourceTree = "<group>"; };
@@ -516,6 +517,7 @@
 		C721C85813D0C7030097AB6F /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				6C7E3DBD1471800700E8A65E /* MagicalRecord+Private.h */,
 				00310178146F758F00AA9A2F /* NSManagedObject+MagicalDataImport.h */,
 				00310179146F758F00AA9A2F /* NSManagedObject+MagicalDataImport.m */,
 				C721C85B13D0C7030097AB6F /* NSManagedObject+MagicalRecord.h */,

@@ -7,6 +7,7 @@
 //
 
 #import "SingleEntityWithNoRelationships.h"
+#import "MagicalRecord+Private.h"
 
 @interface ImportSingleEntityWithNoRelationshipsTests : GHTestCase
 
@@ -20,7 +21,7 @@
 
 - (void) setUpClass
 {
-	[NSManagedObjectModel setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
+	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
 	[MagicalRecordHelpers setupCoreDataStackWithInMemoryStore];
 
 	id singleEntity = [self dataFromJSONFixture];
