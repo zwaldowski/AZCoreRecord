@@ -44,39 +44,40 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
 	
 	if (block) {
 		block(error);
+        return;
 	}
 	
 	if (target) {
 		BOOL isClassSelector = [objc_getAssociatedObject(self, kErrorHandlerIsClassKey) boolValue];
 		[(isClassSelector ? [target class] : target) performSelector:@selector(handleErrors:) withObject:error];
+        return;
 	}
 	
-	if (!block && !target) {
-		NSDictionary *userInfo = [error userInfo];
-		for (NSArray *detailedError in [userInfo allValues])
-		{
-			if ([detailedError isKindOfClass:[NSArray class]])
-			{
-				for (NSError *e in detailedError)
-				{
-					if ([e respondsToSelector:@selector(userInfo)])
-					{
-						ARLog(@"Error Details: %@", [e userInfo]);
-					}
-					else
-					{
-						ARLog(@"Error Details: %@", e);
-					}
-				}
-			}
-			else
-			{
-				ARLog(@"Error: %@", detailedError);
-			}
-		}
-		ARLog(@"Error Domain: %@", [error domain]);
-		ARLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
-	}
+    // default error handler
+    NSDictionary *userInfo = [error userInfo];
+    for (NSArray *detailedError in [userInfo allValues])
+    {
+        if ([detailedError isKindOfClass:[NSArray class]])
+        {
+            for (NSError *e in detailedError)
+            {
+                if ([e respondsToSelector:@selector(userInfo)])
+                {
+                    ARLog(@"Error Details: %@", [e userInfo]);
+                }
+                else
+                {
+                    ARLog(@"Error Details: %@", e);
+                }
+            }
+        }
+        else
+        {
+            ARLog(@"Error: %@", detailedError);
+        }
+    }
+    ARLog(@"Error Domain: %@", [error domain]);
+    ARLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
 }
 
 + (void)setErrorHandler:(CoreDataError)block
@@ -96,14 +97,12 @@ static const char *kShouldAutoCreatePSCKey = "shouldAutoCreateDefaultPersistentS
 
 + (void) setErrorHandlerTarget:(id <MRErrorHandler>)target
 {
-	BOOL isClassMethod;
+	NSNumber *isClassMethodNumber = nil;
 	if ([target respondsToSelector:@selector(handleErrors:)])
-		isClassMethod = NO;
+		isClassMethodNumber = [NSNumber numberWithBool:NO];
 	else if ([[target class] respondsToSelector:@selector(handleErrors:)])
-		isClassMethod = YES;
-	else
-		return;
-	objc_setAssociatedObject(self, kErrorHandlerIsClassKey, [NSNumber numberWithBool:isClassMethod], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+		isClassMethodNumber = [NSNumber numberWithBool:YES];
+	objc_setAssociatedObject(self, kErrorHandlerIsClassKey, isClassMethodNumber, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 	objc_setAssociatedObject(self, kErrorHandlerTargetKey, target, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
