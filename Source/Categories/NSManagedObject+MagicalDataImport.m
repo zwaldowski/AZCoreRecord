@@ -95,7 +95,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
 		if (!key.length)
 			return;
 		
-		id value = [objectData valueForKeyPath:key];
+		id value = [objectData objectForKey:key];
         
         for (int i = 1; i < 10 && value == nil; i++)
         {
@@ -106,19 +106,44 @@ static NSString *primaryKeyNameFromString(NSString *value)
 		
 		NSAttributeType attributeType = [attributeInfo attributeType];
 		NSString *desiredAttributeType = [[attributeInfo userInfo] valueForKey:kMagicalRecordImportClassNameKey];
+        
+        if ([key isEqualToString:@"nullTestAttribute"]) {
+            NSLog(@"%@ %@", value, NSStringFromClass([value class]));
+        }
+        
+        switch (attributeType) {
+            case NSInteger16AttributeType:
+            case NSInteger32AttributeType:
+            case NSInteger64AttributeType:
+            case NSDecimalAttributeType:
+            case NSDoubleAttributeType:
+            case NSFloatAttributeType:
+            case NSBooleanAttributeType:
+                if (!value) // if it just wasn't set, leave the default
+                    return;
+                
+                if (value == [NSNull null]) // if it was *explicitly* set to nil, set
+                    value = nil;
+                break;
+                
+            case NSDateAttributeType:
+                if ([value isKindOfClass:[NSString class]]) {
+                    NSString *dateFormat = [[attributeInfo userInfo] valueForKey:kMagicalRecordImportCustomDateFormat];
+                    value = MRDateFromString(value, dateFormat ?: kMagicalRecordImportDefaultDateFormat);
+                }
+                value = MRDateAdjustForDST(value);
+                break;
+                
+            default:
+                if (desiredAttributeType && [desiredAttributeType hasSuffix:@"Color"])
+                    value = MRColorFromString(value);
+                break;
+                
+                if (value == [NSNull null])
+                    return;
+                break;
+        }
 		
-		if (desiredAttributeType && [desiredAttributeType hasSuffix:@"Color"]) {
-			value = MRColorFromString(value);
-		} else if (!desiredAttributeType && attributeType == NSDateAttributeType) {
-			if (![value isKindOfClass:[NSDate class]]) 
-			{
-				NSString *dateFormat = [[attributeInfo userInfo] valueForKey:kMagicalRecordImportCustomDateFormat];
-				value = MRDateFromString(value, dateFormat ?: kMagicalRecordImportDefaultDateFormat);
-			}
-			value = MRDateAdjustForDST(value);
-		}
-		
-		value = value != [NSNull null] ? value : nil;
 		[self setValue:value forKey:attributeName];
 	}];
 }
