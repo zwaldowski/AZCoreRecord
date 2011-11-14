@@ -11,6 +11,11 @@
 
 @implementation NSManagedObjectHelperTests
 
+- (void) setUpClass
+{
+	[NSManagedObjectModel setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];   
+}
+
 - (void) setUp
 {
 	[MagicalRecordHelpers setupCoreDataStackWithInMemoryStore];

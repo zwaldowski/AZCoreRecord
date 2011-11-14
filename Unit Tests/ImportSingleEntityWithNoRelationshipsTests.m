@@ -20,6 +20,7 @@
 
 - (void) setUpClass
 {
+	[NSManagedObjectModel setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
 	[MagicalRecordHelpers setupCoreDataStackWithInMemoryStore];
 
 	id singleEntity = [self dataFromJSONFixture];
