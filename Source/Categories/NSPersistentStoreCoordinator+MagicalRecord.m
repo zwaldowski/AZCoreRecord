@@ -23,7 +23,7 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 + (void)_setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator
 {
 	defaultCoordinator_ = coordinator;
-	if ([NSPersistentStore defaultPersistentStore] == nil)
+	if (defaultCoordinator_ && ![NSPersistentStore defaultPersistentStore])
 	{
 		NSArray *persistentStores = [defaultCoordinator_ persistentStores];
 		if ([persistentStores count])
