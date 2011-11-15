@@ -23,7 +23,7 @@
 {
 	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
 	[MagicalRecord setupCoreDataStackWithInMemoryStore];
-
+    
 	id singleEntity = [self dataFromJSONFixture];
 	
 	testEntity = [SingleEntityWithNoRelationships importFromDictionary:singleEntity];
@@ -101,12 +101,12 @@
 - (void) testImportUIColorAttributeToEntity
 {
 	id actualColor = testEntity.colorTestAttribute;
- 
+    
 	if ([actualColor respondsToSelector:@selector(getRed:green:blue:alpha:)]) 
 	{
 		CGFloat red, blue, green, alpha;
 		[actualColor getRed:&red green:&green blue:&blue alpha:&alpha];
-
+        
 		assertThatFloat(alpha, is(equalToFloat(1.)));
 		assertThatFloat(red, is(equalToFloat(64./255.)));
 		assertThatFloat(green, is(equalToFloat(128./255.)));
@@ -123,7 +123,7 @@
 	formatter.locale = [NSLocale currentLocale];
 	
 	NSDate *expectedDate = [formatter dateFromString:date];
-
+    
 	return expectedDate;
 }
 
@@ -131,12 +131,12 @@
 
 - (void) testImportNSColorAttributeToEntity
 {
-	NSColor *actualColor = testEntity.colorTestAttribute;
-	
-	assertThatFloat(actualColor.alphaComponent, is(equalToFloat(255./255.)));
-	assertThatFloat(actualColor.redComponent, is(equalToFloat(64./255.)));
-	assertThatFloat(actualColor.greenComponent, is(equalToFloat(128./255.)));
-	assertThatFloat(actualColor.blueComponent, is(equalToFloat(225./255.)));
+	id actualColor = testEntity.colorTestAttribute;
+    
+	assertThatFloat([actualColor alphaComponent], is(equalToFloat(255./255.)));
+	assertThatFloat([actualColor redComponent], is(equalToFloat(64./255.)));
+	assertThatFloat([actualColor greenComponent], is(equalToFloat(128./255.)));
+	assertThatFloat([actualColor blueComponent], is(equalToFloat(225./255.)));
 }
 
 - (NSDate *) dateFromString:(NSString *)date
