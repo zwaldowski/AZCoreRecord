@@ -101,7 +101,7 @@
 	[MagicalRecordHelpers setErrorHandler:NULL];
 	
 	NSError *testError = [NSError errorWithDomain:@"MRTests" code:1000 userInfo:nil];
-	[MagicalRecordHelpers handleErrors:testError];
+	[MagicalRecordHelpers handleError:testError];
 	
 	assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
 }
@@ -115,7 +115,7 @@
 	[MagicalRecordHelpers setErrorHandlerTarget:nil];
 	
 	NSError *testError = [NSError errorWithDomain:@"MRTests" code:1000 userInfo:nil];
-	[MagicalRecordHelpers handleErrors: testError];
+	[MagicalRecordHelpers handleError:testError];
 	
 	assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
 }
@@ -128,7 +128,7 @@
 	
 	[MagicalRecordHelpers setErrorHandlerTarget:mockErrorHandler];
 	[MagicalRecordHelpers setErrorHandler:NULL];
-	[MagicalRecordHelpers handleErrors:testError];
+	[MagicalRecordHelpers handleError:testError];
 	
 	[mockErrorHandler verify];
 }

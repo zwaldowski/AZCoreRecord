@@ -47,7 +47,7 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 	return status;
 }
 
-+ (void)handleErrors:(NSError *)error
++ (void)handleError:(NSError *)error
 {
 	if (!error)
 		return;
@@ -62,35 +62,20 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 	
 	if (target) {
 		BOOL isClassSelector = [objc_getAssociatedObject(self, kErrorHandlerIsClassKey) boolValue];
-		[(isClassSelector ? [target class] : target) performSelector:@selector(handleErrors:) withObject:error];
+		[(isClassSelector ? [target class] : target) performSelector:@selector(handleError:) withObject:error];
 		return;
 	}
 	
 	// default error handler
-	NSDictionary *userInfo = [error userInfo];
-	for (NSArray *detailedError in [userInfo allValues])
-	{
-		if ([detailedError isKindOfClass:[NSArray class]])
-		{
-			for (NSError *e in detailedError)
-			{
-				if ([e respondsToSelector:@selector(userInfo)])
-				{
-					ARLog(@"Error Details: %@", [e userInfo]);
-				}
-				else
-				{
-					ARLog(@"Error Details: %@", e);
-				}
-			}
-		}
-		else
-		{
-			ARLog(@"Error: %@", detailedError);
-		}
+	for (NSArray *detailedError in error.userInfo.allValues) {
+		ARLog(@"Error: %@", detailedError);
 	}
 	ARLog(@"Error Domain: %@", [error domain]);
 	ARLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
+}
+
++ (void)handleErrors:(NSError *)error {
+    [self handleError:error];
 }
 
 + (void)setErrorHandler:(MRErrorBlock)block
@@ -111,9 +96,9 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 + (void) setErrorHandlerTarget:(id <MRErrorHandler>)target
 {
 	NSNumber *isClassMethodNumber = nil;
-	if ([target respondsToSelector:@selector(handleErrors:)])
+	if ([target respondsToSelector:@selector(handleError:)])
 		isClassMethodNumber = [NSNumber numberWithBool:NO];
-	else if ([[target class] respondsToSelector:@selector(handleErrors:)])
+	else if ([[target class] respondsToSelector:@selector(handleError:)])
 		isClassMethodNumber = [NSNumber numberWithBool:YES];
 	objc_setAssociatedObject(self, kErrorHandlerIsClassKey, isClassMethodNumber, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 	objc_setAssociatedObject(self, kErrorHandlerTargetKey, target, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -156,8 +141,7 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 
 #pragma mark - Core Data actions
 
-+ (void) saveDataWithBlock:(MRContextBlock)block
-{   
++ (void) saveDataWithBlock:(MRContextBlock)block {   
     [self saveDataWithOptions:MRCoreDataSaveOptionNone block:block success:NULL failure:NULL];
 }
 

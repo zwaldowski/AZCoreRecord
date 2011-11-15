@@ -19,8 +19,8 @@ typedef enum {
 
 @protocol MRErrorHandler <NSObject>
 @optional
-- (void)handleErrors:(NSError *)error;
-+ (void)handleErrors:(NSError *)error;
+- (void)handleError:(NSError *)error;
++ (void)handleError:(NSError *)error;
 @end
 
 @interface MagicalRecord : NSObject
@@ -34,7 +34,8 @@ typedef enum {
 
 + (void) cleanUp;
 
-+ (void) handleErrors:(NSError *)error;
++ (void)handleError:(NSError *)error;
++ (void)handleErrors:(NSError *)error DEPRECATED_ATTRIBUTE;
 
 + (void)setErrorHandler:(MRErrorBlock)block;
 + (MRErrorBlock)errorHandler;

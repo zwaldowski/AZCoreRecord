@@ -149,7 +149,7 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 			}
 			else if (error)
 			{
-				[MagicalRecordHelpers handleErrors:error];
+				[MagicalRecordHelpers handleError:error];
 			}
 		}
 	}

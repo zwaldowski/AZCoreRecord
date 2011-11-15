@@ -38,7 +38,7 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 {
 	NSError *error = nil;
 	NSManagedObject *inContext = [context existingObjectWithID:[self objectID] error:&error];
-	[MagicalRecordHelpers handleErrors:error];
+	[MagicalRecordHelpers handleError:error];
 	
 	return inContext;
 }
@@ -125,7 +125,7 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	NSError *error = nil;
 	
 	NSArray *results = [context executeFetchRequest:request error:&error];
-	[MagicalRecordHelpers handleErrors:error];
+	[MagicalRecordHelpers handleError:error];
 	return results;	
 }
 
@@ -313,7 +313,7 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 {
 	NSError *error = nil;
 	NSUInteger count = [context countForFetchRequest:[self createFetchRequestInContext:context] error:&error];
-	[MagicalRecordHelpers handleErrors:error];
+	[MagicalRecordHelpers handleError:error];
 	
 	return count;
 }
@@ -330,7 +330,7 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	[request setPredicate:searchFilter];
 	
 	NSUInteger count = [context countForFetchRequest:request error:&error];
-	[MagicalRecordHelpers handleErrors:error];
+	[MagicalRecordHelpers handleError:error];
 	
 	return count;
 }
@@ -712,7 +712,7 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	NSError *error = nil;
 	if (![controller performFetch:&error])
 	{
-		[MagicalRecordHelpers handleErrors:error];
+		[MagicalRecordHelpers handleError:error];
 	}
 }
 

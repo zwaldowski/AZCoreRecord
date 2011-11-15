@@ -43,7 +43,7 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 
 	if (!pathWasCreated) 
 	{
-		[MagicalRecordHelpers handleErrors:error];
+		[MagicalRecordHelpers handleError:error];
 	}
 }
 
@@ -60,7 +60,7 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 	
 	if (!store)
 	{
-		[MagicalRecordHelpers handleErrors:error];
+		[MagicalRecordHelpers handleError:error];
 	}
 	
 	[NSPersistentStore _setDefaultPersistentStore:store];		
@@ -182,7 +182,7 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 																 error:&error];
 	if (!store)
 	{
-		[MagicalRecordHelpers handleErrors:error];
+		[MagicalRecordHelpers handleError:error];
 	}
 	return store;
 }
