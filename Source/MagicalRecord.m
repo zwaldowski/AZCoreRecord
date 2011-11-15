@@ -10,16 +10,6 @@
 #import "MagicalRecord+Private.h"
 #import <objc/runtime.h>
 
-void ARLog(NSString *format, ...) {
-#ifdef MR_LOGGING
-    va_list arguments;
-    va_start(arguments, format);
-    NSString *log = [[NSString alloc] initWithFormat:format arguments:arguments];
-    NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, log);
-    va_end(arguments);
-#endif
-}
-
 static const char *kErrorHandlerTargetKey = "errorHandlerTarget_";
 static const char *kErrorHandlerIsClassKey = "errorHandlerIsClass_";
 static const char *kErrorHandlerBlockKey = "errorHandler_";

@@ -12,7 +12,11 @@
 #define DEPRECATED_ATTRIBUTE_M(...) DEPRECATED_ATTRIBUTE
 #endif
 
-extern void ARLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2);
+#ifdef MR_LOGGING
+	#define ARLog(...) NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat:__VA_ARGS__])
+#else
+	#define ARLog(...)
+#endif
 
 typedef void (^MRContextBlock)(NSManagedObjectContext *);
 typedef void (^MRBlock)(void);
