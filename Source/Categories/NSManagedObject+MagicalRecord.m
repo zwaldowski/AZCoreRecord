@@ -701,7 +701,7 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 #pragma mark - Fetched results controllers
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 
 + (void) performFetch:(NSFetchedResultsController *)controller
 {
@@ -710,51 +710,35 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
     [MagicalRecord handleError:error];
 }
 
-+ (NSFetchedResultsController *) fetchRequestAllGroupedBy:(NSString *)group withPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending 
-{
-	return [self fetchRequestAllGroupedBy:group
-							withPredicate:searchTerm
-								 sortedBy:sortTerm
-								ascending:ascending
-								inContext:[NSManagedObjectContext contextForCurrentThread]];
++ (NSFetchedResultsController *)fetchAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm groupBy:(NSString *)groupingKeyPath {
+	return [self fetchAllSortedBy:sortTerm ascending:ascending withPredicate:searchTerm groupBy:groupingKeyPath inContext:[NSManagedObjectContext contextForCurrentThread]];
 }
 
-+ (NSFetchedResultsController *) fetchAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm groupBy:(NSString *)groupingKeyPath inContext:(NSManagedObjectContext *)context
-{
-	NSFetchedResultsController *controller = [self fetchRequestAllGroupedBy:groupingKeyPath 
-															  withPredicate:searchTerm
-																   sortedBy:sortTerm 
-																  ascending:ascending
-																  inContext:context];
-	
++ (NSFetchedResultsController *)fetchAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm groupBy:(NSString *)groupingKeyPath inContext:(NSManagedObjectContext *)context {
+	NSFetchedResultsController *controller = [self fetchAllSortedBy:sortTerm ascending:ascending withPredicate:searchTerm groupBy:groupingKeyPath inContext:context];
 	[self performFetch:controller];
 	return controller;
 }
 
-+ (NSFetchedResultsController *) fetchRequest:(NSFetchRequest *)request groupedBy:(NSString *)group
-{
-	return [self fetchRequest:request 
-					groupedBy:group
-					inContext:[NSManagedObjectContext contextForCurrentThread]];
++ (NSFetchedResultsController *)fetchRequest:(NSFetchRequest *)request groupedBy:(NSString *)group {
+	return [self fetchRequest:request groupedBy:group inContext:[NSManagedObjectContext contextForCurrentThread]];
 }
 
-+ (NSFetchedResultsController *) fetchRequest:(NSFetchRequest *)request groupedBy:(NSString *)group inContext:(NSManagedObjectContext *)context
-{
++ (NSFetchedResultsController *)fetchRequest:(NSFetchRequest *)request groupedBy:(NSString *)group inContext:(NSManagedObjectContext *)context {
 	NSString *cacheName = TARGET_OS_IPHONE ? [NSString stringWithFormat:@"MagicalRecord-Cache-%@", NSStringFromClass([self class])] : nil;
 	NSFetchedResultsController *controller = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:context sectionNameKeyPath:group cacheName:cacheName];
 	[self performFetch:controller];
 	return controller;
 }
 
-+ (NSFetchedResultsController *) fetchAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm groupBy:(NSString *)groupingKeyPath
-{
-	return [self fetchAllSortedBy:sortTerm ascending:ascending withPredicate:searchTerm groupBy:groupingKeyPath  inContext:[NSManagedObjectContext contextForCurrentThread]];
++ (NSFetchedResultsController *) fetchRequestAllGroupedBy:(NSString *)group withPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending {
+	return [self fetchRequestAllGroupedBy:group withPredicate:searchTerm sortedBy:sortTerm ascending:ascending inContext:[NSManagedObjectContext contextForCurrentThread]];
+
 }
 
-+ (NSFetchedResultsController *) fetchRequestAllGroupedBy:(NSString *)group withPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context
-{
-	NSString *cacheName = TARGET_OS_IPHONE ? [NSString stringWithFormat:@"MagicalRecord-Cache-%@", NSStringFromClass(self)] : nil;
-
++ (NSFetchedResultsController *) fetchRequestAllGroupedBy:(NSString *)group withPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context {
+	NSString *cacheName = TARGET_OS_IPHONE ? [NSString stringWithFormat:@"MagicalRecord-Cache-%@", [self entityDescriptionInContext:context]] : nil;
+	
 	NSFetchRequest *request = [self requestAllSortedBy:sortTerm 
 											 ascending:ascending 
 										 withPredicate:searchTerm
