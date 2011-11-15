@@ -25,7 +25,7 @@
 	
 	NSError *error = nil;
 	id obj = [NSJSONSerialization JSONObjectWithData: jsonData options: 0 error: &error];
-	[MagicalRecordHelpers handleErrors: error];
+	[MagicalRecord handleError:error];
 	
 	return obj;
 }

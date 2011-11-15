@@ -11,11 +11,18 @@
 
 @implementation NSPersisentStoreHelperTests
 
+- (NSString *) applicationStorageDirectory
+{
+	NSString *appSupportDirectory = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) lastObject];
+	appSupportDirectory = [[appSupportDirectory stringByAppendingPathComponent:@"iOS App Unit Tests"] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+	return appSupportDirectory;
+}
+
 #if TARGET_OS_IPHONE
 
 - (void) testDefaultStoreFolderForiOSDevicesIsTheLibraryFolder
 {
-	NSString *applicationLibraryDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+	NSString *applicationLibraryDirectory = [self applicationStorageDirectory];
 	NSString *defaultStoreName = kMagicalRecordDefaultStoreFileName;
 	
 	NSURL *expectedStoreUrl = [NSURL fileURLWithPath:[applicationLibraryDirectory stringByAppendingPathComponent:defaultStoreName]];
@@ -29,7 +36,7 @@
 - (void) testCanFindAURLInTheLibraryForiOSForASpecifiedStoreName
 {
 	NSString *storeFileName = @"NotTheDefaultStoreName.storefile";
-	NSString *applicationLibraryDirectory = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
+	NSString *applicationLibraryDirectory = [self applicationStorageDirectory];
 	NSString *testStorePath = [applicationLibraryDirectory stringByAppendingPathComponent:storeFileName];
 	
 	BOOL fileWasCreated = [[NSFileManager defaultManager] createFileAtPath:testStorePath contents:[storeFileName dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
