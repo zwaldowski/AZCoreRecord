@@ -63,7 +63,7 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 		[MagicalRecordHelpers handleErrors:error];
 	}
 	
-	[NSPersistentStore setDefaultPersistentStore:store];		
+	[NSPersistentStore _setDefaultPersistentStore:store];		
 }
 
 - (void)setupSqliteStoreNamed:(NSString *)storeFilename withOptions:(NSDictionary *)options
@@ -72,7 +72,7 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 	[self setupSqliteStoreAtURL:storeURL withOptions:options];
 }
 
-+ (NSPersistentStoreCoordinator *)coordinatorWithPersitentStore:(NSPersistentStore *)persistentStore;
++ (NSPersistentStoreCoordinator *)coordinatorWithPersistentStore:(NSPersistentStore *)persistentStore
 {
 	NSManagedObjectModel *model = [NSManagedObjectModel defaultManagedObjectModel];
 	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
