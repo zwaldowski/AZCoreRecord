@@ -10,6 +10,7 @@
 #import <objc/runtime.h>
 
 static NSManagedObjectContext *defaultManagedObjectContext_ = nil;
+static NSManagedObjectContextConcurrencyType concurrencyType_ = NSConfinementConcurrencyType;
 static NSString const *kMagicalRecordManagedObjectContextKey = @"MagicalRecordManagedObjectContexts";
 static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 
@@ -33,7 +34,7 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-		defaultManagedObjectContext_ = [NSManagedObjectContext new];
+		defaultManagedObjectContext_ = [[NSManagedObjectContext alloc] initWithConcurrencyType: concurrencyType_];
 		[self _resetDefaultStoreCoordinator];
 	});
 	return defaultManagedObjectContext_;
@@ -53,6 +54,12 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 	}
 	return threadContext;
     
+}
+
++ (void)setDefaultContextConcurrencyType:(NSManagedObjectContextConcurrencyType)type
+{
+	NSAssert(!defaultManagedObjectContext_, @"%s must be run before the default managed object context is created");
+	concurrencyType_ = type;
 }
 
 + (void) resetDefaultContext

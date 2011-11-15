@@ -13,6 +13,7 @@
 
 + (void)resetDefaultContext;
 + (void)resetContextForCurrentThread;
++ (void)setDefaultContextConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType;
 
 - (void) observeContext:(NSManagedObjectContext *)otherContext;
 - (void) stopObservingContext:(NSManagedObjectContext *)otherContext;
