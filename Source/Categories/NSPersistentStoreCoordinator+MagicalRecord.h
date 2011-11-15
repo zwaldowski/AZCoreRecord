@@ -8,7 +8,6 @@
 @interface NSPersistentStoreCoordinator (MagicalRecord)
 
 + (NSPersistentStoreCoordinator *)defaultStoreCoordinator;
-+ (void)setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;
 
 + (NSPersistentStoreCoordinator *)coordinatorWithInMemoryStore;
 

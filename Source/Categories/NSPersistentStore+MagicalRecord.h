@@ -19,12 +19,6 @@ extern NSString *const kMagicalRecordDefaultStoreFileName;
  */
 + (NSPersistentStore *)defaultPersistentStore;
 
-/** Sets the default persistent store.
- 
- @param store A persistent store.
- */
-+ (void)setDefaultPersistentStore:(NSPersistentStore *)store;
-
 /** Creates and returns a URL for a given store name.
  
  @param storeFileName A file name, like @"Nyan.sqlite"

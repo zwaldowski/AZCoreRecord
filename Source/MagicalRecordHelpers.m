@@ -21,8 +21,8 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
     objc_removeAssociatedObjects(self);
     [NSManagedObjectContext _setDefaultContext:nil];
 	[NSManagedObjectModel _setDefaultManagedObjectModel:nil];
-	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:nil];
-	[NSPersistentStore setDefaultPersistentStore:nil];
+	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:nil];
+	[NSPersistentStore _setDefaultPersistentStore:nil];
 }
 
 + (NSString *) currentStack
@@ -117,19 +117,19 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 + (void) setupCoreDataStackWithStoreNamed:(NSString *)storeName
 {
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreNamed:storeName];
-	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
+	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:coordinator];
 }
 
 + (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName
 {
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreNamed:storeName];
-	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
+	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:coordinator];
 }
 
 + (void) setupCoreDataStackWithInMemoryStore
 {
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
-	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
+	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:coordinator];
 }
 
 @end

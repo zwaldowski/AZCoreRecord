@@ -13,3 +13,11 @@
 @interface NSManagedObjectModel(MagicalRecordPrivate)
 + (void)_setDefaultManagedObjectModel:(NSManagedObjectModel *)newModel;
 @end
+
+@interface NSPersistentStore(MagicalRecordPrivate)
++ (void)_setDefaultPersistentStore:(NSPersistentStore *)store;
+@end
+
+@interface NSPersistentStoreCoordinator(MagicalRecordPrivate)
++ (void)_setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;
+@end
