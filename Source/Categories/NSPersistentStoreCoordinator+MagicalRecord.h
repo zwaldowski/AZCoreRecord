@@ -9,14 +9,15 @@
 
 + (NSPersistentStoreCoordinator *)defaultStoreCoordinator;
 
++ (NSPersistentStoreCoordinator *)coordinator;
 + (NSPersistentStoreCoordinator *)coordinatorWithInMemoryStore;
-
-+ (NSPersistentStoreCoordinator *)newPersistentStoreCoordinator;
-
 + (NSPersistentStoreCoordinator *)coordinatorWithSqliteStoreNamed:(NSString *)storeFileName;
 + (NSPersistentStoreCoordinator *)coordinatorWithAutoMigratingSqliteStoreNamed:(NSString *) storeFileName;
-+ (NSPersistentStoreCoordinator *)coordinatorWithPersitentStore:(NSPersistentStore *)persistentStore;
++ (NSPersistentStoreCoordinator *)coordinatorWithPersistentStore:(NSPersistentStore *)persistentStore;
 
 - (NSPersistentStore *)addInMemoryStore;
+
++ (NSPersistentStoreCoordinator *)newPersistentStoreCoordinator DEPRECATED_ATTRIBUTE;
+
 
 @end

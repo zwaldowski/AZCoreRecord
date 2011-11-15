@@ -62,7 +62,7 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 	[NSPersistentStore _setDefaultPersistentStore:store];		
 }
 
-+ (NSPersistentStoreCoordinator *)coordinatorWithPersitentStore:(NSPersistentStore *)persistentStore;
++ (NSPersistentStoreCoordinator *)coordinatorWithPersistentStore:(NSPersistentStore *)persistentStore
 {
 	NSManagedObjectModel *model = [NSManagedObjectModel defaultManagedObjectModel];
 	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
@@ -137,9 +137,14 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 	return store;
 }
 
-+ (NSPersistentStoreCoordinator *)newPersistentStoreCoordinator
++ (NSPersistentStoreCoordinator *)coordinator
 {
 	return [self coordinatorWithSqliteStoreNamed:kMagicalRecordDefaultStoreFileName];
+}
+
++ (NSPersistentStoreCoordinator *)newPersistentStoreCoordinator
+{
+	return [self coordinator];
 }
 
 @end
