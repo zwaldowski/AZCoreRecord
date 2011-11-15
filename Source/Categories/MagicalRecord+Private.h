@@ -25,3 +25,5 @@
 @interface MagicalRecord(MagicalRecordPrivate)
 + (NSString *)currentStack;
 @end
+
+extern NSString *const kMagicalRecordDefaultStoreFileName;

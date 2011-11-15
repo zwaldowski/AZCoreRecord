@@ -7,6 +7,7 @@
 //
 
 #import "NSPersisentStoreHelperTests.h"
+#import "MagicalRecord+Private.h"
 
 @implementation NSPersisentStoreHelperTests
 

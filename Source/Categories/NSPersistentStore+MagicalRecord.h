@@ -6,8 +6,6 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-extern NSString *const kMagicalRecordDefaultStoreFileName;
-
 /** MagicalRecord for NSPersistentStore.  Allows for
  a default persistent store and automatic store creation.
  */
