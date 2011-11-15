@@ -9,7 +9,7 @@
 @interface NSManagedObjectContext (MagicalRecord)
 
 + (NSManagedObjectContext *)defaultContext;
-+ (void)setDefaultConcurrencyType:(NSManagedObjectContextConcurrencyType)type;
++ (void)setDefaultConcurrencyType:(NSManagedObjectContextConcurrencyType)type __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_5_0);
 + (void)resetDefaultContext;
 
 + (NSManagedObjectContext *)contextForCurrentThread;

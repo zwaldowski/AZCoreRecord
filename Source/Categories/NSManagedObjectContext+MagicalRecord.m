@@ -26,7 +26,11 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 + (NSManagedObjectContext *)defaultContext
 {
     if (!defaultManagedObjectContext_) {
-        defaultManagedObjectContext_ = [[NSManagedObjectContext alloc] initWithConcurrencyType:concurrencyType_];
+        if ([NSManagedObjectContext instancesRespondToSelector:@selector(initWithConcurrencyType:)]) {
+            defaultManagedObjectContext_ = [[NSManagedObjectContext alloc] initWithConcurrencyType:concurrencyType_];
+        } else {
+            defaultManagedObjectContext_ = [NSManagedObjectContext new];
+        }
 		defaultManagedObjectContext_.persistentStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
     }
 	return defaultManagedObjectContext_;
