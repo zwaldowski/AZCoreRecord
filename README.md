@@ -18,19 +18,11 @@ Magical Record for Core Data was inspired by the ease of Ruby on Rails’ Active
 2. Add *CoreData+MagicalRecord.h* file to your `.pch` file or your `AppDelegate` file.
 3. Start writing code! There is no step 3!
 
-# ARC Support
-
-MagicalRecord will not directly support ARC at this time. However, MagicalRecord will work with ARC enabled, by adding the *-fno-objc-arc* flag to the following files:
-
-* *NSManagedObjectContext+MagicalRecord.m*
-* *NSManagedObject+MagicalDataImport.m*
-* *MagicalRecordHelpers.m*
-
 # Usage
 
 ## Setting up the Core Data Stack
 
-To get started, first, import the header file *CoreData+MagicalRecord.h* in your project’s `.pch` file. This will allow a global include of all the required headers. If you don’t want auto migration, an in-memory store, or a special name for your stack, simply start working! Otherwise, somewhere in your app delegate, in either the `-applicationDidFinishLaunching:withOptions:` method, or `-awakeFromNib`, use **one** of the following setup calls with the MagicalRecordHelpers class:
+To get started, first, import the header file *CoreData+MagicalRecord.h* in your project’s `.pch` file. This will allow a global include of all the required headers. If you don’t want auto migration, an in-memory store, or a special name for your stack, simply start working! Otherwise, somewhere in your app delegate, in either the `-applicationDidFinishLaunching:withOptions:` method, or `-awakeFromNib`, use **one** of the following setup calls with the MagicalRecord metaclass:
 
 	+ (void) setupAutoMigratingDefaultCoreDataStack;
 	+ (void) setupCoreDataStackWithInMemoryStore;
@@ -41,7 +33,7 @@ Each call instantiates one of each piece of the Core Data stack, and provides ge
 
 And, before your app exits, you can use the clean up method:
 
-	[MagicalRecordHelpers cleanUp];
+	[MagicalRecord cleanUp];
 
 ### Default Managed Object Context 
 

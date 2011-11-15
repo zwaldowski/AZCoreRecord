@@ -18,8 +18,7 @@
 
 - (void) tearDown
 {
-	[MagicalRecordHelpers cleanUp];
-	//delete temp store
+	[MagicalRecord _cleanUp];
 }
 
 - (void) assertDefaultStack
@@ -44,7 +43,7 @@
 
 - (void) testCreateInMemoryCoreDataStack
 {
-	[MagicalRecordHelpers setupCoreDataStackWithInMemoryStore];
+	[MagicalRecord setupCoreDataStackWithInMemoryStore];
 	
 	[self assertDefaultStack];
 	
@@ -61,7 +60,7 @@
 		NSURL *testStoreURL = [NSPersistentStore URLForStoreName:testStoreName];
 		[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 		
-		[MagicalRecordHelpers setupCoreDataStackWithStoreNamed:testStoreName];
+		[MagicalRecord setupCoreDataStackWithStoreNamed:testStoreName];
 		
 		[self assertDefaultStack];
 		
@@ -73,9 +72,9 @@
 
 - (void) testCanSetAUserSpecifiedErrorHandler
 {
-	[MagicalRecordHelpers setErrorHandlerTarget:self];
+	[MagicalRecord setErrorHandlerTarget:self];
 	
-	assertThat([MagicalRecordHelpers errorHandlerTarget], is(equalTo(self)));
+	assertThat([MagicalRecord errorHandlerTarget], is(equalTo(self)));
 }
 
 - (void) handleErrors:(NSError *)error
@@ -89,19 +88,19 @@
 - (void) testCanSetAUserSpecifiedErrorHandlerBlock
 {
 	MRErrorBlock handler = ^(NSError *error){ };
-	[MagicalRecordHelpers setErrorHandler: handler];
+	[MagicalRecord setErrorHandler: handler];
 	
-	assertThat([MagicalRecordHelpers errorHandler], is(notNilValue()));
+	assertThat([MagicalRecord errorHandler], is(notNilValue()));
 }
 
 - (void) testUserSpecifiedErrorHandlerIsTriggeredOnError
 {
 	errorHandlerWasCalled_ = NO;
-	[MagicalRecordHelpers setErrorHandlerTarget:self];
-	[MagicalRecordHelpers setErrorHandler:NULL];
+	[MagicalRecord setErrorHandlerTarget:self];
+	[MagicalRecord setErrorHandler:NULL];
 	
 	NSError *testError = [NSError errorWithDomain:@"MRTests" code:1000 userInfo:nil];
-	[MagicalRecordHelpers handleError:testError];
+	[MagicalRecord handleError:testError];
 	
 	assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
 }
@@ -109,13 +108,13 @@
 - (void) testUserSpecifiedErrorHandlerBlockIsTriggeredOnError
 {
 	errorHandlerWasCalled_ = NO;
-	[MagicalRecordHelpers setErrorHandler: ^(NSError *error) {
+	[MagicalRecord setErrorHandler: ^(NSError *error) {
 		[self handleErrors: error];
 	}];
-	[MagicalRecordHelpers setErrorHandlerTarget:nil];
+	[MagicalRecord setErrorHandlerTarget:nil];
 	
 	NSError *testError = [NSError errorWithDomain:@"MRTests" code:1000 userInfo:nil];
-	[MagicalRecordHelpers handleError:testError];
+	[MagicalRecord handleError:testError];
 	
 	assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
 }
@@ -126,9 +125,9 @@
 	id mockErrorHandler = [OCMockObject mockForProtocol:@protocol(MRErrorHandler)];
 	[[mockErrorHandler expect] handleErrors:testError];
 	
-	[MagicalRecordHelpers setErrorHandlerTarget:mockErrorHandler];
-	[MagicalRecordHelpers setErrorHandler:NULL];
-	[MagicalRecordHelpers handleError:testError];
+	[MagicalRecord setErrorHandlerTarget:mockErrorHandler];
+	[MagicalRecord setErrorHandler:NULL];
+	[MagicalRecord handleError:testError];
 	
 	[mockErrorHandler verify];
 }

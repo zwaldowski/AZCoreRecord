@@ -39,30 +39,16 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 	NSURL *pathToStore = [urlForStore URLByDeletingLastPathComponent];
 	
 	NSError *error = nil;
-	BOOL pathWasCreated = [fileManager createDirectoryAtPath:[pathToStore path] withIntermediateDirectories:YES attributes:nil error:&error];
-
-	if (!pathWasCreated) 
-	{
-		[MagicalRecordHelpers handleError:error];
-	}
+	[fileManager createDirectoryAtPath:[pathToStore path] withIntermediateDirectories:YES attributes:nil error:&error];
+    [MagicalRecord handleError:error];
 }
 
 - (void)setupSqliteStoreAtURL:(NSURL *)storeURL withOptions:(NSDictionary *)options
 {
 	[self _createPathToStoreFileIfNeccessary:storeURL];
-	
 	NSError *error = nil;
-	NSPersistentStore *store = [self addPersistentStoreWithType:NSSQLiteStoreType
-												  configuration:nil
-															URL:storeURL
-														options:options
-														  error:&error];
-	
-	if (!store)
-	{
-		[MagicalRecordHelpers handleError:error];
-	}
-	
+	NSPersistentStore *store = [self addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:options error:&error];
+	[MagicalRecord handleError:error];
 	[NSPersistentStore _setDefaultPersistentStore:store];		
 }
 
@@ -175,15 +161,8 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 - (NSPersistentStore *)addInMemoryStore
 {
 	NSError *error = nil;
-	NSPersistentStore *store = [self addPersistentStoreWithType:NSInMemoryStoreType
-														 configuration:nil 
-																   URL:nil
-															   options:nil
-																 error:&error];
-	if (!store)
-	{
-		[MagicalRecordHelpers handleError:error];
-	}
+	NSPersistentStore *store = [self addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:&error];
+    [MagicalRecord handleError:error];
 	return store;
 }
 

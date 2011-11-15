@@ -17,7 +17,7 @@
 - (void) setUp
 {
 	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
-	[MagicalRecordHelpers setupCoreDataStackWithInMemoryStore];
+	[MagicalRecord setupCoreDataStackWithInMemoryStore];
 	
 	if ([self respondsToSelector:@selector(setupTestData)])
 	{
@@ -29,7 +29,7 @@
 
 - (void) tearDown
 {
-	[MagicalRecordHelpers cleanUp];
+	[MagicalRecord _cleanUp];
 }
 
 - (Class) testEntityClass;

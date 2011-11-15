@@ -22,7 +22,7 @@
 - (void) setUpClass
 {
 	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
-	[MagicalRecordHelpers setupCoreDataStackWithInMemoryStore];
+	[MagicalRecord setupCoreDataStackWithInMemoryStore];
 
 	id singleEntity = [self dataFromJSONFixture];
 	
@@ -31,7 +31,7 @@
 
 - (void) tearDownClass
 {
-	[MagicalRecordHelpers cleanUp];
+	[MagicalRecord _cleanUp];
 }
 
 - (void) testImportASingleEntity

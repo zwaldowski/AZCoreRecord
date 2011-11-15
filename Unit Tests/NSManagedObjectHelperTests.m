@@ -19,12 +19,12 @@
 
 - (void) setUp
 {
-	[MagicalRecordHelpers setupCoreDataStackWithInMemoryStore];
+	[MagicalRecord setupCoreDataStackWithInMemoryStore];
 }
 
 - (void) tearDown
 {
-	[MagicalRecordHelpers cleanUp];
+	[MagicalRecord _cleanUp];
 }
 
 -(BOOL)shouldRunOnMainThread
