@@ -9,6 +9,59 @@
 #import "CoreData+MagicalRecord.h"
 #import <objc/message.h>
 
+static inline NSDate *MRDateAdjustForDST(NSDate *date) {
+	NSTimeInterval dstOffset = [[NSTimeZone localTimeZone] daylightSavingTimeOffsetForDate:date];
+	NSDate *actualDate = [date dateByAddingTimeInterval:dstOffset];
+	return actualDate;
+}
+
+static inline NSDate *MRDateFromString(NSString *value, NSString *format) {
+	static dispatch_once_t onceToken;
+	static NSDateFormatter *helperFormatter;
+	dispatch_once(&onceToken, ^{
+		helperFormatter = [NSDateFormatter new];
+		[helperFormatter setTimeZone:[NSTimeZone localTimeZone]];
+		[helperFormatter setLocale:[NSLocale currentLocale]];
+	});
+	[helperFormatter setDateFormat:format];
+	return [helperFormatter dateFromString:value];
+}
+
+static inline id MRColorFromString(NSString *serializedColor) {
+	NSScanner *colorScanner = [NSScanner scannerWithString:serializedColor];
+	NSString *colorType;
+	[colorScanner scanUpToString:@"(" intoString:&colorType];
+	
+	NSInteger *componentValues = calloc(4, sizeof(NSInteger));
+	if ([colorType hasPrefix:@"rgba"])
+	{
+		NSCharacterSet *rgbaCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"(,)"];
+		
+		NSInteger *componentValue = componentValues;
+		while (![colorScanner isAtEnd]) 
+		{
+			[colorScanner scanCharactersFromSet:rgbaCharacterSet intoString:nil];
+			[colorScanner scanInteger:componentValue];
+			componentValue++;
+		}
+	}
+	
+	id color = nil;
+#if TARGET_OS_IPHONE
+	color = [UIColor colorWithRed:(componentValues[0] / 255.)
+                            green:(componentValues[1] / 255.)
+                             blue:(componentValues[2] / 255.)
+                            alpha:componentValues[3]];
+#else
+	color = [NSColor colorWithDeviceRed:(componentValues[0] / 255.)
+                                  green:(componentValues[1] / 255.)
+                                   blue:(componentValues[2] / 255.)
+                                  alpha:componentValues[3]];
+#endif
+	free(componentValues);
+	return color;
+}
+
 NSString * const kMagicalRecordImportCustomDateFormat = @"dateFormat";
 NSString * const kMagicalRecordImportDefaultDateFormat = @"yyyy-MM-dd'T'HH:mm:ss'Z'";
 
@@ -288,7 +341,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
 {
 	__block NSArray *objectIDs = nil;
 	
-	[MRCoreDataAction saveDataWithBlock:^(NSManagedObjectContext *localContext) {
+	[MagicalRecord saveDataWithBlock:^(NSManagedObjectContext *localContext) {
 		NSMutableArray *objects = [NSMutableArray array];
 		
 		for (NSDictionary *objectData in listOfObjectData) {
@@ -309,7 +362,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
 + (NSArray *)updateFromArray:(NSArray *)listOfObjectData inContext:(NSManagedObjectContext *)context {
 	__block NSArray *objectIDs = nil;
 	
-	[MRCoreDataAction saveDataWithBlock:^(NSManagedObjectContext *localContext) {
+	[MagicalRecord saveDataWithBlock:^(NSManagedObjectContext *localContext) {
 		NSMutableArray *objects = [NSMutableArray array];
 		
 		for (NSDictionary *objectData in listOfObjectData) {

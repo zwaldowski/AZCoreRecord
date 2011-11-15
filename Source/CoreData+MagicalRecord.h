@@ -7,8 +7,7 @@
 
 #import <CoreData/CoreData.h>
 
-#import "MagicalRecordHelpers.h"
-#import "MRCoreDataAction.h"
+#import "MagicalRecord.h"
 
 #import "NSManagedObject+MagicalRecord.h"
 #import "NSManagedObjectContext+MagicalRecord.h"

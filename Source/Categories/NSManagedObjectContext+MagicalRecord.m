@@ -122,7 +122,7 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 	return [self saveWithErrorHandler:nil];
 }
 
-- (BOOL) saveWithErrorHandler:(CoreDataError)errorCallback
+- (BOOL) saveWithErrorHandler:(MRErrorBlock)errorCallback
 {
 	NSError *error = nil;
 	BOOL saved = NO;

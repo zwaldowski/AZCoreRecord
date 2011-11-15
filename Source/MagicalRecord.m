@@ -43,7 +43,7 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 		return;
 	
 	id target = [self errorHandlerTarget];
-	CoreDataError block = [self errorHandler];
+	MRErrorBlock block = [self errorHandler];
 	
 	if (block) {
 		block(error);
@@ -83,12 +83,12 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 	ARLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
 }
 
-+ (void)setErrorHandler:(CoreDataError)block
++ (void)setErrorHandler:(MRErrorBlock)block
 {
 	objc_setAssociatedObject(self, kErrorHandlerBlockKey, block, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-+ (CoreDataError)errorHandler
++ (MRErrorBlock)errorHandler
 {
 	return objc_getAssociatedObject(self, kErrorHandlerBlockKey);
 }
@@ -144,60 +144,80 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:coordinator];
 }
 
-@end
+#pragma mark - Core Data actions
 
-NSDate * MRDateAdjustForDST(NSDate *date)
-{
-	NSTimeInterval dstOffset = [[NSTimeZone localTimeZone] daylightSavingTimeOffsetForDate:date];
-	NSDate *actualDate = [date dateByAddingTimeInterval:dstOffset];
-	return actualDate;
++ (void) saveDataWithBlock:(MRContextBlock)block
+{   
+    [self saveDataWithOptions:MRCoreDataSaveOptionNone block:block success:NULL failure:NULL];
 }
 
-NSDate * MRDateFromString(NSString *value, NSString *format)
++ (void) saveDataWithBlock:(MRContextBlock)block errorHandler:(MRErrorBlock)errorHandler
 {
-	static dispatch_once_t onceToken;
-	static NSDateFormatter *helperFormatter;
-	dispatch_once(&onceToken, ^{
-		helperFormatter = [NSDateFormatter new];
-		[helperFormatter setTimeZone:[NSTimeZone localTimeZone]];
-		[helperFormatter setLocale:[NSLocale currentLocale]];
-	});
-	[helperFormatter setDateFormat:format];
-	return [helperFormatter dateFromString:value];
+	[self saveDataWithOptions:MRCoreDataSaveOptionNone block:block success:NULL failure:errorHandler];
 }
 
-id MRColorFromString(NSString *serializedColor)
-{
-	NSScanner *colorScanner = [NSScanner scannerWithString:serializedColor];
-	NSString *colorType;
-	[colorScanner scanUpToString:@"(" intoString:&colorType];
++ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block {
+    [self saveDataWithOptions:MRCoreDataSaveOptionInBackground block:block success:NULL failure:NULL];
+}
+
++ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block completion:(MRBlock)callback {
+    [self saveDataWithOptions:MRCoreDataSaveOptionInBackground block:block success:callback failure:NULL];
+}
+
++ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block completion:(MRBlock)callback errorHandler:(MRErrorBlock)errorHandler {
+    [self saveDataWithOptions:MRCoreDataSaveOptionInBackground block:block success:callback failure:errorHandler];
+}
+
++ (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block {
+    [self saveDataWithOptions:options block:block success:NULL failure:NULL];
+}
+
++ (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block success:(MRBlock)callback {
+    [self saveDataWithOptions:options block:block success:callback failure:NULL];
+}
+
++ (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block success:(MRBlock)callback failure:(MRErrorBlock)errorCallback {
+	BOOL wantsBackground = (options & MRCoreDataSaveOptionInBackground);
+	BOOL wantsNewContext = (options & MRCoreDataSaveOptionWithNewContext) || ![NSThread isMainThread];
 	
-	NSInteger *componentValues = calloc(4, sizeof(NSInteger));
-	if ([colorType hasPrefix:@"rgba"])
+	dispatch_queue_t queue = nil;
+	if (wantsBackground)
 	{
-		NSCharacterSet *rgbaCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"(,)"];
+		static dispatch_once_t once;
+		static dispatch_queue_t MRBackgroundSaveQueue;
+		dispatch_once(&once, ^{
+			MRBackgroundSaveQueue = dispatch_queue_create("com.magicalpanda.magicalrecord.backgroundsaves", 0);
+		});
 		
-		NSInteger *componentValue = componentValues;
-		while (![colorScanner isAtEnd]) 
-		{
-			[colorScanner scanCharactersFromSet:rgbaCharacterSet intoString:nil];
-			[colorScanner scanInteger:componentValue];
-			componentValue++;
-		}
+		queue = MRBackgroundSaveQueue;
+	}
+	else
+	{
+		queue = dispatch_get_current_queue();
 	}
 	
-	id color = nil;
-#if TARGET_OS_IPHONE
-	color = [UIColor colorWithRed:(componentValues[0] / 255.)
-									 green:(componentValues[1] / 255.)
-									  blue:(componentValues[2] / 255.)
-									 alpha:componentValues[3]];
-#else
-	color = [NSColor colorWithDeviceRed:(componentValues[0] / 255.)
-										   green:(componentValues[1] / 255.)
-											blue:(componentValues[2] / 255.)
-										   alpha:componentValues[3]];
-#endif
-	free(componentValues);
-	return color;
+	dispatch_async(queue, ^{
+		NSManagedObjectContext *mainContext  = [NSManagedObjectContext defaultContext];
+		NSManagedObjectContext *localContext = mainContext;
+		
+		if (!wantsBackground || wantsNewContext) {
+			localContext = [NSManagedObjectContext contextThatNotifiesDefaultContextOnMainThread];
+			
+			[mainContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
+			[localContext setMergePolicy:NSOverwriteMergePolicy];
+		}
+		
+		block(localContext);
+		
+		if (localContext.hasChanges)
+			[localContext saveWithErrorHandler:errorCallback];
+		
+		localContext.notifiesMainContextOnSave = NO;
+		[mainContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+		
+		if (callback)
+			dispatch_async(dispatch_get_main_queue(), callback);
+	});
 }
+
+@end

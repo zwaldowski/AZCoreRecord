@@ -192,7 +192,7 @@ The Magical Record library is trying to make these steps more reusable with the 
 All the boilerplate operations that need to be done when saving are done in these methods. To use this method from the *main thread*:
 
 	Person *person = ...;
-	[MRCoreDataAction saveDataInBackgroundWithBlock:^(NSManagedObjectContext *localContext){
+	[MagicalRecord saveDataInBackgroundWithBlock:^(NSManagedObjectContext *localContext){
 		Person *localPerson = [person inContext:localContext];
 
 		localPerson.firstName = @"Chuck";
@@ -201,7 +201,7 @@ All the boilerplate operations that need to be done when saving are done in thes
 	
 In this method, the `CoreDataBlock` provides you with the proper context in which to perform your operations, you don’t need to worry about setting up the context so that it tells the default context that it’s done, and should update because changes were performed on another thread.
 
-All `MRCoreDataAction`s have a dedicated GCD queue on which they operate. This means that throughout your app, you only really have 2 queues (somewhat like threads) performing Core Data actions at any one time: one on the main queue, and another on this dedicated GCD queue.
+All `MagicalRecord`s have a dedicated GCD queue on which they operate. This means that throughout your app, you only really have 2 queues (somewhat like threads) performing Core Data actions at any one time: one on the main queue, and another on this dedicated GCD queue.
 
 # Data Import
 

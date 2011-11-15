@@ -21,3 +21,7 @@
 @interface NSPersistentStoreCoordinator(MagicalRecordPrivate)
 + (void)_setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;
 @end
+
+@interface MagicalRecord(MagicalRecordPrivate)
++ (NSString *)currentStack;
+@end

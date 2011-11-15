@@ -88,7 +88,7 @@
 
 - (void) testCanSetAUserSpecifiedErrorHandlerBlock
 {
-	CoreDataError handler = ^(NSError *error) { };
+	MRErrorBlock handler = ^(NSError *error){ };
 	[MagicalRecordHelpers setErrorHandler: handler];
 	
 	assertThat([MagicalRecordHelpers errorHandler], is(notNilValue()));
