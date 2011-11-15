@@ -7,7 +7,6 @@
 //
 
 #import "FixtureHelpers.h"
-#import "JSONKit.h"
 
 @implementation FixtureHelpers
 
@@ -23,7 +22,12 @@
 {
 	NSString *resource = [[NSBundle mainBundle] pathForResource:fixtureName ofType:@"json"];
 	NSData *jsonData = [NSData dataWithContentsOfFile:resource];
-	return [jsonData objectFromJSONData];
+	
+	NSError *error = nil;
+	id obj = [NSJSONSerialization JSONObjectWithData: jsonData options: 0 error: &error];
+	[MagicalRecordHelpers handleErrors: error];
+	
+	return obj;
 }
 
 @end
