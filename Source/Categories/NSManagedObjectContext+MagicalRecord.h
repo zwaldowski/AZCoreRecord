@@ -9,9 +9,10 @@
 @interface NSManagedObjectContext (MagicalRecord)
 
 + (NSManagedObjectContext *)defaultContext;
-+ (NSManagedObjectContext *)contextForCurrentThread;
-
++ (void)setDefaultConcurrencyType:(NSManagedObjectContextConcurrencyType)type;
 + (void)resetDefaultContext;
+
++ (NSManagedObjectContext *)contextForCurrentThread;
 + (void)resetContextForCurrentThread;
 
 - (void) observeContext:(NSManagedObjectContext *)otherContext;
