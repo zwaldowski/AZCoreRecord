@@ -102,7 +102,6 @@
 		C7BD889313DBFA6200274567 /* DifferentClassNameMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = C7BD888713DBFA6200274567 /* DifferentClassNameMapping.m */; };
 		C7BD889413DBFA6200274567 /* SingleEntityWithNoRelationships.m in Sources */ = {isa = PBXBuildFile; fileRef = C7BD888913DBFA6200274567 /* SingleEntityWithNoRelationships.m */; };
 		C7BD889513DBFA6200274567 /* SingleRelatedEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = C7BD888B13DBFA6200274567 /* SingleRelatedEntity.m */; };
-		C7C9A37313F43D93002C5B0C /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = C7C9A37213F43D93002C5B0C /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		C7C9A37613F44A3C002C5B0C /* ImportSingleEntityRelatedToMappedEntityUsingDefaultsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C7C9A37513F44A3C002C5B0C /* ImportSingleEntityRelatedToMappedEntityUsingDefaultsTests.m */; };
 		C7C9A37D13F44B08002C5B0C /* SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey.json in Resources */ = {isa = PBXBuildFile; fileRef = C7C9A37C13F44B08002C5B0C /* SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey.json */; };
 		C7C9A37F13F44B29002C5B0C /* SingleEntityRelatedToMappedEntityUsingDefaults.json in Resources */ = {isa = PBXBuildFile; fileRef = C7C9A37E13F44B29002C5B0C /* SingleEntityRelatedToMappedEntityUsingDefaults.json */; };
@@ -292,8 +291,6 @@
 		C7BD888913DBFA6200274567 /* SingleEntityWithNoRelationships.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SingleEntityWithNoRelationships.m; sourceTree = "<group>"; };
 		C7BD888A13DBFA6200274567 /* SingleRelatedEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingleRelatedEntity.h; sourceTree = "<group>"; };
 		C7BD888B13DBFA6200274567 /* SingleRelatedEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SingleRelatedEntity.m; sourceTree = "<group>"; };
-		C7C9A37113F43D93002C5B0C /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSONKit.h; path = "Third Party/JSONKit.h"; sourceTree = "<group>"; };
-		C7C9A37213F43D93002C5B0C /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSONKit.m; path = "Third Party/JSONKit.m"; sourceTree = "<group>"; };
 		C7C9A37513F44A3C002C5B0C /* ImportSingleEntityRelatedToMappedEntityUsingDefaultsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = ImportSingleEntityRelatedToMappedEntityUsingDefaultsTests.m; path = "Unit Tests/ImportSingleEntityRelatedToMappedEntityUsingDefaultsTests.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		C7C9A37C13F44B08002C5B0C /* SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey.json; path = "Unit Tests/Fixtures/SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey.json"; sourceTree = "<group>"; };
 		C7C9A37E13F44B29002C5B0C /* SingleEntityRelatedToMappedEntityUsingDefaults.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = SingleEntityRelatedToMappedEntityUsingDefaults.json; path = "Unit Tests/Fixtures/SingleEntityRelatedToMappedEntityUsingDefaults.json"; sourceTree = "<group>"; };
@@ -342,7 +339,6 @@
 		C721C7A013D0A3750097AB6F = {
 			isa = PBXGroup;
 			children = (
-				C7C9A37013F43D3E002C5B0C /* Third Party */,
 				C721C7E413D0C3A00097AB6F /* Mac App Unit Tests */,
 				C721C80213D0C3CD0097AB6F /* iOS App Unit Tests */,
 				C721C7B313D0A3AF0097AB6F /* Frameworks */,
@@ -709,15 +705,6 @@
 			path = "Unit Tests/Fixtures/iOS/TestEntities";
 			sourceTree = "<group>";
 		};
-		C7C9A37013F43D3E002C5B0C /* Third Party */ = {
-			isa = PBXGroup;
-			children = (
-				C7C9A37113F43D93002C5B0C /* JSONKit.h */,
-				C7C9A37213F43D93002C5B0C /* JSONKit.m */,
-			);
-			name = "Third Party";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -920,7 +907,6 @@
 				C763783213E10BEC0009A6CA /* GHUnitIOSTestMain.m in Sources */,
 				C784349013F0FEE000463CEE /* _MappedEntity.m in Sources */,
 				C784349213F0FEE000463CEE /* MappedEntity.m in Sources */,
-				C7C9A37313F43D93002C5B0C /* JSONKit.m in Sources */,
 				C7C9A37613F44A3C002C5B0C /* ImportSingleEntityRelatedToMappedEntityUsingDefaultsTests.m in Sources */,
 				C7C9A38413F45240002C5B0C /* _SingleEntityRelatedToMappedEntityUsingDefaults.m in Sources */,
 				C7C9A38513F45240002C5B0C /* _SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey.m in Sources */,
