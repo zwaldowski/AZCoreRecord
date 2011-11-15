@@ -20,7 +20,7 @@
 - (void) observeContextOnMainThread:(NSManagedObjectContext *)otherContext;
 
 - (BOOL) save;
-- (BOOL) saveWithErrorHandler:(void(^)(NSError *))errorCallback;
+- (BOOL) saveWithErrorHandler:(CoreDataError)errorCallback;
 
 - (BOOL) saveOnMainThread;
 - (BOOL) saveOnBackgroundThread;

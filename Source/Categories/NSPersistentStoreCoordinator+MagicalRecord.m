@@ -14,9 +14,8 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 
 + (NSPersistentStoreCoordinator *)defaultStoreCoordinator
 {
-	if (!defaultCoordinator_)
-	{
-		defaultCoordinator_ = [self newPersistentStoreCoordinator];
+	if (!defaultCoordinator_) {
+		defaultCoordinator_ = [self coordinator];
 	}
 	return defaultCoordinator_;
 }

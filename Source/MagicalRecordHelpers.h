@@ -13,8 +13,8 @@
 #endif
 
 @class NSManagedObjectContext;
-typedef void (^CoreDataBlock)(NSManagedObjectContext *context);
-typedef void (^CoreDataError)(NSError *error);
+typedef void (^CoreDataBlock)(NSManagedObjectContext *);
+typedef void (^CoreDataError)(NSError *);
 
 @protocol MRErrorHandler <NSObject>
 
