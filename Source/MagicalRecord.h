@@ -6,6 +6,12 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
+#if ((defined(__GNUC__) && ((__GNUC__ >= 4) || (__GNUC__ >= 5))) || defined(__clang__))
+#define DEPRECATED_ATTRIBUTE_M(...) __attribute__((deprecated (__VA_ARGS__)))
+#else
+#define DEPRECATED_ATTRIBUTE_M(...) DEPRECATED_ATTRIBUTE
+#endif
+
 extern void ARLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2);
 
 typedef void (^MRContextBlock)(NSManagedObjectContext *);
@@ -32,7 +38,7 @@ typedef enum {
 + (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL:(NSURL *)storeURL;
 + (void) setupCoreDataStackWithInMemoryStore;
 
-+ (void) cleanUp;
++ (void)cleanUp DEPRECATED_ATTRIBUTE_M("Your app will do this automatically on exit.");
 
 + (void)handleError:(NSError *)error;
 + (void)handleErrors:(NSError *)error DEPRECATED_ATTRIBUTE;

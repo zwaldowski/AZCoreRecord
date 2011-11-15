@@ -24,6 +24,7 @@
 
 @interface MagicalRecord(MagicalRecordPrivate)
 + (NSString *)currentStack;
++ (void)_cleanUp;
 @end
 
 extern NSString *const kMagicalRecordDefaultStoreFileName;

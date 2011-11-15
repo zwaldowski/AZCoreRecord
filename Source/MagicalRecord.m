@@ -1,5 +1,5 @@
 //
-//  MagicalRecordHelpers.m
+//  MagicalRecord.m
 //  MagicalRecord
 //
 //  Created by Saul Mora on 3/11/10.
@@ -24,9 +24,14 @@ static const char *kErrorHandlerTargetKey = "errorHandlerTarget_";
 static const char *kErrorHandlerIsClassKey = "errorHandlerIsClass_";
 static const char *kErrorHandlerBlockKey = "errorHandler_";
 
-@implementation MagicalRecordHelpers
+@implementation MagicalRecord
 
 + (void) cleanUp
+{
+	[self _cleanUp];
+}
+
++ (void)_cleanUp
 {
 	objc_removeAssociatedObjects(self);
 	[NSManagedObjectContext _setDefaultContext:nil];
@@ -34,6 +39,7 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:nil];
 	[NSPersistentStore _setDefaultPersistentStore:nil];
 }
+
 
 + (NSString *) currentStack
 {
