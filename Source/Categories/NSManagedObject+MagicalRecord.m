@@ -91,12 +91,9 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 #pragma mark - Default batch size
 
-+ (void) setDefaultBatchSize:(NSUInteger)newBatchSize
++ (void)setDefaultBatchSize:(NSUInteger)newBatchSize
 {
-	@synchronized(self)
-	{
-		defaultBatchSize = newBatchSize;
-	}
+    defaultBatchSize = newBatchSize;
 }
 
 + (NSUInteger) defaultBatchSize
