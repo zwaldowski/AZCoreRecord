@@ -27,8 +27,10 @@ typedef void (^CoreDataError)(NSError *error);
 @interface MagicalRecordHelpers : NSObject
 
 + (void) setupCoreDataStackWithStoreNamed:(NSString *)storeName;
++ (void) setupCoreDataStackWithStoreAtURL:(NSURL *)storeURL;
 + (void) setupAutoMigratingCoreDataStack;
 + (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName;
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL:(NSURL *)storeURL;
 + (void) setupCoreDataStackWithInMemoryStore;
 
 + (void) cleanUp;

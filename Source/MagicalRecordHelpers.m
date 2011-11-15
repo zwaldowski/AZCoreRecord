@@ -120,9 +120,21 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
 }
 
++ (void) setupCoreDataStackWithStoreAtURL:(NSURL *)storeURL
+{
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreAtURL:storeURL];
+	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
+}
+
 + (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName
 {
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreNamed:storeName];
+	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
+}
+
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL:(NSURL *)storeURL
+{
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreAtURL:storeURL];
 	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
 }
 
