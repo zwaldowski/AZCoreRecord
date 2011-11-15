@@ -62,15 +62,15 @@ static NSString *primaryKeyNameFromString(NSString *value)
 	if ([singleRelatedObjectData isKindOfClass:[NSNumber class]] || [singleRelatedObjectData isKindOfClass:[NSString class]])
 		relatedValue = singleRelatedObjectData;
 	else if ([singleRelatedObjectData isKindOfClass:[NSDictionary class]]) {
-        
-        NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
-        NSString *destinationName = [singleRelatedObjectData objectForKey:destinationKey];
-        if (destinationName) {
-            NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
-            if ([customDestination isKindOfEntity:destination])
-                destination = customDestination;
-        }
-        
+		
+		NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
+		NSString *destinationName = [singleRelatedObjectData objectForKey:destinationKey];
+		if (destinationName) {
+			NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:[self managedObjectContext]];
+			if ([customDestination isKindOfEntity:destination])
+				destination = customDestination;
+		}
+		
 		NSEntityDescription *destinationEntity = [relationshipInfo destinationEntity];
 		NSString *primaryKeyName = [relationshipInfo.userInfo valueForKey:kMagicalRecordImportRelationshipPrimaryKey] ?: primaryKeyNameFromString(relationshipInfo.destinationEntity.name);	
 		NSAttributeDescription *primaryKeyAttribute = [destinationEntity.attributesByName valueForKey:primaryKeyName];
@@ -96,33 +96,33 @@ static NSString *primaryKeyNameFromString(NSString *value)
 			return;
 		
 		id value = [objectData objectForKey:key];
-        
-        for (int i = 1; i < 10 && value == nil; i++)
-        {
-            NSString *attributeName = [NSString stringWithFormat:@"%@.%d", key, i];
-            key = [[attributeInfo userInfo] valueForKey:attributeName];
-            value = [objectData valueForKeyPath:key];
-        }
+		
+		for (int i = 1; i < 10 && value == nil; i++)
+		{
+			NSString *attributeName = [NSString stringWithFormat:@"%@.%d", key, i];
+			key = [[attributeInfo userInfo] valueForKey:attributeName];
+			value = [objectData valueForKeyPath:key];
+		}
 		
 		NSAttributeType attributeType = [attributeInfo attributeType];
 		NSString *desiredAttributeType = [[attributeInfo userInfo] valueForKey:kMagicalRecordImportClassNameKey];
-        
-        if (desiredAttributeType && [desiredAttributeType hasSuffix:@"Color"])
-            value = MRColorFromString(value);
-        else if (attributeType == NSDateAttributeType) {
-            if (![value isKindOfClass:[NSDate class]]) 
-            {
-                NSString *dateFormat = [[attributeInfo userInfo] valueForKey:kMagicalRecordImportCustomDateFormat];
-                value = MRDateFromString([value description], dateFormat ?: kMagicalRecordImportDefaultDateFormat);
-            }
-            value = MRDateAdjustForDST(value);
-        }
-        
-        if (!value) // if it just wasn't set, leave the default
-            return;
-        
-        if (value == [NSNull null]) // if it was *explicitly* set to nil, set
-            value = nil;
+		
+		if (desiredAttributeType && [desiredAttributeType hasSuffix:@"Color"])
+			value = MRColorFromString(value);
+		else if (attributeType == NSDateAttributeType) {
+			if (![value isKindOfClass:[NSDate class]]) 
+			{
+				NSString *dateFormat = [[attributeInfo userInfo] valueForKey:kMagicalRecordImportCustomDateFormat];
+				value = MRDateFromString([value description], dateFormat ?: kMagicalRecordImportDefaultDateFormat);
+			}
+			value = MRDateAdjustForDST(value);
+		}
+		
+		if (!value) // if it just wasn't set, leave the default
+			return;
+		
+		if (value == [NSNull null]) // if it was *explicitly* set to nil, set
+			value = nil;
 		
 		[self setValue:value forKey:attributeName];
 	}];
@@ -134,9 +134,9 @@ static NSString *primaryKeyNameFromString(NSString *value)
 	
 	//add related object to set
 	NSString *addRelationMessageFormat = [relationshipInfo isToMany] ? @"add%@Object:" : @"set%@:";
-    NSString *addRelatedObjectToSetMessage = [NSString stringWithFormat:addRelationMessageFormat, attributeNameFromString([relationshipInfo name])];
-    
-    SEL selector = NSSelectorFromString(addRelatedObjectToSetMessage);
+	NSString *addRelatedObjectToSetMessage = [NSString stringWithFormat:addRelationMessageFormat, attributeNameFromString([relationshipInfo name])];
+	
+	SEL selector = NSSelectorFromString(addRelatedObjectToSetMessage);
 	
 	@try 
 	{
@@ -178,71 +178,71 @@ static NSString *primaryKeyNameFromString(NSString *value)
 - (void) importValuesFromDictionary:(NSDictionary *)objectData
 {
 	@autoreleasepool {
-        NSDictionary *attributes = self.entity.attributesByName;
-        NSDictionary *relationships = self.entity.relationshipsByName;
-        
-        if (attributes.count)
-            [self _setAttributes:attributes forDictionary:objectData];
-        
-        if (relationships.count) {
-            NSManagedObjectContext *context = self.managedObjectContext;
-            __block id safeSelf = self;
-            [self _setRelationships:relationships forDictionary:objectData withBlock:^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData) {			
-                NSManagedObject *relatedObject = nil;
-                
-                if ([objectData isKindOfClass:[NSDictionary class]])  {
-                    NSEntityDescription *destination = [relationshipInfo destinationEntity];
-                    NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
-                    NSString *destinationName = [objectData objectForKey:destinationKey];
-                    if (destinationName) {
-                        NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:context];
-                        if ([customDestination isKindOfEntity:destination])
-                            destination = customDestination;
-                    }
-                    relatedObject = [safeSelf _createInstanceForEntity:destination withDictionary:objectData];
-                } else {
-                    relatedObject = [safeSelf _findObjectForRelationship:relationshipInfo withData:objectData];
-                }
-                return relatedObject;
-            }];
-        }
+		NSDictionary *attributes = self.entity.attributesByName;
+		NSDictionary *relationships = self.entity.relationshipsByName;
+		
+		if (attributes.count)
+			[self _setAttributes:attributes forDictionary:objectData];
+		
+		if (relationships.count) {
+			NSManagedObjectContext *context = self.managedObjectContext;
+			__block id safeSelf = self;
+			[self _setRelationships:relationships forDictionary:objectData withBlock:^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData) {			
+				NSManagedObject *relatedObject = nil;
+				
+				if ([objectData isKindOfClass:[NSDictionary class]])  {
+					NSEntityDescription *destination = [relationshipInfo destinationEntity];
+					NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
+					NSString *destinationName = [objectData objectForKey:destinationKey];
+					if (destinationName) {
+						NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:context];
+						if ([customDestination isKindOfEntity:destination])
+							destination = customDestination;
+					}
+					relatedObject = [safeSelf _createInstanceForEntity:destination withDictionary:objectData];
+				} else {
+					relatedObject = [safeSelf _findObjectForRelationship:relationshipInfo withData:objectData];
+				}
+				return relatedObject;
+			}];
+		}
 	}
 }
 
 - (void)updateValuesFromDictionary:(NSDictionary *)objectData
 {
 	@autoreleasepool {
-        NSDictionary *attributes = self.entity.attributesByName;
-        NSDictionary *relationships = self.entity.relationshipsByName;
+		NSDictionary *attributes = self.entity.attributesByName;
+		NSDictionary *relationships = self.entity.relationshipsByName;
 
-        if (attributes.count)
-            [self _setAttributes:attributes forDictionary:objectData];
-        
-        if (relationships.count) {
-            __block NSManagedObject *safeSelf = self;
-            [self _setRelationships:self.entity.relationshipsByName forDictionary:objectData withBlock:^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData){
-                NSManagedObject *relatedObject = [safeSelf _findObjectForRelationship:relationshipInfo withData:objectData];
-                
-                if (relatedObject) {
-                    if ([objectData isKindOfClass:[NSDictionary class]])
-                        [relatedObject importValuesFromDictionary:objectData];
-                    return relatedObject;
-                }
-                
-                NSEntityDescription *destination = [relationshipInfo destinationEntity];
-                
-                if ([objectData isKindOfClass:[NSDictionary class]]) {
-                    NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
-                    NSString *destinationName = [objectData objectForKey:destinationKey];
-                    if (destinationName) {
-                        NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:safeSelf.managedObjectContext];
-                        if ([customDestination isKindOfEntity:destination])
-                            destination = customDestination;
-                    }
-                }
-                return [safeSelf _createInstanceForEntity:destination withDictionary:objectData];
-            }];
-        }
+		if (attributes.count)
+			[self _setAttributes:attributes forDictionary:objectData];
+		
+		if (relationships.count) {
+			__block NSManagedObject *safeSelf = self;
+			[self _setRelationships:self.entity.relationshipsByName forDictionary:objectData withBlock:^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData){
+				NSManagedObject *relatedObject = [safeSelf _findObjectForRelationship:relationshipInfo withData:objectData];
+				
+				if (relatedObject) {
+					if ([objectData isKindOfClass:[NSDictionary class]])
+						[relatedObject importValuesFromDictionary:objectData];
+					return relatedObject;
+				}
+				
+				NSEntityDescription *destination = [relationshipInfo destinationEntity];
+				
+				if ([objectData isKindOfClass:[NSDictionary class]]) {
+					NSString *destinationKey = [relationshipInfo.userInfo objectForKey:kMagicalRecordImportClassNameKey];
+					NSString *destinationName = [objectData objectForKey:destinationKey];
+					if (destinationName) {
+						NSEntityDescription *customDestination = [NSEntityDescription entityForName:destinationName inManagedObjectContext:safeSelf.managedObjectContext];
+						if ([customDestination isKindOfEntity:destination])
+							destination = customDestination;
+					}
+				}
+				return [safeSelf _createInstanceForEntity:destination withDictionary:objectData];
+			}];
+		}
 	}
 }
 
