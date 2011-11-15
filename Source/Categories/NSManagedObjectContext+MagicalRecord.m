@@ -32,24 +32,24 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
             defaultManagedObjectContext_ = [NSManagedObjectContext new];
         }
 		defaultManagedObjectContext_.persistentStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
-    }
+	}
 	return defaultManagedObjectContext_;
 }
 
 + (void)_setDefaultContext:(NSManagedObjectContext *)newDefault {
-    defaultManagedObjectContext_ = newDefault;
+	defaultManagedObjectContext_ = newDefault;
 }
 
 + (void)setDefaultConcurrencyType:(NSManagedObjectContextConcurrencyType)type {
-    NSAssert(!defaultManagedObjectContext_, @"%s must be run before the default managed object context is created");
-    concurrencyType_ = type;
+	NSAssert(!defaultManagedObjectContext_, @"%s must be run before the default managed object context is created");
+	concurrencyType_ = type;
 }
 
 + (NSManagedObjectContext *) contextForCurrentThread
 {
 	if ([NSThread isMainThread])
 		return [self defaultContext];
-    
+	
 	NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
 	NSManagedObjectContext *threadContext = [threadDict objectForKey:kMagicalRecordManagedObjectContextKey];
 	if (threadContext == nil)
@@ -58,7 +58,7 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 		[threadDict setObject:threadContext forKey:kMagicalRecordManagedObjectContextKey];
 	}
 	return threadContext;
-    
+	
 }
 
 + (void) resetDefaultContext

@@ -15,14 +15,14 @@ static NSManagedObjectModel *defaultManagedObjectModel_ = nil;
 
 + (NSManagedObjectModel *)defaultManagedObjectModel
 {
-    if (!defaultManagedObjectModel_) {
-        defaultManagedObjectModel_ = [self mergedModelFromBundles:nil];
-    }
+	if (!defaultManagedObjectModel_) {
+		defaultManagedObjectModel_ = [self mergedModelFromBundles:nil];
+	}
 	return defaultManagedObjectModel_;
 }
 
 + (void)_setDefaultManagedObjectModel:(NSManagedObjectModel *)newModel {
-    defaultManagedObjectModel_ = newModel;
+	defaultManagedObjectModel_ = newModel;
 }
 
 + (NSManagedObjectModel *)managedObjectModel {

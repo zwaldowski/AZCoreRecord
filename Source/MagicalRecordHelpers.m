@@ -18,8 +18,8 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 
 + (void) cleanUp
 {
-    objc_removeAssociatedObjects(self);
-    [NSManagedObjectContext _setDefaultContext:nil];
+	objc_removeAssociatedObjects(self);
+	[NSManagedObjectContext _setDefaultContext:nil];
 	[NSManagedObjectModel _setDefaultManagedObjectModel:nil];
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:nil];
 	[NSPersistentStore _setDefaultPersistentStore:nil];
@@ -47,40 +47,40 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 	
 	if (block) {
 		block(error);
-        return;
+		return;
 	}
 	
 	if (target) {
 		BOOL isClassSelector = [objc_getAssociatedObject(self, kErrorHandlerIsClassKey) boolValue];
 		[(isClassSelector ? [target class] : target) performSelector:@selector(handleErrors:) withObject:error];
-        return;
+		return;
 	}
 	
-    // default error handler
-    NSDictionary *userInfo = [error userInfo];
-    for (NSArray *detailedError in [userInfo allValues])
-    {
-        if ([detailedError isKindOfClass:[NSArray class]])
-        {
-            for (NSError *e in detailedError)
-            {
-                if ([e respondsToSelector:@selector(userInfo)])
-                {
-                    ARLog(@"Error Details: %@", [e userInfo]);
-                }
-                else
-                {
-                    ARLog(@"Error Details: %@", e);
-                }
-            }
-        }
-        else
-        {
-            ARLog(@"Error: %@", detailedError);
-        }
-    }
-    ARLog(@"Error Domain: %@", [error domain]);
-    ARLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
+	// default error handler
+	NSDictionary *userInfo = [error userInfo];
+	for (NSArray *detailedError in [userInfo allValues])
+	{
+		if ([detailedError isKindOfClass:[NSArray class]])
+		{
+			for (NSError *e in detailedError)
+			{
+				if ([e respondsToSelector:@selector(userInfo)])
+				{
+					ARLog(@"Error Details: %@", [e userInfo]);
+				}
+				else
+				{
+					ARLog(@"Error Details: %@", e);
+				}
+			}
+		}
+		else
+		{
+			ARLog(@"Error: %@", detailedError);
+		}
+	}
+	ARLog(@"Error Domain: %@", [error domain]);
+	ARLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
 }
 
 + (void)setErrorHandler:(CoreDataError)block
@@ -120,10 +120,22 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:coordinator];
 }
 
++ (void) setupCoreDataStackWithStoreAtURL:(NSURL *)storeURL
+{
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreAtURL:storeURL];
+	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
+}
+
 + (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName
 {
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreNamed:storeName];
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:coordinator];
+}
+
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL:(NSURL *)storeURL
+{
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreAtURL:storeURL];
+	[NSPersistentStoreCoordinator setDefaultStoreCoordinator:coordinator];
 }
 
 + (void) setupCoreDataStackWithInMemoryStore

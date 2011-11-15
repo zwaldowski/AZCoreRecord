@@ -505,9 +505,9 @@
 			isa = PBXGroup;
 			children = (
 				C721C85813D0C7030097AB6F /* Categories */,
+				C721C86513D0C7030097AB6F /* CoreData+MagicalRecord.h */,
 				C721C85613D0C7030097AB6F /* MRCoreDataAction.h */,
 				C721C85713D0C7030097AB6F /* MRCoreDataAction.m */,
-				C721C86513D0C7030097AB6F /* CoreData+MagicalRecord.h */,
 				C721C86613D0C7030097AB6F /* MagicalRecordHelpers.h */,
 				C721C86713D0C7030097AB6F /* MagicalRecordHelpers.m */,
 			);
