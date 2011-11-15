@@ -151,21 +151,12 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
     [self saveDataWithOptions:MRCoreDataSaveOptionNone block:block success:NULL failure:NULL];
 }
 
-+ (void) saveDataWithBlock:(MRContextBlock)block errorHandler:(MRErrorBlock)errorHandler
-{
-	[self saveDataWithOptions:MRCoreDataSaveOptionNone block:block success:NULL failure:errorHandler];
-}
-
 + (void) saveDataInBackgroundWithBlock:(MRContextBlock)block {
     [self saveDataWithOptions:MRCoreDataSaveOptionInBackground block:block success:NULL failure:NULL];
 }
 
 + (void) saveDataInBackgroundWithBlock:(MRContextBlock)block completion:(MRBlock)callback {
     [self saveDataWithOptions:MRCoreDataSaveOptionInBackground block:block success:callback failure:NULL];
-}
-
-+ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block completion:(MRBlock)callback errorHandler:(MRErrorBlock)errorHandler {
-    [self saveDataWithOptions:MRCoreDataSaveOptionInBackground block:block success:callback failure:errorHandler];
 }
 
 + (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block {

@@ -49,11 +49,9 @@ typedef enum {
 /** @name Data commit */
 
 + (void) saveDataWithBlock:(MRContextBlock)block;
-+ (void) saveDataWithBlock:(MRContextBlock)block errorHandler:(MRErrorBlock)errorHandler;
 
 + (void) saveDataInBackgroundWithBlock:(MRContextBlock)block;
 + (void) saveDataInBackgroundWithBlock:(MRContextBlock)block completion:(MRBlock)callback;
-+ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block completion:(MRBlock)callback errorHandler:(MRErrorBlock)errorHandler;
 
 + (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block;
 + (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block success:(MRBlock)callback;
