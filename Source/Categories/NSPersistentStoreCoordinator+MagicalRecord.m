@@ -20,7 +20,7 @@ static NSPersistentStoreCoordinator *defaultCoordinator_ = nil;
 	return defaultCoordinator_;
 }
 
-+ (void)setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator
++ (void)_setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator
 {
 	defaultCoordinator_ = coordinator;
 	if ([NSPersistentStore defaultPersistentStore] == nil)
