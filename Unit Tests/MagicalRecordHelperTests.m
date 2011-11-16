@@ -77,7 +77,7 @@
 	assertThat([MagicalRecord errorHandlerTarget], is(equalTo(self)));
 }
 
-- (void) handleErrors:(NSError *)error
+- (void)handleError:(NSError *)error
 {
 	assertThat(error, is(notNilValue()));
 	assertThat([error domain], is(equalTo(@"MRTests")));
@@ -109,7 +109,7 @@
 {
 	errorHandlerWasCalled_ = NO;
 	[MagicalRecord setErrorHandler: ^(NSError *error) {
-		[self handleErrors: error];
+		[self handleError:error];
 	}];
 	[MagicalRecord setErrorHandlerTarget:nil];
 	
@@ -123,7 +123,7 @@
 {
 	NSError *testError = [NSError errorWithDomain:@"Cocoa" code:1000 userInfo:nil];
 	id mockErrorHandler = [OCMockObject mockForProtocol:@protocol(MRErrorHandler)];
-	[[mockErrorHandler expect] handleErrors:testError];
+	[[mockErrorHandler expect] handleError:testError];
 	
 	[MagicalRecord setErrorHandlerTarget:mockErrorHandler];
 	[MagicalRecord setErrorHandler:NULL];
