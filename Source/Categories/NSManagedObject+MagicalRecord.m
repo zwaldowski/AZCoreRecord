@@ -404,7 +404,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 {
 	NSFetchRequest *request = [self createFetchRequestInContext:context];
 	[request setPredicate:searchTerm];
-	[request setIncludesSubentities:NO];
 	[request setFetchBatchSize:[self defaultBatchSize]];
 	NSSortDescriptor *sortBy = [NSSortDescriptor sortDescriptorWithKey:sortTerm ascending:ascending];
 	[request setSortDescriptors:[NSArray arrayWithObject:sortBy]];
