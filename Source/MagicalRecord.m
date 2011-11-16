@@ -100,6 +100,11 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 	objc_setAssociatedObject(self, kErrorHandlerTargetKey, target, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
++ (void)setDefaultModelName:(NSString *)modelName {
+	NSManagedObjectModel *model = [NSManagedObjectModel newManagedObjectModelNamed:modelName];
+	[NSManagedObjectModel _setDefaultManagedObjectModel:model];
+}
+
 + (void) setupAutoMigratingCoreDataStack
 {
 	[self setupCoreDataStackWithAutoMigratingSqliteStoreNamed:kMagicalRecordDefaultStoreFileName];

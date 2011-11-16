@@ -16,7 +16,7 @@
 
 - (void) setUp
 {
-	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
+	[MagicalRecord setDefaultModelName:@"TestModel.momd"];
 	[MagicalRecord setupCoreDataStackWithInMemoryStore];
 	
 	if ([self respondsToSelector:@selector(setupTestData)])

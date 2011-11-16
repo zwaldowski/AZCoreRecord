@@ -35,12 +35,14 @@ typedef enum {
 
 @interface MagicalRecord : NSObject
 
-+ (void) setupCoreDataStackWithStoreNamed:(NSString *)storeName;
-+ (void) setupCoreDataStackWithStoreAtURL:(NSURL *)storeURL;
-+ (void) setupAutoMigratingCoreDataStack;
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName;
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL:(NSURL *)storeURL;
-+ (void) setupCoreDataStackWithInMemoryStore;
++ (void)setDefaultModelName:(NSString *)modelName;
+
++ (void)setupCoreDataStackWithStoreNamed:(NSString *)storeName;
++ (void)setupCoreDataStackWithStoreAtURL:(NSURL *)storeURL;
++ (void)setupAutoMigratingCoreDataStack;
++ (void)setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName;
++ (void)setupCoreDataStackWithAutoMigratingSqliteStoreAtURL:(NSURL *)storeURL;
++ (void)setupCoreDataStackWithInMemoryStore;
 
 + (void)cleanUp DEPRECATED_ATTRIBUTE_M("Your app will do this automatically on exit.");
 
