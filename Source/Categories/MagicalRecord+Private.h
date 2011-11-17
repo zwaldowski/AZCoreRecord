@@ -6,25 +6,35 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-@interface NSManagedObjectContext(MagicalRecordPrivate)
-+ (void)_setDefaultContext:(NSManagedObjectContext *)newDefault;
+@interface NSManagedObjectContext (MagicalRecordPrivate)
+
++ (void) _setDefaultContext: (NSManagedObjectContext *) newDefault;
+
 @end
 
-@interface NSManagedObjectModel(MagicalRecordPrivate)
-+ (void)_setDefaultManagedObjectModel:(NSManagedObjectModel *)newModel;
+@interface NSManagedObjectModel (MagicalRecordPrivate)
+
++ (BOOL) _hasDefaultManagedObjectModel;
++ (void) _setDefaultManagedObjectModel: (NSManagedObjectModel *) newModel;
+
 @end
 
-@interface NSPersistentStore(MagicalRecordPrivate)
-+ (void)_setDefaultPersistentStore:(NSPersistentStore *)store;
+@interface NSPersistentStore (MagicalRecordPrivate)
+
++ (void) _setDefaultPersistentStore: (NSPersistentStore *) store;
+
 @end
 
-@interface NSPersistentStoreCoordinator(MagicalRecordPrivate)
-+ (void)_setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator;
+@interface NSPersistentStoreCoordinator (MagicalRecordPrivate)
+
++ (void) _setDefaultStoreCoordinator: (NSPersistentStoreCoordinator *)coordinator;
+
 @end
 
-@interface MagicalRecord(MagicalRecordPrivate)
-+ (NSString *)currentStack;
-+ (void)_cleanUp;
+@interface MagicalRecord (MagicalRecordPrivate)
+
++ (void) _cleanUp;
+
 @end
 
 extern NSString *const kMagicalRecordDefaultStoreFileName;

@@ -16,7 +16,7 @@
 
 - (void) setUp
 {
-	[MagicalRecord setDefaultModelName:@"TestModel.momd"];
+	[MagicalRecord setModelName:@"TestModel.momd"];
 	[MagicalRecord setupCoreDataStackWithInMemoryStore];
 	
 	if ([self respondsToSelector:@selector(setupTestData)])

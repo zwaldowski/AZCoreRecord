@@ -7,162 +7,174 @@
 //
 
 #import "CoreData+MagicalRecord.h"
+#import "MagicalRecord.h"
 #import "MagicalRecord+Private.h"
 #import <objc/runtime.h>
 
-static const char *kErrorHandlerTargetKey = "errorHandlerTarget_";
-static const char *kErrorHandlerIsClassKey = "errorHandlerIsClass_";
-static const char *kErrorHandlerBlockKey = "errorHandler_";
+static void *kErrorHandlerTargetKey;
+static void *kErrorHandlerIsClassKey;
+static void *kErrorHandlerBlockKey;
 
 @implementation MagicalRecord
+
+#pragma mark - Stack Setup
+
++ (void) setModelName: (NSString *) modelName
+{
+	NSAssert1(![NSManagedObjectModel _hasDefaultManagedObjectModel], @"%s must be run before the default managed object model is created", sel_getName(_cmd));
+	NSManagedObjectModel *model = [NSManagedObjectModel newManagedObjectModelNamed: modelName];
+	[NSManagedObjectModel _setDefaultManagedObjectModel: model];
+}
++ (void) setModelURL: (NSURL *) modelURL
+{
+	NSAssert1(![NSManagedObjectModel _hasDefaultManagedObjectModel], @"%s must be run before the default managed object model is created", sel_getName(_cmd));
+	NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL: modelURL];
+	[NSManagedObjectModel _setDefaultManagedObjectModel: model];
+}
+
++ (void) setupAutoMigratingCoreDataStack
+{
+	[self setupCoreDataStackWithAutoMigratingSqliteStoreNamed: kMagicalRecordDefaultStoreFileName];
+}
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL
+{
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreAtURL: storeURL];
+	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
+}
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed: (NSString *) storeName
+{
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreNamed: storeName];
+	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
+}
++ (void) setupCoreDataStackWithInMemoryStore
+{
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
+	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
+}
++ (void) setupCoreDataStackWithStoreAtURL: (NSURL *) storeURL
+{
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreAtURL: storeURL];
+	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
+}
++ (void) setupCoreDataStackWithStoreNamed: (NSString *) storeName
+{
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreNamed: storeName];
+	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
+}
 
 + (void) cleanUp
 {
 	[self _cleanUp];
 }
-
-+ (void)_cleanUp
++ (void) _cleanUp
 {
 	objc_removeAssociatedObjects(self);
-	[NSManagedObjectContext _setDefaultContext:nil];
-	[NSManagedObjectModel _setDefaultManagedObjectModel:nil];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:nil];
-	[NSPersistentStore _setDefaultPersistentStore:nil];
+	[NSManagedObjectContext _setDefaultContext: nil];
+	[NSManagedObjectModel _setDefaultManagedObjectModel: nil];
+	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: nil];
+	[NSPersistentStore _setDefaultPersistentStore: nil];
 }
 
+#pragma mark - Error Handling
 
 + (NSString *) currentStack
 {
 	NSMutableString *status = [NSMutableString stringWithString:@"Current Default Core Data Stack: ---- \n"];
 	
-	[status appendFormat:@"Context:	 %@\n", [NSManagedObjectContext defaultContext]];
-	[status appendFormat:@"Model:	   %@\n", [NSManagedObjectModel defaultManagedObjectModel]];
-	[status appendFormat:@"Coordinator: %@\n", [NSPersistentStoreCoordinator defaultStoreCoordinator]];
-	[status appendFormat:@"Store:	   %@\n", [NSPersistentStore defaultPersistentStore]];
+	[status appendFormat: @"Context:     %@\n", [NSManagedObjectContext defaultContext]];
+	[status appendFormat: @"Model:       %@\n", [NSManagedObjectModel defaultManagedObjectModel]];
+	[status appendFormat: @"Coordinator: %@\n", [NSPersistentStoreCoordinator defaultStoreCoordinator]];
+	[status appendFormat: @"Store:       %@\n", [NSPersistentStore defaultPersistentStore]];
 	
-	return status;
+	return [status copy];
 }
 
-+ (void)handleError:(NSError *)error
++ (void) handleError: (NSError *) error
 {
-	if (!error)
-		return;
+	if (!error) return;
 	
-	id target = [self errorHandlerTarget];
 	MRErrorBlock block = [self errorHandler];
-	
-	if (block) {
+	if (block)
+	{
 		block(error);
 		return;
 	}
 	
-	if (target) {
-		BOOL isClassSelector = [objc_getAssociatedObject(self, kErrorHandlerIsClassKey) boolValue];
-		[(isClassSelector ? [target class] : target) performSelector:@selector(handleError:) withObject:error];
+	id target = [self errorHandlerTarget];
+	if (target)
+	{
+		BOOL isClassSelector = [objc_getAssociatedObject(self, &kErrorHandlerIsClassKey) boolValue];
+		[(isClassSelector ? [target class] : target) performSelector: @selector(handleError:) withObject: error];
 		return;
 	}
 	
-	// default error handler
-	for (NSArray *detailedError in error.userInfo.allValues) {
-		ARLog(@"Error: %@", detailedError);
-	}
-	ARLog(@"Error Domain: %@", [error domain]);
-	ARLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
+	// Default Error Handler
+	ARLog(@"Error: %@", error);
 }
-
-+ (void)handleErrors:(NSError *)error {
-    [self handleError:error];
-}
-
-+ (void)setErrorHandler:(MRErrorBlock)block
++ (void) handleErrors: (NSError *) error
 {
-	objc_setAssociatedObject(self, kErrorHandlerBlockKey, block, OBJC_ASSOCIATION_COPY_NONATOMIC);
+    [self handleError: error];
 }
 
-+ (MRErrorBlock)errorHandler
++ (MRErrorBlock) errorHandler
 {
-	return objc_getAssociatedObject(self, kErrorHandlerBlockKey);
+	return objc_getAssociatedObject(self, &kErrorHandlerBlockKey);
 }
-
-+ (id <MRErrorHandler>) errorHandlerTarget
++ (void) setErrorHandler: (MRErrorBlock) block
 {
-	return objc_getAssociatedObject(self, kErrorHandlerTargetKey);
+	objc_setAssociatedObject(self, &kErrorHandlerBlockKey, block, OBJC_ASSOCIATION_COPY_NONATOMIC);
 }
 
-+ (void) setErrorHandlerTarget:(id <MRErrorHandler>)target
++ (id<MRErrorHandler>) errorHandlerTarget
+{
+	return objc_getAssociatedObject(self, &kErrorHandlerTargetKey);
+}
++ (void) setErrorHandlerTarget: (id<MRErrorHandler>) target
 {
 	NSNumber *isClassMethodNumber = nil;
-	if ([target respondsToSelector:@selector(handleError:)])
-		isClassMethodNumber = [NSNumber numberWithBool:NO];
-	else if ([[target class] respondsToSelector:@selector(handleError:)])
-		isClassMethodNumber = [NSNumber numberWithBool:YES];
-	objc_setAssociatedObject(self, kErrorHandlerIsClassKey, isClassMethodNumber, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-	objc_setAssociatedObject(self, kErrorHandlerTargetKey, target, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	
+	if (target)
+	{
+		if ([target respondsToSelector: @selector(handleError:)])
+			isClassMethodNumber = [NSNumber numberWithBool: NO];
+		else if ([[target class] respondsToSelector: @selector(handleError:)])
+			isClassMethodNumber = [NSNumber numberWithBool: YES];
+		else
+			NSAssert(NO, @"Error handler target must conform to the MRErrorHandler protocol");
+	}
+	
+	objc_setAssociatedObject(self, &kErrorHandlerIsClassKey, isClassMethodNumber, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	objc_setAssociatedObject(self, &kErrorHandlerTargetKey, target, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-+ (void)setDefaultModelName:(NSString *)modelName {
-	NSManagedObjectModel *model = [NSManagedObjectModel newManagedObjectModelNamed:modelName];
-	[NSManagedObjectModel _setDefaultManagedObjectModel:model];
+#pragma mark - Data Commit
+
++ (void) saveDataWithBlock: (MRContextBlock) block
+{   
+    [self saveDataWithOptions: MRCoreDataSaveOptionNone block: block success: NULL failure: NULL];
 }
 
-+ (void) setupAutoMigratingCoreDataStack
++ (void) saveDataInBackgroundWithBlock: (MRContextBlock) block
 {
-	[self setupCoreDataStackWithAutoMigratingSqliteStoreNamed:kMagicalRecordDefaultStoreFileName];
+    [self saveDataWithOptions: MRCoreDataSaveOptionInBackground block: block success: NULL failure: NULL];
 }
-
-+ (void) setupCoreDataStackWithStoreNamed:(NSString *)storeName
++ (void) saveDataInBackgroundWithBlock: (MRContextBlock) block completion: (MRBlock) callback
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreNamed:storeName];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:coordinator];
+    [self saveDataWithOptions: MRCoreDataSaveOptionInBackground block: block success: callback failure: NULL];
 }
 
-+ (void) setupCoreDataStackWithStoreAtURL:(NSURL *)storeURL
++ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreAtURL:storeURL];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:coordinator];
+    [self saveDataWithOptions: options block: block success: NULL failure: NULL];
 }
-
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName
++ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreNamed:storeName];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:coordinator];
+    [self saveDataWithOptions: options block: block success: callback failure:  NULL];
 }
-
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL:(NSURL *)storeURL
++ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreAtURL:storeURL];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:coordinator];
-}
-
-+ (void) setupCoreDataStackWithInMemoryStore
-{
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:coordinator];
-}
-
-#pragma mark - Core Data actions
-
-+ (void) saveDataWithBlock:(MRContextBlock)block {   
-    [self saveDataWithOptions:MRCoreDataSaveOptionNone block:block success:NULL failure:NULL];
-}
-
-+ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block {
-    [self saveDataWithOptions:MRCoreDataSaveOptionInBackground block:block success:NULL failure:NULL];
-}
-
-+ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block completion:(MRBlock)callback {
-    [self saveDataWithOptions:MRCoreDataSaveOptionInBackground block:block success:callback failure:NULL];
-}
-
-+ (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block {
-    [self saveDataWithOptions:options block:block success:NULL failure:NULL];
-}
-
-+ (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block success:(MRBlock)callback {
-    [self saveDataWithOptions:options block:block success:callback failure:NULL];
-}
-
-+ (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block success:(MRBlock)callback failure:(MRErrorBlock)errorCallback {
+	NSParameterAssert(block);
+	
 	BOOL wantsBackground = (options & MRCoreDataSaveOptionInBackground);
 	BOOL wantsNewContext = (options & MRCoreDataSaveOptionWithNewContext) || ![NSThread isMainThread];
 	
@@ -186,20 +198,25 @@ static const char *kErrorHandlerBlockKey = "errorHandler_";
 		NSManagedObjectContext *mainContext  = [NSManagedObjectContext defaultContext];
 		NSManagedObjectContext *localContext = mainContext;
 		
+		id bkpMergyPolicy = mainContext.mergePolicy;
+		
 		if (!wantsBackground || wantsNewContext) {
 			localContext = [NSManagedObjectContext contextThatNotifiesDefaultContextOnMainThread];
 			
-			[mainContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
-			[localContext setMergePolicy:NSOverwriteMergePolicy];
+			mainContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+			localContext.mergePolicy = NSOverwriteMergePolicy;
 		}
 		
 		block(localContext);
 		
 		if (localContext.hasChanges)
-			[localContext saveWithErrorHandler:errorCallback];
+		{
+			// -[NSManagedObjectContext saveWithErrorHandler:] handles a NULL block
+			[localContext saveWithErrorHandler: errorCallback];
+		}
 		
 		localContext.notifiesMainContextOnSave = NO;
-		[mainContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
+		mainContext.mergePolicy = bkpMergyPolicy;
 		
 		if (callback)
 			dispatch_async(dispatch_get_main_queue(), callback);

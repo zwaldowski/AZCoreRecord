@@ -6,65 +6,73 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-#if ((defined(__GNUC__) && ((__GNUC__ >= 4) || (__GNUC__ >= 5))) || defined(__clang__))
-#define DEPRECATED_ATTRIBUTE_M(...) __attribute__((deprecated (__VA_ARGS__)))
+#if __has_attribute(deprecated)
+	#define DEPRECATED_ATTRIBUTE_M(...) __attribute__((deprecated(__VA_ARGS__)))
 #else
-#define DEPRECATED_ATTRIBUTE_M(...) DEPRECATED_ATTRIBUTE
+	#define DEPRECATED_ATTRIBUTE_M(...) DEPRECATED_ATTRIBUTE
 #endif
 
 #ifdef MR_LOGGING
-	#define ARLog(...) NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat:__VA_ARGS__])
+	#define ARLog(...) NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat: __VA_ARGS__])
 #else
 	#define ARLog(...)
 #endif
 
-typedef void (^MRContextBlock)(NSManagedObjectContext *);
 typedef void (^MRBlock)(void);
+typedef void (^MRContextBlock)(NSManagedObjectContext *);
 typedef void (^MRErrorBlock)(NSError *);
+
 typedef enum {
-	MRCoreDataSaveOptionNone			   = 0,
-	MRCoreDataSaveOptionInBackground	   = 1 << 0,
-	MRCoreDataSaveOptionWithNewContext	 = 1 << 1
+	MRCoreDataSaveOptionNone			= 0,
+	MRCoreDataSaveOptionInBackground	= 1 << 0,
+	MRCoreDataSaveOptionWithNewContext	= 1 << 1
 } MRCoreDataSaveOption;
 
 @protocol MRErrorHandler <NSObject>
 @optional
-- (void)handleError:(NSError *)error;
-+ (void)handleError:(NSError *)error;
+
+- (void) handleError: (NSError *) error;
++ (void) handleError: (NSError *) error;
+
 @end
 
 @interface MagicalRecord : NSObject
 
-+ (void)setDefaultModelName:(NSString *)modelName;
+#pragma mark - Stack Setup
 
-+ (void)setupCoreDataStackWithStoreNamed:(NSString *)storeName;
-+ (void)setupCoreDataStackWithStoreAtURL:(NSURL *)storeURL;
-+ (void)setupAutoMigratingCoreDataStack;
-+ (void)setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName;
-+ (void)setupCoreDataStackWithAutoMigratingSqliteStoreAtURL:(NSURL *)storeURL;
-+ (void)setupCoreDataStackWithInMemoryStore;
++ (void) setModelName: (NSString *) modelName;
++ (void) setModelURL: (NSURL *) modelURL;
 
-+ (void)cleanUp DEPRECATED_ATTRIBUTE_M("Your app will do this automatically on exit.");
++ (void) setupAutoMigratingCoreDataStack;
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL;
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed: (NSString *) storeName;
++ (void) setupCoreDataStackWithInMemoryStore;
++ (void) setupCoreDataStackWithStoreAtURL: (NSURL *) storeURL;
++ (void) setupCoreDataStackWithStoreNamed: (NSString *) storeName;
 
-+ (void)handleError:(NSError *)error;
-+ (void)handleErrors:(NSError *)error DEPRECATED_ATTRIBUTE;
++ (void) cleanUp DEPRECATED_ATTRIBUTE_M("Your app will do this automatically on exit.");
 
-+ (void)setErrorHandler:(MRErrorBlock)block;
-+ (MRErrorBlock)errorHandler;
+#pragma mark - Error Handling
 
-+ (void)setErrorHandlerTarget:(id <MRErrorHandler>)target;
-+ (id <MRErrorHandler>)errorHandlerTarget;
++ (void) handleError: (NSError *) error;
++ (void) handleErrors: (NSError *) error DEPRECATED_ATTRIBUTE;
 
-/** @name Data commit */
++ (MRErrorBlock) errorHandler;
++ (void) setErrorHandler: (MRErrorBlock) block;
 
-+ (void) saveDataWithBlock:(MRContextBlock)block;
++ (id<MRErrorHandler>) errorHandlerTarget;
++ (void) setErrorHandlerTarget: (id<MRErrorHandler>) target;
 
-+ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block;
-+ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block completion:(MRBlock)callback;
+#pragma mark - Data Commit
 
-+ (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block;
-+ (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block success:(MRBlock)callback;
-+ (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block success:(MRBlock)callback failure:(MRErrorBlock)errorCallback;
++ (void) saveDataWithBlock: (MRContextBlock) block;
+
++ (void) saveDataInBackgroundWithBlock: (MRContextBlock) block;
++ (void) saveDataInBackgroundWithBlock: (MRContextBlock) block completion: (MRBlock) callback;
+
++ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block;
++ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback;
++ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback;
 
 @end
 
