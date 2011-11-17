@@ -29,7 +29,7 @@ static NSManagedObjectModel *defaultManagedObjectModel_ = nil;
 	return [self mergedModelFromBundles:nil];
 }
 
-+ (NSManagedObjectModel *)mergedObjectModelFromMainBundle;
++ (NSManagedObjectModel *)mergedObjectModelFromMainBundle
 {
 	return [self managedObjectModel];
 }

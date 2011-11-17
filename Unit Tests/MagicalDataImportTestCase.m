@@ -32,7 +32,7 @@
 	[MagicalRecord _cleanUp];
 }
 
-- (Class) testEntityClass;
+- (Class) testEntityClass
 {
 	return [NSManagedObject class];
 }

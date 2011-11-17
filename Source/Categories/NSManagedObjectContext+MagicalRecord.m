@@ -207,7 +207,7 @@ static const char *kNotfiesMainContextKey = "notifiesMainContext_";
 	return context;
 }
 
-+ (NSManagedObjectContext *) contextThatNotifiesDefaultContextOnMainThreadWithCoordinator:(NSPersistentStoreCoordinator *)coordinator;
++ (NSManagedObjectContext *) contextThatNotifiesDefaultContextOnMainThreadWithCoordinator:(NSPersistentStoreCoordinator *)coordinator
 {
 	NSManagedObjectContext *context = [self contextWithStoreCoordinator:coordinator];
 	context.notifiesMainContextOnSave = YES;
