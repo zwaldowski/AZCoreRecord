@@ -8,174 +8,192 @@
 
 @interface NSManagedObject (MagicalRecord) <NSCoding>
 
-/** @name Instance methods */
+#pragma mark - Instance Methods
 
-- (id) inContext:(NSManagedObjectContext *)otherContext;
+- (id) inContext: (NSManagedObjectContext *) otherContext;
 - (id) inThreadContext;
 
-- (void)delete;
-- (BOOL)deleteEntity DEPRECATED_ATTRIBUTE;
-- (void)deleteInContext:(NSManagedObjectContext *)context;
+- (void) delete;
+- (BOOL) deleteEntity DEPRECATED_ATTRIBUTE;
+- (void) deleteInContext: (NSManagedObjectContext *) context;
 
-- (id)objectWithMinValueFor:(NSString *)property;
-- (id)objectWithMinValueFor:(NSString *)property inContext:(NSManagedObjectContext *)context;
+- (id) objectWithMinValueFor: (NSString *) property;
+- (id) objectWithMinValueFor: (NSString *) property inContext: (NSManagedObjectContext *) context;
 
-@property (nonatomic, readonly) NSURL *uri;
+- (id) objectWithMaxValueFor: (NSString *) property;
+- (id) objectWithMaxValueFor: (NSString *) property inContext: (NSManagedObjectContext *) context;
 
-/** @name Default batch size */
+- (NSURL *) uri DEPRECATED_ATTRIBUTE;
+
+@property (nonatomic, readonly) NSURL *URI;
+
+#pragma mark - Default Batch Size
 
 + (NSUInteger) defaultBatchSize;
-+ (void) setDefaultBatchSize:(NSUInteger)newBatchSize;
++ (void) setDefaultBatchSize: (NSUInteger) newBatchSize;
 
-/** @name Fetch request helpers */
+#pragma mark - Fetch Request Helpers
 
-+ (NSArray *) executeFetchRequest:(NSFetchRequest *)request;
-+ (NSArray *) executeFetchRequest:(NSFetchRequest *)request inContext:(NSManagedObjectContext *)context;
-+ (id) executeFetchRequestAndReturnFirstObject:(NSFetchRequest *)request;
-+ (id) executeFetchRequestAndReturnFirstObject:(NSFetchRequest *)request inContext:(NSManagedObjectContext *)context;
++ (NSFetchRequest *) createFetchRequest;
++ (NSFetchRequest *) createFetchRequestInContext: (NSManagedObjectContext *) context;
 
-+ (NSFetchRequest *)createFetchRequest;
-+ (NSFetchRequest *)createFetchRequestInContext:(NSManagedObjectContext *)context;
++ (NSArray *) executeFetchRequest: (NSFetchRequest *) request;
++ (NSArray *) executeFetchRequest: (NSFetchRequest *) request inContext: (NSManagedObjectContext *) context;
 
-+ (NSArray *) ascendingSortDescriptors:(NSArray *)attributesToSortBy;
-+ (NSArray *) descendingSortDescriptors:(NSArray *)attributesToSortBy;
++ (id) executeFetchRequestAndReturnFirstObject: (NSFetchRequest *) request;
++ (id) executeFetchRequestAndReturnFirstObject: (NSFetchRequest *) request inContext: (NSManagedObjectContext *) context;
 
-/** @name Entity description */
++ (NSArray *) ascendingSortDescriptors: (NSArray *) attributesToSortBy;
++ (NSArray *) descendingSortDescriptors: (NSArray *) attributesToSortBy;
++ (NSArray *) sortAscending: (BOOL) ascending attributes: (NSArray *) attributesToSortBy;
 
-+ (NSEntityDescription *)entityDescription;
-+ (NSEntityDescription *)entityDescriptionInContext:(NSManagedObjectContext *)context;
-+ (NSArray *)propertiesNamed:(NSArray *)properties;
+#pragma mark - Entity Description
 
-/** @name Entity creation */
++ (NSArray *) propertiesNamed: (NSArray *) properties;
+
++ (NSEntityDescription *) entityDescription;
++ (NSEntityDescription *) entityDescriptionInContext: (NSManagedObjectContext *) context;
+
+#pragma mark - Entity Creation
 
 + (id) create;
 + (id) createEntity DEPRECATED_ATTRIBUTE;
-+ (id) createInContext:(NSManagedObjectContext *)context;
++ (id) createInContext: (NSManagedObjectContext *) context;
 
-/** @name Entity deletion */
+#pragma mark - Entity Deletion
 
-+ (BOOL) deleteAllMatchingPredicate:(NSPredicate *)predicate;
-+ (BOOL) deleteAllMatchingPredicate:(NSPredicate *)predicate inContext:(NSManagedObjectContext *)context;
++ (BOOL) deleteAllMatchingPredicate: (NSPredicate *) predicate;
++ (BOOL) deleteAllMatchingPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context;
 
 + (BOOL) truncateAll;
-+ (BOOL) truncateAllInContext:(NSManagedObjectContext *)context;
++ (BOOL) truncateAllInContext: (NSManagedObjectContext *) context;
 
-/** @name Counting entities */
-
-+ (NSNumber *) numberOfEntities;
-+ (NSNumber *) numberOfEntitiesWithContext:(NSManagedObjectContext *)context;
-+ (NSNumber *) numberOfEntitiesWithPredicate:(NSPredicate *)searchTerm;
-+ (NSNumber *) numberOfEntitiesWithPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
-
-+ (NSNumber *)aggregateOperation:(NSString *)function onAttribute:(NSString *)attributeName withPredicate:(NSPredicate *)predicate;
-+ (NSNumber *)aggregateOperation:(NSString *)function onAttribute:(NSString *)attributeName withPredicate:(NSPredicate *)predicate inContext:(NSManagedObjectContext *)context;
-
-+ (NSUInteger) countOfEntities;
-+ (NSUInteger) countOfEntitiesWithContext:(NSManagedObjectContext *)context;
-+ (NSUInteger) countOfEntitiesWithPredicate:(NSPredicate *)searchFilter;
-+ (NSUInteger) countOfEntitiesWithPredicate:(NSPredicate *)searchFilter inContext:(NSManagedObjectContext *)context;
+#pragma mark - Entity Count
 
 + (BOOL) hasAtLeastOneEntity;
-+ (BOOL) hasAtLeastOneEntityInContext:(NSManagedObjectContext *)context;
++ (BOOL) hasAtLeastOneEntityInContext: (NSManagedObjectContext *) context;
 
-/** @name Fetch requests for groups of items */
++ (NSUInteger) countOfEntities;
++ (NSUInteger) countOfEntitiesWithContext: (NSManagedObjectContext *) context;
++ (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter;
++ (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter inContext: (NSManagedObjectContext *) context;
 
-+ (NSFetchRequest *) requestAll;
-+ (NSFetchRequest *) requestAllInContext:(NSManagedObjectContext *)context;
-+ (NSFetchRequest *) requestAllWithPredicate:(NSPredicate *)searchTerm;
-+ (NSFetchRequest *) requestAllWithPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
-+ (NSFetchRequest *) requestAllWhere:(NSString *)property isEqualTo:(id)value;
-+ (NSFetchRequest *) requestAllWhere:(NSString *)property isEqualTo:(id)value inContext:(NSManagedObjectContext *)context;
-+ (NSFetchRequest *) requestAllWhere:(NSString *)property isEqualTo:(id)value sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending;
-+ (NSFetchRequest *) requestAllWhere:(NSString *)property isEqualTo:(id)value sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context;
-+ (NSFetchRequest *) requestAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending;
-+ (NSFetchRequest *) requestAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context;
-+ (NSFetchRequest *) requestAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm;
-+ (NSFetchRequest *) requestAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
++ (NSNumber *) numberOfEntities;
++ (NSNumber *) numberOfEntitiesWithContext: (NSManagedObjectContext *) context;
++ (NSNumber *) numberOfEntitiesWithPredicate: (NSPredicate *) searchTerm;
++ (NSNumber *) numberOfEntitiesWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-/** @name Fetch requests for single items */
++ (NSNumber *) aggregateOperation: (NSString *) function onAttribute: (NSString *) attributeName withPredicate: (NSPredicate *) predicate;
++ (NSNumber *) aggregateOperation: (NSString *) function onAttribute: (NSString *) attributeName withPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context;
+
+#pragma mark - Singleton-returning Fetch Request Factory Methods
 
 + (NSFetchRequest *) requestFirst;
-+ (NSFetchRequest *) requestFirstInContext:(NSManagedObjectContext *)context;
-+ (NSFetchRequest *) requestFirstWithPredicate:(NSPredicate *)searchTerm;
-+ (NSFetchRequest *) requestFirstWithPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
-+ (NSFetchRequest *) requestFirstWhere:(NSString *)property isEqualTo:(id)searchValue;
-+ (NSFetchRequest *) requestFirstWhere:(NSString *)property isEqualTo:(id)searchValue inContext:(NSManagedObjectContext *)context;
-+ (NSFetchRequest *) requestFirstWhere:(NSString *)property isEqualTo:(id)searchValue sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending;
-+ (NSFetchRequest *) requestFirstWhere:(NSString *)property isEqualTo:(id)searchValue sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context;
-+ (NSFetchRequest *) requestFirstSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending;
-+ (NSFetchRequest *) requestFirstSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context;
-+ (NSFetchRequest *) requestFirstSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm;
-+ (NSFetchRequest *) requestFirstSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
++ (NSFetchRequest *) requestFirstInContext: (NSManagedObjectContext *) context;
 
-+ (NSFetchRequest *) requestFirstByAttribute:(NSString *)attribute withValue:(id)searchValue DEPRECATED_ATTRIBUTE;
-+ (NSFetchRequest *) requestFirstByAttribute:(NSString *)attribute withValue:(id)searchValue inContext:(NSManagedObjectContext *)context DEPRECATED_ATTRIBUTE;
++ (NSFetchRequest *) requestFirstWithPredicate: (NSPredicate *) searchTerm;
++ (NSFetchRequest *) requestFirstWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-/** @name Fetching groups */
++ (NSFetchRequest *) requestFirstWhere: (NSString *) property isEqualTo: (id) searchValue;
++ (NSFetchRequest *) requestFirstWhere: (NSString *) property isEqualTo: (id) searchValue inContext: (NSManagedObjectContext *) context;
++ (NSFetchRequest *) requestFirstWhere: (NSString *) property isEqualTo: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
++ (NSFetchRequest *) requestFirstWhere: (NSString *) property isEqualTo: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
 
-+ (NSArray *)findAll;
-+ (NSArray *)findAllInContext:(NSManagedObjectContext *)context;
-+ (NSArray *)findAllWithPredicate:(NSPredicate *)searchTerm;
-+ (NSArray *)findAllWithPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
-+ (NSArray *) findAllWhere:(NSString *)property isEqualTo:(id)value;
-+ (NSArray *) findAllWhere:(NSString *)property isEqualTo:(id)value inContext:(NSManagedObjectContext *)context;
-+ (NSArray *) findAllWhere:(NSString *)property isEqualTo:(id)value sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending;
-+ (NSArray *) findAllWhere:(NSString *)property isEqualTo:(id)value sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context;
-+ (NSArray *)findAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending;
-+ (NSArray *)findAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context;
-+ (NSArray *)findAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm;
-+ (NSArray *)findAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
++ (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
++ (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
++ (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm;
++ (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-+ (NSArray *)findByAttribute:(NSString *)attribute withValue:(id)searchValue DEPRECATED_ATTRIBUTE;
-+ (NSArray *)findByAttribute:(NSString *)attribute withValue:(id)searchValue inContext:(NSManagedObjectContext *)context DEPRECATED_ATTRIBUTE;
-+ (NSArray *)findByAttribute:(NSString *)attribute withValue:(id)searchValue andOrderBy:(NSString *)sortTerm ascending:(BOOL)ascending DEPRECATED_ATTRIBUTE;
-+ (NSArray *)findByAttribute:(NSString *)attribute withValue:(id)searchValue andOrderBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context DEPRECATED_ATTRIBUTE;
++ (NSFetchRequest *) requestFirstByAttribute: (NSString *) attribute withValue: (id) searchValue DEPRECATED_ATTRIBUTE;
++ (NSFetchRequest *) requestFirstByAttribute: (NSString *) attribute withValue: (id) searchValue inContext: (NSManagedObjectContext *) context DEPRECATED_ATTRIBUTE;
 
-/** @name Fetching single objects */
+#pragma mark - Array-returning Fetch Request Factory Methods
 
-+ (id)findFirst;
-+ (id)findFirstInContext:(NSManagedObjectContext *)context;
-+ (id)findFirstWithPredicate:(NSPredicate *)searchTerm;
-+ (id)findFirstWithPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
-+ (id)findFirstWhere:(NSString *)property isEqualTo:(id)searchValue;
-+ (id)findFirstWhere:(NSString *)property isEqualTo:(id)searchValue inContext:(NSManagedObjectContext *)context;
-+ (id)findFirstWhere:(NSString *)property isEqualTo:(id)searchValue sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending;
-+ (id)findFirstWhere:(NSString *)property isEqualTo:(id)searchValue sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context;
-+ (id)findFirstSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending;
-+ (id)findFirstSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context;
-+ (id)findFirstSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm;
-+ (id)findFirstSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
++ (NSFetchRequest *) requestAll;
++ (NSFetchRequest *) requestAllInContext: (NSManagedObjectContext *) context;
 
-+ (id)findFirstWithPredicate:(NSPredicate *)searchTerm andRetrieveAttributes:(NSArray *)attributes;
-+ (id)findFirstWithPredicate:(NSPredicate *)searchTerm andRetrieveAttributes:(NSArray *)attributes inContext:(NSManagedObjectContext *)context;
++ (NSFetchRequest *) requestAllWithPredicate: (NSPredicate *) searchTerm;
++ (NSFetchRequest *) requestAllWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-+ (id)findFirstSortedBy:(NSString *)sortBy ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm andRetrieveAttributes:(id)attributes, ...;
-+ (id)findFirstSortedBy:(NSString *)sortBy ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context andRetrieveAttributes:(id)attributes, ...;
++ (NSFetchRequest *) requestAllWhere: (NSString *) property isEqualTo: (id) value;
++ (NSFetchRequest *) requestAllWhere: (NSString *) property isEqualTo: (id) value inContext: (NSManagedObjectContext *) context;
++ (NSFetchRequest *) requestAllWhere: (NSString *) property isEqualTo: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
++ (NSFetchRequest *) requestAllWhere: (NSString *) property isEqualTo: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
++ (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
++ (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
++ (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm;
++ (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-+ (id)findFirstSortedBy:(NSString *)sortBy ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm attributesToRetrieve:(NSArray *)attributes;
-+ (id)findFirstSortedBy:(NSString *)sortBy ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm attributesToRetrieve:(NSArray *)attributes inContext:(NSManagedObjectContext *)context;
+#pragma mark - Singleton-fetching Fetch Request Convenience Methods
 
-+ (id)findFirstWithPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortBy ascending:(BOOL)ascending andRetrieveAttributes:(id)attributes, ... DEPRECATED_ATTRIBUTE;
-+ (id)findFirstWithPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortBy ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context andRetrieveAttributes:(id)attributes, ... DEPRECATED_ATTRIBUTE;
-+ (id)findFirstByAttribute:(NSString *)attribute withValue:(id)searchValue DEPRECATED_ATTRIBUTE;
-+ (id)findFirstByAttribute:(NSString *)attribute withValue:(id)searchValue inContext:(NSManagedObjectContext *)context DEPRECATED_ATTRIBUTE;
-+ (id)findFirstWithPredicate:(NSPredicate *)searchterm sortedBy:(NSString *)property ascending:(BOOL)ascending DEPRECATED_ATTRIBUTE;
-+ (id)findFirstWithPredicate:(NSPredicate *)searchterm sortedBy:(NSString *)property ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context DEPRECATED_ATTRIBUTE;
++ (id) findFirst;
++ (id) findFirstInContext: (NSManagedObjectContext *) context;
 
-/** @name Fetched results controllers */
++ (id) findFirstWithPredicate: (NSPredicate *) searchTerm;
++ (id) findFirstWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
++ (id) findFirstWithPredicate: (NSPredicate *) searchTerm andRetrieveAttributes: (NSArray *) attributes;
++ (id) findFirstWithPredicate: (NSPredicate *) searchTerm andRetrieveAttributes: (NSArray *) attributes inContext: (NSManagedObjectContext *) context;
 
-#if (TARGET_OS_IPHONE)
++ (id) findFirstWhere: (NSString *) property isEqualTo: (id) searchValue;
++ (id) findFirstWhere: (NSString *) property isEqualTo: (id) searchValue inContext: (NSManagedObjectContext *) context;
++ (id) findFirstWhere: (NSString *) property isEqualTo: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
++ (id) findFirstWhere: (NSString *) property isEqualTo: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
 
-+ (void) performFetch:(NSFetchedResultsController *)controller;
++ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
++ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
++ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm;
++ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-+ (NSFetchedResultsController *) fetchAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm groupBy:(NSString *)groupingKeyPath;
-+ (NSFetchedResultsController *) fetchAllSortedBy:(NSString *)sortTerm ascending:(BOOL)ascending withPredicate:(NSPredicate *)searchTerm groupBy:(NSString *)groupingKeyPath inContext:(NSManagedObjectContext *)context;
++ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm andRetrieveAttributes: (id) attributes, ...;
++ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context andRetrieveAttributes: (id) attributes, ...;
 
-+ (NSFetchedResultsController *) fetchRequest:(NSFetchRequest *)request groupedBy:(NSString *)group;
-+ (NSFetchedResultsController *) fetchRequest:(NSFetchRequest *)request groupedBy:(NSString *)group inContext:(NSManagedObjectContext *)context;
++ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm attributesToRetrieve: (NSArray *) attributes;
++ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm attributesToRetrieve: (NSArray *) attributes inContext: (NSManagedObjectContext *) context;
 
-+ (NSFetchedResultsController *) fetchRequestAllGroupedBy:(NSString *)group withPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending;
-+ (NSFetchedResultsController *) fetchRequestAllGroupedBy:(NSString *)group withPredicate:(NSPredicate *)searchTerm sortedBy:(NSString *)sortTerm ascending:(BOOL)ascending inContext:(NSManagedObjectContext *)context;
++ (id) findFirstWithPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortBy ascending: (BOOL) ascending andRetrieveAttributes: (id) attributes, ... DEPRECATED_ATTRIBUTE;
++ (id) findFirstWithPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortBy ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context andRetrieveAttributes: (id) attributes, ... DEPRECATED_ATTRIBUTE;
++ (id) findFirstByAttribute: (NSString *) attribute withValue: (id) searchValue DEPRECATED_ATTRIBUTE;
++ (id) findFirstByAttribute: (NSString *) attribute withValue: (id) searchValue inContext: (NSManagedObjectContext *) context DEPRECATED_ATTRIBUTE;
++ (id) findFirstWithPredicate: (NSPredicate *) searchterm sortedBy: (NSString *) property ascending: (BOOL) ascending DEPRECATED_ATTRIBUTE;
++ (id) findFirstWithPredicate: (NSPredicate *) searchterm sortedBy: (NSString *) property ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context DEPRECATED_ATTRIBUTE;
+
+#pragma mark - Array-fetching Fetch Request Convenience Methods
+
++ (NSArray *) findAll;
++ (NSArray *) findAllInContext: (NSManagedObjectContext *) context;
+
++ (NSArray *) findAllWithPredicate: (NSPredicate *) searchTerm;
++ (NSArray *) findAllWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
+
++ (NSArray *) findAllWhere: (NSString *) property isEqualTo: (id) value;
++ (NSArray *) findAllWhere: (NSString *) property isEqualTo: (id) value inContext: (NSManagedObjectContext *) context;
++ (NSArray *) findAllWhere: (NSString *) property isEqualTo: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
++ (NSArray *) findAllWhere: (NSString *) property isEqualTo: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
+
++ (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
++ (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
++ (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm;
++ (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
+
++ (NSArray *) findByAttribute: (NSString *) attribute withValue: (id) searchValue DEPRECATED_ATTRIBUTE;
++ (NSArray *) findByAttribute: (NSString *) attribute withValue: (id) searchValue inContext: (NSManagedObjectContext *) context DEPRECATED_ATTRIBUTE;
++ (NSArray *) findByAttribute: (NSString *) attribute withValue: (id) searchValue andOrderBy: (NSString *) sortTerm ascending: (BOOL) ascending DEPRECATED_ATTRIBUTE;
++ (NSArray *) findByAttribute: (NSString *) attribute withValue: (id) searchValue andOrderBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context DEPRECATED_ATTRIBUTE;
+
+#pragma mark - Fetched Results Controller Convenience Methods
+
+#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
+
++ (void) performFetch: (NSFetchedResultsController *) controller;
+
++ (NSFetchedResultsController *) fetchAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm groupBy: (NSString *) groupingKeyPath;
++ (NSFetchedResultsController *) fetchAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm groupBy: (NSString *) groupingKeyPath inContext: (NSManagedObjectContext *) context;
+
++ (NSFetchedResultsController *) fetchRequest: (NSFetchRequest *) request groupedBy: (NSString *) group;
++ (NSFetchedResultsController *) fetchRequest: (NSFetchRequest *) request groupedBy: (NSString *) group inContext: (NSManagedObjectContext *) context;
+
++ (NSFetchedResultsController *) fetchRequestAllGroupedBy: (NSString *) group withPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
++ (NSFetchedResultsController *) fetchRequestAllGroupedBy: (NSString *) group withPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
 
 #endif
 
