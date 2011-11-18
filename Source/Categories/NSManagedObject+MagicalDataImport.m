@@ -148,12 +148,12 @@ static NSString *primaryKeyNameFromString(NSString *value)
 		if (!key.length)
 			return;
 		
-		id value = [objectData objectForKey:key];
+		id value = [objectData valueForKeyPath:key];
 		
 		for (int i = 1; i < 10 && value == nil; i++)
 		{
-			NSString *attributeName = [NSString stringWithFormat:@"%@.%d", key, i];
-			key = [[attributeInfo userInfo] valueForKey:attributeName];
+			NSString *attributeName = [NSString stringWithFormat:@"%@.%d", kMagicalRecordImportMapKey, i];
+			key = [attributeInfo.userInfo valueForKey:attributeName];
 			value = [objectData valueForKeyPath:key];
 		}
 		
@@ -212,7 +212,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
 	[relationships enumerateKeysAndObjectsUsingBlock:^(NSString *relationshipName, NSRelationshipDescription *relationshipInfo, BOOL *stop) {
 		NSString *lookupKey = [relationshipInfo.userInfo valueForKey:kMagicalRecordImportMapKey] ?: relationshipName;
 		
-		id relatedObjectData = [relationshipData valueForKey:lookupKey];
+		id relatedObjectData = [relationshipData valueForKeyPath:lookupKey];
 		if (!relatedObjectData || [relatedObjectData isEqual:[NSNull null]]) 
 			return;
 		
@@ -321,7 +321,7 @@ static NSString *primaryKeyNameFromString(NSString *value)
 	NSAssert3(primaryAttribute, @"Unable to determine primary attribute for %@. Specify either an attribute named %@ or the primary key in userInfo named '%@'", entity.name, attributeKey, kMagicalRecordImportPrimaryAttributeKey);
 	
 	NSString *lookupKey = [primaryAttribute.userInfo valueForKey:kMagicalRecordImportMapKey] ?: primaryAttribute.name;
-	id value = [objectData valueForKey:lookupKey];
+	id value = [objectData valueForKeyPath:lookupKey];
 	
 	NSManagedObject *managedObject = [self findFirstWhere:lookupKey isEqualTo:value inContext:context];
 	if (!managedObject) {

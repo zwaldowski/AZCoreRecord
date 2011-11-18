@@ -21,7 +21,7 @@
             </userInfo>
         </attribute>
         <userInfo>
-            <entry key="primaryAttribute" value="mapped"/>
+            <entry key="primaryAttribute" value="mappedEntityID"/>
         </userInfo>
     </entity>
     <entity name="SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey" representedClassName="SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey">
