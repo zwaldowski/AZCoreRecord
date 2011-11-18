@@ -22,14 +22,14 @@ Magical Record for Core Data was inspired by the ease of Ruby on Rails’ Active
 
 ## Setting up the Core Data Stack
 
-To get started, first, import the header file *CoreData+MagicalRecord.h* in your project’s `.pch` file. This will allow a global include of all the required headers. If you don’t want auto migration, an in-memory store, or a special name for your stack, simply start working! Otherwise, somewhere in your app delegate, in either the `-applicationDidFinishLaunching:withOptions:` method, or `-awakeFromNib`, use **one** of the following setup calls with the MagicalRecord metaclass:
+To get started, first, import the header file *CoreData+MagicalRecord.h* in your project’s `.pch` file. This will allow a global include of all the required headers. If you don’t want auto migration, an in-memory store, or a special name for your stack, simply start working! Otherwise, somewhere in your app delegate, in either the `-applicationDidFinishLaunching:withOptions:` method, or `-awakeFromNib`, use **one** of the following setup calls with the `MagicalRecord` metaclass:
 
 	+ (void) setupAutoMigratingDefaultCoreDataStack;
 	+ (void) setupCoreDataStackWithInMemoryStore;
 	+ (void) setupCoreDataStackWithStoreNamed:(NSString *)storeName;
 	+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName;
 
-Each call instantiates one of each piece of the Core Data stack, and provides getter and setter methods for these instances. These well known instances to MagicalRecord, and are recognized as “defaults”.
+Each call instantiates one of each piece of the Core Data stack, and provides getter and setter methods for these instances. These well known instances to Magical Record, and are recognized as “defaults”.
 
 And, before your app exits, you can use the clean up method:
 
@@ -37,7 +37,7 @@ And, before your app exits, you can use the clean up method:
 
 ### Default Managed Object Context 
 
-When using Core Data, you will deal with two types of objects the most: `NSManagedObject` and `NSManagedObjectContext`. MagicalRecord gives you a place for a default NSManagedObjectContext for use within your app. This is great for single threaded apps. You can easily get to this default context by calling:
+When using Core Data, you will deal with two types of objects the most: `NSManagedObject` and `NSManagedObjectContext`. Magical Record gives you a place for a default `NSManagedObjectContext` for use within your app. This is great for single threaded apps. You can easily get to this default context by calling:
 
 	NSManagedObjectContext *context = [NSManagedObjectContext defaultContext];
 
@@ -55,7 +55,7 @@ This will use the same object model and persistent store, but create an entirely
 
 #### Basic Finding
 
-Most methods in MagicalRecord return an `NSArray` of results. So, if you have an Entity called *Person*, related to a *Department* (as seen in various Apple Core Data documentation), to get all the *Person* entities from your persistent store:
+Most methods in Magical Record return an `NSArray` of results. So, if you have an Entity called *Person*, related to a *Department* (as seen in various Apple Core Data documentation), to get all the *Person* entities from your persistent store:
 
 	NSArray *people = [Person findAll];
 
@@ -218,12 +218,12 @@ To perform an action after this save block is completed, you can fill in a compl
 	
 This completion block is called on the main thread (queue), so this is also safe for triggering UI updates.
 
-MagicalRecord has a dedicated GCD queue on which it operates. This means that throughout your app, you only really have 2 queues (somewhat like threads) performing Core Data actions at any one time: one on the main queue, and another on this dedicated GCD queue.
+Magical Record has a dedicated GCD queue on which it operates. This means that throughout your app, you only really have 2 queues (somewhat like threads) performing Core Data actions at any one time: one on the main queue, and another on this dedicated GCD queue.
 
 # Data Import
 
 
-MagicalRecord can now import data from `NSDictionary`s into your Core Data store. This feature is currently under development, and is undergoing updates. Feel free to try it out, add tests and send in your feedback.
+Magical Record can now import data from `NSDictionary`s into your Core Data store. This feature is currently under development, and is undergoing updates. Feel free to try it out, add tests and send in your feedback.
 	
 # Extra Bits
 

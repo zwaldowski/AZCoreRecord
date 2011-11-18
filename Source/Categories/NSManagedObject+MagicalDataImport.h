@@ -1,6 +1,6 @@
 //
 //  NSManagedObject+MagicalDataImport.h
-//  MagicalRecord
+//  Magical Record
 //
 //  Created by Saul Mora on 6/28/11.
 //  Copyright 2011 Magical Panda Software. All rights reserved.
@@ -19,7 +19,7 @@
  already in the model, unless you plan on writing yourself a grand old garbage
  collection/duplicate resolution algorithm.
  
- MagicalRecord will use a number of user info keys on your entities, their
+ Magical Record will use a number of user info keys on your entities, their
  attributes, and their relationships to import. They are as follows:
  
  *Entities*
@@ -30,7 +30,7 @@
  useful for importing sub-entities in relationships.
  - `primaryAttribute` (`kMagicalRecordImportPrimaryAttributeKey`): The value for
  this key is used for comparing and locating model objects. If no value is
- provided for this key, MagicalRecord will search for a property with the name
+ provided for this key, Magical Record will search for a property with the name
  `xID`, where `x` is the first letter of the entity name in lowercase.
  
  *Attributes*
@@ -44,7 +44,7 @@
  value for this key. Note that it is recommended to use value transformers
  instead.
  - `dateFormat` (`kMagicalRecordImportCustomDateFormat`): For a date attribute,
- MagicalRecord can automatically format a string into a date object. The value
+ Magical Record can automatically format a string into a date object. The value
  of this key is used in the date formatter. If it is not set,
  "yyyy-MM-dd'T'HH:mm:ss'Z'" (`kMagicalRecordImportDefaultDateFormat`) is used by
  default.

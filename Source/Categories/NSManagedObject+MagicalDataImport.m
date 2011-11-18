@@ -1,6 +1,6 @@
 //
 //  NSManagedObject+MagicalDataImport.m
-//  MagicalRecord
+//  Magical Record
 //
 //  Created by Saul Mora on 6/28/11.
 //  Copyright 2011 Magical Panda Software. All rights reserved.
