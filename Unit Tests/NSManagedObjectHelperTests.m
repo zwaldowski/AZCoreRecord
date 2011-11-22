@@ -14,7 +14,7 @@
 
 - (void) setUpClass
 {
-	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];   
+	[NSManagedObjectModel _setDefaultModel:[NSManagedObjectModel modelNamed:@"TestModel.momd"]];   
 }
 
 - (void) setUp

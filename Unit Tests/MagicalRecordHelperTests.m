@@ -13,7 +13,7 @@
 
 - (void) setUp
 {
-	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
+	[NSManagedObjectModel _setDefaultModel:[NSManagedObjectModel modelNamed:@"TestModel.momd"]];
 }
 
 - (void) tearDown
@@ -24,7 +24,7 @@
 - (void) assertDefaultStack
 {
 	assertThat([NSManagedObjectContext defaultContext], is(notNilValue()));
-	assertThat([NSManagedObjectModel defaultManagedObjectModel], is(notNilValue()));
+	assertThat([NSManagedObjectModel defaultModel], is(notNilValue()));
 	assertThat([NSPersistentStoreCoordinator defaultStoreCoordinator], is(notNilValue()));
 	assertThat([NSPersistentStore defaultPersistentStore], is(notNilValue()));	
 }

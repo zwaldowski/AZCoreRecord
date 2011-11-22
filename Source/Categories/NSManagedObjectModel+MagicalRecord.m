@@ -6,67 +6,87 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-#import "NSManagedObjectModel+MagicalRecord.h"
 #import "MagicalRecord+Private.h"
+#import "NSManagedObjectModel+MagicalRecord.h"
 
-static NSManagedObjectModel *defaultManagedObjectModel_ = nil;
+static NSManagedObjectModel *_defaultManagedObjectModel = nil;
 
 @implementation NSManagedObjectModel (MagicalRecord)
 
-+ (NSManagedObjectModel *)defaultManagedObjectModel
+#pragma mark - Default Model
+
++ (NSManagedObjectModel *) defaultModel
 {
-	if (!defaultManagedObjectModel_) {
-		defaultManagedObjectModel_ = [self mergedModelFromBundles:nil];
+	if (!_defaultManagedObjectModel)
+	{
+		_defaultManagedObjectModel = [self model];
 	}
-	return defaultManagedObjectModel_;
-}
-
-+ (BOOL) _hasDefaultManagedObjectModel
-{
-	return (defaultManagedObjectModel_ != nil);
-}
-+ (void)_setDefaultManagedObjectModel:(NSManagedObjectModel *)newModel {
-	defaultManagedObjectModel_ = newModel;
-}
-
-+ (NSManagedObjectModel *)managedObjectModel {
-	return [self mergedModelFromBundles:nil];
-}
-
-+ (NSManagedObjectModel *)mergedObjectModelFromMainBundle
-{
-	return [self managedObjectModel];
-}
-
-+ (NSManagedObjectModel *)newManagedObjectModel {
-	return [self managedObjectModel];
-}
-
-+ (NSManagedObjectModel *)newModelNamed:(NSString *) modelName inBundleNamed:(NSString *) bundleName
-{
-	NSString *path = [[NSBundle mainBundle] pathForResource:[modelName stringByDeletingPathExtension] 
-													 ofType:[modelName pathExtension] 
-												inDirectory:bundleName];
-	NSURL *modelUrl = [NSURL fileURLWithPath:path];
 	
-	NSManagedObjectModel *mom = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelUrl];
-	
-	return mom;
+	return _defaultManagedObjectModel;
 }
 
-+ (NSManagedObjectModel *)newManagedObjectModelNamed:(NSString *)modelFileName
++ (BOOL) _hasDefaultModel
 {
-	NSString *path = [[NSBundle mainBundle] pathForResource:[modelFileName stringByDeletingPathExtension] 
-                                                     ofType:[modelFileName pathExtension]];
-	NSURL *momURL = [NSURL fileURLWithPath:path];
-	
-	NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL:momURL];
-	return model;
+	return !!_defaultManagedObjectModel;
+}
++ (void) _setDefaultModel: (NSManagedObjectModel *) newModel
+{
+	_defaultManagedObjectModel = newModel;
 }
 
-+ (NSManagedObjectModel *)managedObjectModelNamed:(NSString *)modelFileName
+#pragma mark - Model Factory Methods
+
++ (NSManagedObjectModel *) model
 {
-	return [self newManagedObjectModelNamed:modelFileName];
+	return [self mergedModelFromBundles: nil];
+}
++ (NSManagedObjectModel *) modelAtURL: (NSURL *) modelURL
+{
+	return [[self alloc] initWithContentsOfURL: modelURL];
+}
++ (NSManagedObjectModel *) modelNamed: (NSString *) modelName
+{
+	return [self modelNamed: modelName inBundle: [NSBundle mainBundle]];
+}
++ (NSManagedObjectModel *) modelNamed: (NSString *) modelName inBundle: (NSBundle *) bundle
+{
+	NSString *resource = [modelName stringByDeletingPathExtension];
+	NSString *pathExtension = [modelName pathExtension];
+	
+	NSURL *modelURL = [bundle URLForResource: resource withExtension: pathExtension];
+	if (!modelURL) modelURL = [bundle URLForResource: resource withExtension: @"momd"];
+	if (!modelURL) modelURL = [bundle URLForResource: resource withExtension: @"mom"];
+	NSAssert2(modelURL, @"Could not find model named %@ in bundle %@", modelName, bundle);
+	
+	return [NSManagedObjectModel modelAtURL: modelURL];
+}
++ (NSManagedObjectModel *) modelNamed: (NSString *) modelName inBundleNamed: (NSString *) bundleName
+{
+	NSString *resource = [modelName stringByDeletingPathExtension];
+	NSString *pathExtension = [modelName pathExtension];
+	
+	NSBundle *bundle = [NSBundle mainBundle];
+	NSURL *modelURL = [bundle URLForResource: resource withExtension: pathExtension subdirectory: bundleName];
+	if (!modelURL) modelURL = [bundle URLForResource: resource withExtension: @"momd" subdirectory: bundleName];
+	if (!modelURL) modelURL = [bundle URLForResource: resource withExtension: @"mom" subdirectory: bundleName];
+	NSAssert2(modelURL, @"Could not find model named %@ in bundle named %@", modelName, bundleName);
+	
+	return [NSManagedObjectModel modelAtURL: modelURL];
+}
+
+#pragma mark Deprecated
+
++ (NSManagedObjectModel *) mergedObjectModelFromMainBundle
+{
+	return [self model];
+}
++ (NSManagedObjectModel *) newManagedObjectModel
+{
+	return [self model];
+}
++ (NSManagedObjectModel *) managedObjectModelNamed: (NSString *) modelFileName
+{
+	return [self modelNamed: modelFileName];
 }
 
 @end

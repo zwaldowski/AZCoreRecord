@@ -8,14 +8,22 @@
 
 @interface NSManagedObjectModel (MagicalRecord)
 
-+ (NSManagedObjectModel *)defaultManagedObjectModel;
+#pragma mark - Default Model
 
-+ (NSManagedObjectModel *)managedObjectModel;
-+ (NSManagedObjectModel *)newManagedObjectModelNamed:(NSString *)modelFileName;
-+ (NSManagedObjectModel *)newModelNamed:(NSString *) modelName inBundleNamed:(NSString *) bundleName;
++ (NSManagedObjectModel *) defaultModel;
 
-+ (NSManagedObjectModel *)newManagedObjectModel DEPRECATED_ATTRIBUTE;
-+ (NSManagedObjectModel *)mergedObjectModelFromMainBundle DEPRECATED_ATTRIBUTE;
-+ (NSManagedObjectModel *)managedObjectModelNamed:(NSString *)modelFileName DEPRECATED_ATTRIBUTE;
+#pragma mark - Model Factory Methods
+
++ (NSManagedObjectModel *) model;
++ (NSManagedObjectModel *) modelAtURL: (NSURL *) modelURL;
++ (NSManagedObjectModel *) modelNamed: (NSString *) modelName;
++ (NSManagedObjectModel *) modelNamed: (NSString *) modelName inBundle: (NSBundle *) bundle;
++ (NSManagedObjectModel *) modelNamed: (NSString *) modelName inBundleNamed: (NSString *) bundleName;
+
+#pragma mark Deprecated
+
++ (NSManagedObjectModel *) newManagedObjectModel DEPRECATED_ATTRIBUTE;
++ (NSManagedObjectModel *) mergedObjectModelFromMainBundle DEPRECATED_ATTRIBUTE;
++ (NSManagedObjectModel *) managedObjectModelNamed: (NSString *) modelFileName DEPRECATED_ATTRIBUTE;
 
 @end

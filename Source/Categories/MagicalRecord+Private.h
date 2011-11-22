@@ -22,8 +22,8 @@ extern IMP magical_record_object_getSupersequent(id obj, SEL selector); // Defin
 
 @interface NSManagedObjectModel (MagicalRecordPrivate)
 
-+ (BOOL) _hasDefaultManagedObjectModel;
-+ (void) _setDefaultManagedObjectModel: (NSManagedObjectModel *) newModel;
++ (BOOL) _hasDefaultModel;
++ (void) _setDefaultModel: (NSManagedObjectModel *) newModel;
 
 @end
 

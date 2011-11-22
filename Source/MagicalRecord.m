@@ -105,15 +105,15 @@ IMP magical_record_object_getSupersequent(id obj, SEL selector)
 
 + (void) setModelName: (NSString *) modelName
 {
-	NSAssert1(![NSManagedObjectModel _hasDefaultManagedObjectModel], @"%s must be run before the default managed object model is created", sel_getName(_cmd));
-	NSManagedObjectModel *model = [NSManagedObjectModel newManagedObjectModelNamed: modelName];
-	[NSManagedObjectModel _setDefaultManagedObjectModel: model];
+	NSAssert1(![NSManagedObjectModel _hasDefaultModel], @"%s must be run before the default managed object model is created", sel_getName(_cmd));
+	NSManagedObjectModel *model = [NSManagedObjectModel modelNamed: modelName];
+	[NSManagedObjectModel _setDefaultModel: model];
 }
 + (void) setModelURL: (NSURL *) modelURL
 {
-	NSAssert1(![NSManagedObjectModel _hasDefaultManagedObjectModel], @"%s must be run before the default managed object model is created", sel_getName(_cmd));
+	NSAssert1(![NSManagedObjectModel _hasDefaultModel], @"%s must be run before the default managed object model is created", sel_getName(_cmd));
 	NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL: modelURL];
-	[NSManagedObjectModel _setDefaultManagedObjectModel: model];
+	[NSManagedObjectModel _setDefaultModel: model];
 }
 
 + (void) setupAutoMigratingCoreDataStack
@@ -154,7 +154,7 @@ IMP magical_record_object_getSupersequent(id obj, SEL selector)
 {
 	objc_removeAssociatedObjects(self);
 	[NSManagedObjectContext _setDefaultContext: nil];
-	[NSManagedObjectModel _setDefaultManagedObjectModel: nil];
+	[NSManagedObjectModel _setDefaultModel: nil];
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: nil];
 	[NSPersistentStore _setDefaultPersistentStore: nil];
 }
@@ -166,7 +166,7 @@ IMP magical_record_object_getSupersequent(id obj, SEL selector)
 	NSMutableString *status = [NSMutableString stringWithString:@"Current Default Core Data Stack: ---- \n"];
 	
 	[status appendFormat: @"Context:     %@\n", [NSManagedObjectContext defaultContext]];
-	[status appendFormat: @"Model:       %@\n", [NSManagedObjectModel defaultManagedObjectModel]];
+	[status appendFormat: @"Model:       %@\n", [NSManagedObjectModel defaultModel]];
 	[status appendFormat: @"Coordinator: %@\n", [NSPersistentStoreCoordinator defaultStoreCoordinator]];
 	[status appendFormat: @"Store:       %@\n", [NSPersistentStore defaultPersistentStore]];
 	
