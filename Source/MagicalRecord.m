@@ -15,6 +15,90 @@ static void *kErrorHandlerTargetKey;
 static void *kErrorHandlerIsClassKey;
 static void *kErrorHandlerBlockKey;
 
+dispatch_queue_t magical_record_get_background_queue(void)
+{
+	static dispatch_once_t once;
+	static dispatch_queue_t queue;
+	dispatch_once(&once, ^{
+		queue = dispatch_queue_create("com.magicalpanda.MagicalRecord.backgroundQueue", 0);
+	});
+	
+	return queue;
+}
+
+IMP magical_record_object_getSupersequent(id obj, SEL selector)
+{
+	BOOL found = NO;
+	
+	NSUInteger returnAddress = (NSUInteger) __builtin_return_address(0);
+	NSUInteger closest = 0;
+	
+	// Iterate over the class and all superclasses
+	Class currentClass = object_getClass(obj);
+	while (currentClass)
+	{
+		// Iterate over all instance methods for this class
+		unsigned int methodCount;
+		Method *methodList = class_copyMethodList(currentClass, &methodCount);
+		
+		for (unsigned int i = 0; i < methodCount; i++)
+		{
+			// Ignore methods with different selectors
+			if (method_getName(methodList[i]) != selector)
+				continue;
+			
+			// If this address is closer, use it instead
+			NSUInteger address = (NSUInteger) method_getImplementation(methodList[i]);
+			if (address < returnAddress && address > closest)
+			{
+				closest = address;
+			}
+		}
+		
+		free(methodList);
+		currentClass = class_getSuperclass(currentClass);
+	}
+	
+	IMP skip = (IMP) closest;
+	
+    currentClass = object_getClass(obj);
+    while (currentClass)
+    {
+        // Get the list of methods for this class
+        unsigned int methodCount;
+        Method *methodList = class_copyMethodList(currentClass, &methodCount);
+		
+        // Iterate over all methods
+        for (unsigned int i = 0; i < methodCount; ++i)
+        {
+            // Look for the selector
+            if (method_getName(methodList[i]) != selector)
+                continue;
+			
+            IMP implementation = method_getImplementation(methodList[i]);
+			
+            // Check if this is the "skip" implementation
+            if (implementation == skip)
+            {
+                found = YES;
+            }
+            else if (found)
+            {
+                // Return the match.
+                free(methodList);
+                return implementation;
+            }
+        }
+		
+        // No match found. Traverse up through superclass's methods.
+        free(methodList);
+		
+        currentClass = class_getSuperclass(currentClass);
+    }
+	
+    return nil;
+}
+
 @implementation MagicalRecord
 
 #pragma mark - Stack Setup
@@ -178,22 +262,7 @@ static void *kErrorHandlerBlockKey;
 	BOOL wantsBackground = (options & MRCoreDataSaveOptionInBackground);
 	BOOL wantsNewContext = (options & MRCoreDataSaveOptionWithNewContext) || ![NSThread isMainThread];
 	
-	dispatch_queue_t queue = nil;
-	if (wantsBackground)
-	{
-		static dispatch_once_t once;
-		static dispatch_queue_t MRBackgroundSaveQueue;
-		dispatch_once(&once, ^{
-			MRBackgroundSaveQueue = dispatch_queue_create("com.magicalpanda.magicalrecord.backgroundsaves", 0);
-		});
-		
-		queue = MRBackgroundSaveQueue;
-	}
-	else
-	{
-		queue = dispatch_get_current_queue();
-	}
-	
+	dispatch_queue_t queue = (wantsBackground) ? magical_record_get_background_queue() : dispatch_get_current_queue();
 	dispatch_async(queue, ^{
 		NSManagedObjectContext *mainContext  = [NSManagedObjectContext defaultContext];
 		NSManagedObjectContext *localContext = mainContext;
@@ -201,7 +270,7 @@ static void *kErrorHandlerBlockKey;
 		id bkpMergyPolicy = mainContext.mergePolicy;
 		
 		if (!wantsBackground || wantsNewContext) {
-			localContext = [NSManagedObjectContext contextThatNotifiesDefaultContextOnMainThread];
+			localContext = [[self defaultContext] newChildContext];
 			
 			mainContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
 			localContext.mergePolicy = NSOverwriteMergePolicy;
@@ -215,11 +284,9 @@ static void *kErrorHandlerBlockKey;
 			[localContext saveWithErrorHandler: errorCallback];
 		}
 		
-		localContext.notifiesMainContextOnSave = NO;
 		mainContext.mergePolicy = bkpMergyPolicy;
 		
-		if (callback)
-			dispatch_async(dispatch_get_main_queue(), callback);
+		if (callback) dispatch_async(dispatch_get_main_queue(), callback);
 	});
 }
 

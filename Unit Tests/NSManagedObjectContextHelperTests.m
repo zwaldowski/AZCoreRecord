@@ -18,11 +18,12 @@
 	assertThat(firstContext, is(equalTo(secondContext)));
 }
 
-- (void) testCanNotifyDefaultContextOnSave
+- (void) testCanCreateChildContext
 {
-	NSManagedObjectContext *testContext = [NSManagedObjectContext contextThatNotifiesDefaultContextOnMainThread];
-
-	assertThatBool(testContext.notifiesMainContextOnSave, is(equalToBool(YES)));
+	NSManagedObjectContext *defaultContext = [NSManagedObjectContext defaultContext];
+	NSManagedObjectContext *childContext = [defaultContext newChildContext];
+	
+	assertThat(childContext.parentContext, is(equalTo(defaultContext)));
 }
 
 
