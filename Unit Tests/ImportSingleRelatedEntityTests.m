@@ -36,6 +36,7 @@
 - (void) setUp
 {
 	[super setUp];
+	
 	self.testEntity = [SingleRelatedEntity importFromDictionary:self.testEntityData];
 	[[NSManagedObjectContext defaultContext] save];
 }
@@ -73,7 +74,7 @@
 	assertThat(testRelatedEntity, is(notNilValue()));
 	
 	assertThat([testRelatedEntity sampleBaseAttribute], containsString(@"BASE"));
-	assertThat([testRelatedEntity sampleConcreteAttribute], containsString(@"DECENDANT"));
+	assertThat([testRelatedEntity sampleConcreteAttribute], containsString(@"DESCENDANT"));
 }
 
 - (void) testImportAnEntityRelatedToASubEntityViaToManyRelationship
@@ -84,7 +85,7 @@
 	assertThat(testRelatedEntity, is(notNilValue()));
 	
 	assertThat([testRelatedEntity sampleBaseAttribute], containsString(@"BASE"));
-	assertThat([testRelatedEntity sampleConcreteAttribute], containsString(@"DECENDANT"));
+	assertThat([testRelatedEntity sampleConcreteAttribute], containsString(@"DESCENDANT"));
 }
 
 

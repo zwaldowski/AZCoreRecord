@@ -21,7 +21,8 @@
 
 - (void) setUpClass
 {
-	[NSManagedObjectModel _setDefaultModel:[NSManagedObjectModel modelNamed:@"TestModel.momd"]];
+	[MagicalRecord _cleanUp];
+	[MagicalRecord setModelName: @"TestModel.momd"];
 	[MagicalRecord setupCoreDataStackWithInMemoryStore];
     
 	id singleEntity = [self dataFromJSONFixture];
@@ -94,9 +95,9 @@
 	assertThat(testEntity.notInJsonAttribute, containsString(@"Core Data Model"));
 }
 
-#if TARGET_OS_IPHONE 
+#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 
-#if defined(__IPHONE_5_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_5_0
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 50000
 
 - (void) testImportUIColorAttributeToEntity
 {
@@ -113,6 +114,7 @@
 		assertThatFloat(blue, is(equalToFloat(225./255.)));
 	}
 }
+
 #endif
 
 - (NSDate *) dateFromString:(NSString *)date

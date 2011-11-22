@@ -12,19 +12,11 @@
 
 @implementation NSManagedObjectHelperTests
 
-- (void) setUpClass
-{
-	[NSManagedObjectModel _setDefaultModel:[NSManagedObjectModel modelNamed:@"TestModel.momd"]];   
-}
-
 - (void) setUp
 {
-	[MagicalRecord setupCoreDataStackWithInMemoryStore];
-}
-
-- (void) tearDown
-{
 	[MagicalRecord _cleanUp];
+	[MagicalRecord setModelName: @"TestModel.momd"];
+	[MagicalRecord setupCoreDataStackWithInMemoryStore];
 }
 
 -(BOOL)shouldRunOnMainThread

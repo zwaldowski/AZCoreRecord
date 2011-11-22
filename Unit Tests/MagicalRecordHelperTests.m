@@ -13,12 +13,8 @@
 
 - (void) setUp
 {
-	[NSManagedObjectModel _setDefaultModel:[NSManagedObjectModel modelNamed:@"TestModel.momd"]];
-}
-
-- (void) tearDown
-{
 	[MagicalRecord _cleanUp];
+	[MagicalRecord setModelName: @"TestModel.momd"];
 }
 
 - (void) assertDefaultStack

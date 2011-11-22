@@ -11,11 +11,12 @@
 
 @implementation MagicalDataImportTestCase
 
-@synthesize testEntityData = testEntityData__;
-@synthesize testEntity = testEntity__;
+@synthesize testEntityData = _testEntityData;
+@synthesize testEntity = _testEntity;
 
 - (void) setUp
 {
+	[MagicalRecord _cleanUp];
 	[MagicalRecord setModelName:@"TestModel.momd"];
 	[MagicalRecord setupCoreDataStackWithInMemoryStore];
 	
@@ -25,11 +26,6 @@
 	}
 	
 	self.testEntityData = [self dataFromJSONFixture];
-}
-
-- (void) tearDown
-{
-	[MagicalRecord _cleanUp];
 }
 
 - (Class) testEntityClass

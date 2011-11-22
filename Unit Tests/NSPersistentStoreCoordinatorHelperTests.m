@@ -7,11 +7,13 @@
 //
 
 #import "NSPersistentStoreCoordinatorHelperTests.h"
+#import "MagicalRecord+Private.h"
 
 @implementation NSPersistentStoreCoordinatorHelperTests
 
 - (void) setUp
 {
+	[MagicalRecord _cleanUp];
 	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:@"TestStore.sqlite"];
 	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 }

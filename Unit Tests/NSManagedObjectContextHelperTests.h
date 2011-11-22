@@ -6,8 +6,6 @@
 //  Copyright 2011 Magical Panda Software LLC. All rights reserved.
 //
 
-
-
 @interface NSManagedObjectContextHelperTests : GHTestCase
 
 @end
