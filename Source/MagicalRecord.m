@@ -11,6 +11,8 @@
 #import "MagicalRecord+Private.h"
 #import <objc/runtime.h>
 
+static dispatch_queue_t backgroundQueue = nil;
+
 static void *kErrorHandlerTargetKey;
 static void *kErrorHandlerIsClassKey;
 static void *kErrorHandlerBlockKey;
@@ -18,12 +20,11 @@ static void *kErrorHandlerBlockKey;
 dispatch_queue_t mr_get_background_queue(void)
 {
 	static dispatch_once_t once;
-	static dispatch_queue_t queue;
 	dispatch_once(&once, ^{
-		queue = dispatch_queue_create("com.magicalpanda.MagicalRecord.backgroundQueue", 0);
+		backgroundQueue = dispatch_queue_create("com.magicalpanda.MagicalRecord.backgroundQueue", 0);
 	});
 	
-	return queue;
+	return backgroundQueue;
 }
 
 IMP mr_getSupersequent(id obj, SEL selector)
@@ -153,6 +154,8 @@ IMP mr_getSupersequent(id obj, SEL selector)
 + (void) _cleanUp
 {
 	objc_removeAssociatedObjects(self);
+	if (backgroundQueue) dispatch_release(backgroundQueue), backgroundQueue = nil;
+	
 	[NSManagedObjectContext _setDefaultContext: nil];
 	[NSManagedObjectModel _setDefaultModel: nil];
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: nil];
