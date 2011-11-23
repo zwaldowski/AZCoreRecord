@@ -123,12 +123,12 @@ IMP mr_getSupersequent(id obj, SEL selector)
 }
 + (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreAtURL: storeURL];
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithStoreAtURL: storeURL ofType: NSSQLiteStoreType automaticLightweightMigrationEnabled: YES];
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
 }
 + (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed: (NSString *) storeName
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithAutoMigratingSqliteStoreNamed: storeName];
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithStoreNamed: storeName ofType: NSSQLiteStoreType automaticLightweightMigrationEnabled: YES];
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
 }
 + (void) setupCoreDataStackWithInMemoryStore
@@ -138,12 +138,12 @@ IMP mr_getSupersequent(id obj, SEL selector)
 }
 + (void) setupCoreDataStackWithStoreAtURL: (NSURL *) storeURL
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreAtURL: storeURL];
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithStoreAtURL: storeURL ofType: NSSQLiteStoreType];
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
 }
 + (void) setupCoreDataStackWithStoreNamed: (NSString *) storeName
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreNamed: storeName];
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithStoreNamed: storeName ofType: NSSQLiteStoreType];
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
 }
 

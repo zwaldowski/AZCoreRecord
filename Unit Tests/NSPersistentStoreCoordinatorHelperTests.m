@@ -20,7 +20,7 @@
 
 - (void) testCreateCoodinatorWithSqlitePersistentStore
 {
-	NSPersistentStoreCoordinator *testCoordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreNamed:@"TestStore.sqlite"];
+	NSPersistentStoreCoordinator *testCoordinator = [NSPersistentStoreCoordinator coordinatorWithStoreNamed: @"TestStore.sqlite" ofType: NSSQLiteStoreType];
 	
 	assertThatUnsignedInteger([[testCoordinator persistentStores] count], is(equalToUnsignedInteger(1)));
 
@@ -40,7 +40,7 @@
 
 - (void) testCanAddAnInMemoryStoreToAnExistingCoordinator
 {
-	NSPersistentStoreCoordinator *testCoordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreNamed:@"TestStore.sqlite"];
+	NSPersistentStoreCoordinator *testCoordinator = [NSPersistentStoreCoordinator coordinatorWithStoreNamed: @"TestStore.sqlite" ofType: NSSQLiteStoreType];
 	
 	assertThatUnsignedInteger([[testCoordinator persistentStores] count], is(equalToUnsignedInteger(1)));
 	
