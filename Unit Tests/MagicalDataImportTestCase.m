@@ -17,8 +17,8 @@
 - (void) setUp
 {
 	[MagicalRecord _cleanUp];
-	[MagicalRecord setModelName:@"TestModel.momd"];
-	[MagicalRecord setupCoreDataStackWithInMemoryStore];
+	[NSManagedObjectModel modelNamed: @"TestModel.momd"];
+	[NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
 	
 	if ([self respondsToSelector:@selector(setupTestData)])
 	{

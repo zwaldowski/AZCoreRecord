@@ -8,13 +8,15 @@
 #import "NSPersistentStoreCoordinator+MagicalRecord.h"
 #import "MagicalRecord+Private.h"
 
+#define return_storeCoordinator(x) \
+	do { \
+		NSPersistentStoreCoordinator *_storeCoordinator = (x); \
+		if (!_defaultCoordinator && [MagicalRecord shouldAutoCreateDefaultStoreCoordinator]) \
+			[self _setDefaultStoreCoordinator: _storeCoordinator]; \
+		return _storeCoordinator; \
+	} while (0)
+
 static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
-
-@interface NSPersistentStoreCoordinator ()
-
-- (void) setUpStoreWithType: (NSString *) storeType URL: (NSURL *) storeURL options: (NSDictionary *) options;
-
-@end
 
 @implementation NSPersistentStoreCoordinator (MagicalRecord)
 
@@ -22,7 +24,7 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 
 + (NSPersistentStoreCoordinator *) defaultStoreCoordinator
 {
-	if (!_defaultCoordinator)
+	if (!_defaultCoordinator && [MagicalRecord shouldAutoCreateDefaultModel])
 	{
 		[self _setDefaultStoreCoordinator: [self coordinator]];
 	}
@@ -57,9 +59,12 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	NSManagedObjectModel *model = [NSManagedObjectModel defaultModel];
 	
 	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
-	[psc setUpStoreWithType: persistentStore.type URL: persistentStore.URL options: persistentStore.options];
 	
-	return psc;
+	NSError *error = nil;
+	[psc addPersistentStoreWithType: persistentStore.type configuration: persistentStore.configurationName URL: persistentStore.URL options: persistentStore.options error: &error];
+	[MagicalRecord handleError: error];
+	
+	return_storeCoordinator(psc);
 }
 
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType
@@ -81,37 +86,21 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	NSManagedObjectModel *model = [NSManagedObjectModel defaultModel];
 	
 	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
-	[psc setUpStoreWithType: storeType URL: storeURL options: options];
 	
-	return psc;
-
-}
-
-- (void) setUpStoreWithType: (NSString *) storeType URL: (NSURL *) storeURL options: (NSDictionary *) options
-{
-	// Create path to store
+	// Create path to store (if necessary)
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	NSURL *storeDirectory = [storeURL URLByDeletingLastPathComponent];
 	
-	NSError *error = nil;
-	[fileManager createDirectoryAtURL: storeDirectory withIntermediateDirectories: YES attributes: nil error: &error];
-    [MagicalRecord handleError: error];
-	error = nil;
+	NSError *fmError = nil;
+	[fileManager createDirectoryAtURL: storeDirectory withIntermediateDirectories: YES attributes: nil error: &fmError];
+    [MagicalRecord handleError: fmError];
 	
-	[self addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &error];
-	[MagicalRecord handleError: error];
-	error = nil;
+	// Add the persistent store
+	NSError *pscError = nil;
+	[psc addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &pscError];
+	[MagicalRecord handleError: pscError];
 	
-	//HACK: Lame solution to fix automigration error "Migration failed after first pass"
-	if (!self.persistentStores.count)
-	{
-		dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC);
-		dispatch_after(when, dispatch_get_main_queue(), ^(void){
-			NSError *error = nil;
-			[self addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &error];
-			[MagicalRecord handleError: error];
-		});
-	}
+	return_storeCoordinator(psc);
 }
 
 #pragma mark - Automatic Lightweight Migration
@@ -132,23 +121,29 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled
 {
-	if (enabled)
+	// If we don't want ALM...
+	if (!enabled) return [self coordinatorWithStoreAtURL: storeURL ofType: storeType];
+	
+	NSDictionary *options = [self automaticLightweightMigrationOptions];
+	NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
+	
+	// HACK: Lame solution to fix automigration error "Migration failed after first pass"
+	if (!psc.persistentStores.count)
 	{
-		NSDictionary *options = [self automaticLightweightMigrationOptions];
-		return [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
+		dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC);
+		dispatch_after(when, dispatch_get_main_queue(), ^(void) {
+			NSError *error = nil;
+			[psc addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &error];
+			[MagicalRecord handleError: error];
+		});
 	}
 	
-	return [self coordinatorWithStoreAtURL: storeURL ofType: storeType];
+	return psc;
 }
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled
 {
-	if (enabled)
-	{
-		NSDictionary *options = [self automaticLightweightMigrationOptions];
-		return [self coordinatorWithStoreNamed: storeName ofType: storeType options: options];
-	}
-	
-	return [self coordinatorWithStoreNamed: storeName ofType: storeType];
+	NSURL *storeURL = [NSPersistentStore URLForStoreName: storeName];
+	return [self coordinatorWithStoreAtURL: storeURL ofType: storeType automaticLightweightMigrationEnabled: enabled];
 }
 
 #pragma mark - In-Memory Store
@@ -160,7 +155,7 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
 	[psc addInMemoryStore];
 	
-	return psc;
+	return_storeCoordinator(psc);
 }
 
 - (NSPersistentStore *) addInMemoryStore

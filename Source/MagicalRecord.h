@@ -38,24 +38,17 @@ typedef enum {
 
 @interface MagicalRecord : NSObject
 
-#pragma mark - Stack Setup
+#pragma mark - Auto Creation of Default Model / Store Coordinator
 
-+ (void) setModelName: (NSString *) modelName;
-+ (void) setModelURL: (NSURL *) modelURL;
++ (BOOL) shouldAutoCreateDefaultModel;
++ (void) setShouldAutoCreateDefaultModel: (BOOL) shouldAutoCreate;
 
-+ (void) setupAutoMigratingCoreDataStack;
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL;
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed: (NSString *) storeName;
-+ (void) setupCoreDataStackWithInMemoryStore;
-+ (void) setupCoreDataStackWithStoreAtURL: (NSURL *) storeURL;
-+ (void) setupCoreDataStackWithStoreNamed: (NSString *) storeName;
-
-+ (void) cleanUp DEPRECATED_ATTRIBUTE_M("Your app will do this automatically on exit.");
++ (BOOL) shouldAutoCreateDefaultStoreCoordinator;
++ (void) setShouldAutoCreateDefaultStoreCoordinator: (BOOL) shouldAutoCreate;
 
 #pragma mark - Error Handling
 
 + (void) handleError: (NSError *) error;
-+ (void) handleErrors: (NSError *) error DEPRECATED_ATTRIBUTE;
 
 + (MRErrorBlock) errorHandler;
 + (void) setErrorHandler: (MRErrorBlock) block;
@@ -73,6 +66,19 @@ typedef enum {
 + (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block;
 + (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback;
 + (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback;
+
+#pragma mark Deprecated
+
++ (void) cleanUp DEPRECATED_ATTRIBUTE_M("Your app will do this automatically on exit.");
+
++ (void) handleErrors: (NSError *) error DEPRECATED_ATTRIBUTE;
+
++ (void) setupAutoMigratingCoreDataStack DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreAtURL/Named:storeType:automaticLightweightMigrationEnabled:] instead");
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreAtURL:storeType:automaticLightweightMigrationEnabled:] instead");
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreNamed:storeType:automaticLightweightMigrationEnabled:] instead");
++ (void) setupCoreDataStackWithInMemoryStore DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithInMemoryStore]");
++ (void) setupCoreDataStackWithStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreAtURL:ofType:]");
++ (void) setupCoreDataStackWithStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreNamed:ofType:]");
 
 @end
 

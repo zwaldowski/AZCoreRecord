@@ -22,8 +22,8 @@
 - (void) setUpClass
 {
 	[MagicalRecord _cleanUp];
-	[MagicalRecord setModelName: @"TestModel.momd"];
-	[MagicalRecord setupCoreDataStackWithInMemoryStore];
+	[NSManagedObjectModel modelNamed: @"TestModel.momd"];
+	[NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
     
 	id singleEntity = [self dataFromJSONFixture];
 	

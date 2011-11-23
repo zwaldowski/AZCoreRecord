@@ -11,6 +11,9 @@
 #import "MagicalRecord+Private.h"
 #import <objc/runtime.h>
 
+static BOOL _shouldAutoCreateDefaultModel = YES;
+static BOOL _shouldAutoCreateDefaultStoreCoordinator = YES;
+
 static dispatch_queue_t backgroundQueue = nil;
 
 static void *kErrorHandlerTargetKey;
@@ -104,19 +107,6 @@ IMP mr_getSupersequent(id obj, SEL selector)
 
 #pragma mark - Stack Setup
 
-+ (void) setModelName: (NSString *) modelName
-{
-	NSAssert1(![NSManagedObjectModel _hasDefaultModel], @"%s must be run before the default managed object model is created", sel_getName(_cmd));
-	NSManagedObjectModel *model = [NSManagedObjectModel modelNamed: modelName];
-	[NSManagedObjectModel _setDefaultModel: model];
-}
-+ (void) setModelURL: (NSURL *) modelURL
-{
-	NSAssert1(![NSManagedObjectModel _hasDefaultModel], @"%s must be run before the default managed object model is created", sel_getName(_cmd));
-	NSManagedObjectModel *model = [[NSManagedObjectModel alloc] initWithContentsOfURL: modelURL];
-	[NSManagedObjectModel _setDefaultModel: model];
-}
-
 + (void) setupAutoMigratingCoreDataStack
 {
 	[self setupCoreDataStackWithAutoMigratingSqliteStoreNamed: kMagicalRecordDefaultStoreFileName];
@@ -160,6 +150,26 @@ IMP mr_getSupersequent(id obj, SEL selector)
 	[NSManagedObjectModel _setDefaultModel: nil];
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: nil];
 	[NSPersistentStore _setDefaultPersistentStore: nil];
+}
+
+#pragma mark - Auto Creation of Default Model / Store Coordinator
+
++ (BOOL) shouldAutoCreateDefaultModel
+{
+	return _shouldAutoCreateDefaultModel;
+}
++ (void) setShouldAutoCreateDefaultModel: (BOOL) shouldAutoCreate
+{
+	_shouldAutoCreateDefaultModel = shouldAutoCreate;
+}
+
++ (BOOL) shouldAutoCreateDefaultStoreCoordinator
+{
+	return _shouldAutoCreateDefaultStoreCoordinator;
+}
++ (void) setShouldAutoCreateDefaultStoreCoordinator: (BOOL) shouldAutoCreate
+{
+	_shouldAutoCreateDefaultStoreCoordinator = shouldAutoCreate;
 }
 
 #pragma mark - Error Handling

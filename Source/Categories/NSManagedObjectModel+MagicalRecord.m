@@ -9,6 +9,14 @@
 #import "MagicalRecord+Private.h"
 #import "NSManagedObjectModel+MagicalRecord.h"
 
+#define return_model(x) \
+	do { \
+		NSManagedObjectModel *_model = (x); \
+		if (!_defaultManagedObjectModel && [MagicalRecord shouldAutoCreateDefaultModel]) \
+			[self _setDefaultModel: _model]; \
+		return _model; \
+	} while (0)
+
 static NSManagedObjectModel *_defaultManagedObjectModel = nil;
 
 @implementation NSManagedObjectModel (MagicalRecord)
@@ -17,7 +25,7 @@ static NSManagedObjectModel *_defaultManagedObjectModel = nil;
 
 + (NSManagedObjectModel *) defaultModel
 {
-	if (!_defaultManagedObjectModel)
+	if (!_defaultManagedObjectModel && [MagicalRecord shouldAutoCreateDefaultModel])
 	{
 		_defaultManagedObjectModel = [self model];
 	}
@@ -38,15 +46,15 @@ static NSManagedObjectModel *_defaultManagedObjectModel = nil;
 
 + (NSManagedObjectModel *) model
 {
-	return [self mergedModelFromBundles: nil];
+	return_model([self mergedModelFromBundles: nil]);
 }
 + (NSManagedObjectModel *) modelAtURL: (NSURL *) modelURL
 {
-	return [[self alloc] initWithContentsOfURL: modelURL];
+	return_model([[self alloc] initWithContentsOfURL: modelURL]);
 }
 + (NSManagedObjectModel *) modelNamed: (NSString *) modelName
 {
-	return [self modelNamed: modelName inBundle: [NSBundle mainBundle]];
+	return_model([self modelNamed: modelName inBundle: [NSBundle mainBundle]]);
 }
 + (NSManagedObjectModel *) modelNamed: (NSString *) modelName inBundle: (NSBundle *) bundle
 {
@@ -58,7 +66,7 @@ static NSManagedObjectModel *_defaultManagedObjectModel = nil;
 	if (!modelURL) modelURL = [bundle URLForResource: resource withExtension: @"mom"];
 	NSAssert2(modelURL, @"Could not find model named %@ in bundle %@", modelName, bundle);
 	
-	return [NSManagedObjectModel modelAtURL: modelURL];
+	return_model([NSManagedObjectModel modelAtURL: modelURL]);
 }
 + (NSManagedObjectModel *) modelNamed: (NSString *) modelName inBundleNamed: (NSString *) bundleName
 {
@@ -71,7 +79,7 @@ static NSManagedObjectModel *_defaultManagedObjectModel = nil;
 	if (!modelURL) modelURL = [bundle URLForResource: resource withExtension: @"mom" subdirectory: bundleName];
 	NSAssert2(modelURL, @"Could not find model named %@ in bundle named %@", modelName, bundleName);
 	
-	return [NSManagedObjectModel modelAtURL: modelURL];
+	return_model([NSManagedObjectModel modelAtURL: modelURL]);
 }
 
 #pragma mark Deprecated

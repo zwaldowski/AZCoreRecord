@@ -14,7 +14,7 @@
 - (void) setUp
 {
 	[MagicalRecord _cleanUp];
-	[MagicalRecord setModelName: @"TestModel.momd"];
+	[NSManagedObjectModel modelNamed: @"TestModel.momd"];
 }
 
 - (void) assertDefaultStack
@@ -39,7 +39,7 @@
 
 - (void) testCreateInMemoryCoreDataStack
 {
-	[MagicalRecord setupCoreDataStackWithInMemoryStore];
+	[NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
 	
 	[self assertDefaultStack];
 	
@@ -56,7 +56,7 @@
 		NSURL *testStoreURL = [NSPersistentStore URLForStoreName:testStoreName];
 		[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 		
-		[MagicalRecord setupCoreDataStackWithStoreNamed:testStoreName];
+		[NSPersistentStoreCoordinator coordinatorWithStoreNamed: testStoreName ofType: NSSQLiteStoreType];
 		
 		[self assertDefaultStack];
 		
