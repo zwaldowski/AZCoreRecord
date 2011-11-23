@@ -7,10 +7,10 @@
 //
 
 DISPATCH_EXPORT DISPATCH_PURE DISPATCH_WARN_RESULT DISPATCH_NOTHROW
-dispatch_queue_t magical_record_get_background_queue(void);
+dispatch_queue_t mr_get_background_queue(void);
 
-extern IMP magical_record_object_getSupersequent(id obj, SEL selector); // Defined in MagicalRecord.m
-#define getSupersequent() (magical_record_object_getSupersequent(self, _cmd))
+extern IMP mr_getSupersequent(id obj, SEL selector); // Defined in MagicalRecord.m
+#define getSupersequent() (mr_getSupersequent(self, _cmd))
 #define invokeSupersequent(...)  getSupersequent()(self, _cmd, ## __VA_ARGS__)
 
 @interface NSManagedObjectContext (MagicalRecordPrivate)

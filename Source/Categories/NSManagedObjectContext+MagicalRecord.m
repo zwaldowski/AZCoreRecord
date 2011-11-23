@@ -79,7 +79,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 }
 - (BOOL) saveOnBackgroundThreadWithErrorHandler: (MRErrorBlock) errorCallback
 {
-	dispatch_queue_t queue = magical_record_get_background_queue();
+	dispatch_queue_t queue = mr_get_background_queue();
 	return saveContext(self, queue, errorCallback);
 }
 

@@ -15,7 +15,7 @@ static void *kErrorHandlerTargetKey;
 static void *kErrorHandlerIsClassKey;
 static void *kErrorHandlerBlockKey;
 
-dispatch_queue_t magical_record_get_background_queue(void)
+dispatch_queue_t mr_get_background_queue(void)
 {
 	static dispatch_once_t once;
 	static dispatch_queue_t queue;
@@ -26,7 +26,7 @@ dispatch_queue_t magical_record_get_background_queue(void)
 	return queue;
 }
 
-IMP magical_record_object_getSupersequent(id obj, SEL selector)
+IMP mr_getSupersequent(id obj, SEL selector)
 {
 	BOOL found = NO;
 	
@@ -262,7 +262,7 @@ IMP magical_record_object_getSupersequent(id obj, SEL selector)
 	BOOL wantsBackground = (options & MRCoreDataSaveOptionInBackground);
 	BOOL wantsNewContext = (options & MRCoreDataSaveOptionWithNewContext) || ![NSThread isMainThread];
 	
-	dispatch_queue_t queue = (wantsBackground) ? magical_record_get_background_queue() : dispatch_get_current_queue();
+	dispatch_queue_t queue = (wantsBackground) ? mr_get_background_queue() : dispatch_get_current_queue();
 	dispatch_async(queue, ^{
 		NSManagedObjectContext *mainContext  = [NSManagedObjectContext defaultContext];
 		NSManagedObjectContext *localContext = mainContext;
