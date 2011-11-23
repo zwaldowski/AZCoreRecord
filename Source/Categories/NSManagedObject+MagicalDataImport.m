@@ -199,12 +199,12 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 		[self performSelector: selector withObject: relatedObject];
 #pragma clank diagnostic pop
 	}
-	@catch(NSException *exception)
+	@catch (NSException *exception)
 	{
-		ARLog(@"Adding object for relationship failed: %@\n", relationshipInfo);
-		ARLog(@"relatedObject.entity = %@", relatedObject.entity);
-		ARLog(@"relationshipInfo.destinationEntity = %@", relationshipInfo.destinationEntity);
-		ARLog(@"perform Selector Error: %@", exception);
+		MRLog(@"Adding object for relationship failed: %@", relationshipInfo);
+		MRLog(@"relatedObject.entity = %@", relatedObject.entity);
+		MRLog(@"relationshipInfo.destinationEntity = %@", relationshipInfo.destinationEntity);
+		MRLog(@"Perform Selector Exception: %@", exception);
 	}
 }
 - (void) _setAttributes: (NSDictionary *) attributes forDictionary: (NSDictionary *) objectData

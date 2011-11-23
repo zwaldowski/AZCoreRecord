@@ -22,7 +22,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 	
 	@try
 	{
-		ARLog(@"Saving %@context%@...", 
+		MRLog(@"Saving %@context%@...", 
 			  context == [NSManagedObjectContext defaultContext] ? @"default ": @"", 
 			  ([NSThread isMainThread] ? @" on main thread" : @""));
 		
@@ -30,7 +30,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 	}
 	@catch (NSException *exception)
 	{
-		ARLog(@"Exception saving context... %@", exception);
+		MRLog(@"Exception saving context... %@", exception);
 	}
 	@finally
 	{
@@ -193,7 +193,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 {
 	NSAssert1(coordinator, @"%s must be passed a persistent store coordinator", sel_getName(_cmd));
 	
-	ARLog(@"Creating managed object context%@...", [NSThread isMainThread] ? @" on main thread" : @"");
+	MRLog(@"Creating managed object context%@...", [NSThread isMainThread] ? @" on main thread" : @"");
 	
 	NSManagedObjectContext *context = [NSManagedObjectContext new];
 	context.persistentStoreCoordinator = coordinator;

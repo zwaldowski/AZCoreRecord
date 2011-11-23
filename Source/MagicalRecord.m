@@ -206,7 +206,7 @@ IMP mr_getSupersequent(id obj, SEL selector)
 	}
 	
 	// Default Error Handler
-	ARLog(@"Error: %@", error);
+	MRLog(@"Error: %@", error);
 }
 + (void) handleErrors: (NSError *) error
 {
