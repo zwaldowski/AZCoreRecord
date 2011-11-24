@@ -1,6 +1,6 @@
 //
 //  MagicalRecordHelperTests.m
-//  MagicalRecord
+//  Magical Record
 //
 //  Created by Saul Mora on 7/15/11.
 //  Copyright 2011 Magical Panda Software LLC. All rights reserved.
@@ -13,18 +13,14 @@
 
 - (void) setUp
 {
-	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
-}
-
-- (void) tearDown
-{
 	[MagicalRecord _cleanUp];
+	[NSManagedObjectModel modelNamed: @"TestModel.momd"];
 }
 
 - (void) assertDefaultStack
 {
 	assertThat([NSManagedObjectContext defaultContext], is(notNilValue()));
-	assertThat([NSManagedObjectModel defaultManagedObjectModel], is(notNilValue()));
+	assertThat([NSManagedObjectModel defaultModel], is(notNilValue()));
 	assertThat([NSPersistentStoreCoordinator defaultStoreCoordinator], is(notNilValue()));
 	assertThat([NSPersistentStore defaultPersistentStore], is(notNilValue()));	
 }
@@ -43,7 +39,7 @@
 
 - (void) testCreateInMemoryCoreDataStack
 {
-	[MagicalRecord setupCoreDataStackWithInMemoryStore];
+	[NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
 	
 	[self assertDefaultStack];
 	
@@ -60,7 +56,7 @@
 		NSURL *testStoreURL = [NSPersistentStore URLForStoreName:testStoreName];
 		[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 		
-		[MagicalRecord setupCoreDataStackWithStoreNamed:testStoreName];
+		[NSPersistentStoreCoordinator coordinatorWithStoreNamed: testStoreName ofType: NSSQLiteStoreType];
 		
 		[self assertDefaultStack];
 		

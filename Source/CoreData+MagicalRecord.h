@@ -1,5 +1,5 @@
 //
-//  MagicalRecord for Core Data
+//  Magical Record for Core Data
 //
 //  Created by Saul Mora.
 //  Copyright 2011 Magical Panda Software. All rights reserved.

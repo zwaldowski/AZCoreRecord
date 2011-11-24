@@ -1,24 +1,26 @@
 //
 //  NSPersistentStoreCoordinatorHelperTests.m
-//  MagicalRecord
+//  Magical Record
 //
 //  Created by Saul Mora on 7/15/11.
 //  Copyright 2011 Magical Panda Software LLC. All rights reserved.
 //
 
 #import "NSPersistentStoreCoordinatorHelperTests.h"
+#import "MagicalRecord+Private.h"
 
 @implementation NSPersistentStoreCoordinatorHelperTests
 
 - (void) setUp
 {
+	[MagicalRecord _cleanUp];
 	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:@"TestStore.sqlite"];
 	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 }
 
 - (void) testCreateCoodinatorWithSqlitePersistentStore
 {
-	NSPersistentStoreCoordinator *testCoordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreNamed:@"TestStore.sqlite"];
+	NSPersistentStoreCoordinator *testCoordinator = [NSPersistentStoreCoordinator coordinatorWithStoreNamed: @"TestStore.sqlite" ofType: NSSQLiteStoreType];
 	
 	assertThatUnsignedInteger([[testCoordinator persistentStores] count], is(equalToUnsignedInteger(1)));
 
@@ -38,7 +40,7 @@
 
 - (void) testCanAddAnInMemoryStoreToAnExistingCoordinator
 {
-	NSPersistentStoreCoordinator *testCoordinator = [NSPersistentStoreCoordinator coordinatorWithSqliteStoreNamed:@"TestStore.sqlite"];
+	NSPersistentStoreCoordinator *testCoordinator = [NSPersistentStoreCoordinator coordinatorWithStoreNamed: @"TestStore.sqlite" ofType: NSSQLiteStoreType];
 	
 	assertThatUnsignedInteger([[testCoordinator persistentStores] count], is(equalToUnsignedInteger(1)));
 	

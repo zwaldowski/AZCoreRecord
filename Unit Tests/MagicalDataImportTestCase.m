@@ -1,6 +1,6 @@
 //
 //  MagicalDataImportTestCase.m
-//  MagicalRecord
+//  Magical Record
 //
 //  Created by Saul Mora on 8/16/11.
 //  Copyright (c) 2011 Magical Panda Software LLC. All rights reserved.
@@ -11,13 +11,14 @@
 
 @implementation MagicalDataImportTestCase
 
-@synthesize testEntityData = testEntityData__;
-@synthesize testEntity = testEntity__;
+@synthesize testEntityData = _testEntityData;
+@synthesize testEntity = _testEntity;
 
 - (void) setUp
 {
-	[MagicalRecord setDefaultModelName:@"TestModel.momd"];
-	[MagicalRecord setupCoreDataStackWithInMemoryStore];
+	[MagicalRecord _cleanUp];
+	[NSManagedObjectModel modelNamed: @"TestModel.momd"];
+	[NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
 	
 	if ([self respondsToSelector:@selector(setupTestData)])
 	{
@@ -27,12 +28,7 @@
 	self.testEntityData = [self dataFromJSONFixture];
 }
 
-- (void) tearDown
-{
-	[MagicalRecord _cleanUp];
-}
-
-- (Class) testEntityClass;
+- (Class) testEntityClass
 {
 	return [NSManagedObject class];
 }

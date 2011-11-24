@@ -1,70 +1,84 @@
 //
 //  MagicalRecord.h
-//  MagicalRecord
+//  Magical Record
 //
 //  Created by Saul Mora on 3/11/10.
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-#if ((defined(__GNUC__) && ((__GNUC__ >= 4) || (__GNUC__ >= 5))) || defined(__clang__))
-#define DEPRECATED_ATTRIBUTE_M(...) __attribute__((deprecated (__VA_ARGS__)))
+#if __has_attribute(deprecated)
+	#define DEPRECATED_ATTRIBUTE_M(...) __attribute__((deprecated(__VA_ARGS__)))
 #else
-#define DEPRECATED_ATTRIBUTE_M(...) DEPRECATED_ATTRIBUTE
+	#define DEPRECATED_ATTRIBUTE_M(...) DEPRECATED_ATTRIBUTE
 #endif
 
 #ifdef MR_LOGGING
-	#define ARLog(...) NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat:__VA_ARGS__])
+	#define MRLog(...) NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat: __VA_ARGS__])
 #else
-	#define ARLog(...)
+	#define MRLog(...)
 #endif
 
-typedef void (^MRContextBlock)(NSManagedObjectContext *);
 typedef void (^MRBlock)(void);
+typedef void (^MRContextBlock)(NSManagedObjectContext *);
 typedef void (^MRErrorBlock)(NSError *);
+
 typedef enum {
-	MRCoreDataSaveOptionNone			   = 0,
-	MRCoreDataSaveOptionInBackground	   = 1 << 0,
-	MRCoreDataSaveOptionWithNewContext	 = 1 << 1
+	MRCoreDataSaveOptionNone			= 0,
+	MRCoreDataSaveOptionInBackground	= 1 << 0,
+	MRCoreDataSaveOptionWithNewContext	= 1 << 1
 } MRCoreDataSaveOption;
 
 @protocol MRErrorHandler <NSObject>
 @optional
-- (void)handleError:(NSError *)error;
-+ (void)handleError:(NSError *)error;
+
+- (void) handleError: (NSError *) error;
++ (void) handleError: (NSError *) error;
+
 @end
 
 @interface MagicalRecord : NSObject
 
-+ (void)setDefaultModelName:(NSString *)modelName;
+#pragma mark - Auto Creation of Default Model / Store Coordinator
 
-+ (void)setupCoreDataStackWithStoreNamed:(NSString *)storeName;
-+ (void)setupCoreDataStackWithStoreAtURL:(NSURL *)storeURL;
-+ (void)setupAutoMigratingCoreDataStack;
-+ (void)setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName;
-+ (void)setupCoreDataStackWithAutoMigratingSqliteStoreAtURL:(NSURL *)storeURL;
-+ (void)setupCoreDataStackWithInMemoryStore;
++ (BOOL) shouldAutoCreateDefaultModel;
++ (void) setShouldAutoCreateDefaultModel: (BOOL) shouldAutoCreate;
 
-+ (void)cleanUp DEPRECATED_ATTRIBUTE_M("Your app will do this automatically on exit.");
++ (BOOL) shouldAutoCreateDefaultStoreCoordinator;
++ (void) setShouldAutoCreateDefaultStoreCoordinator: (BOOL) shouldAutoCreate;
 
-+ (void)handleError:(NSError *)error;
-+ (void)handleErrors:(NSError *)error DEPRECATED_ATTRIBUTE;
+#pragma mark - Error Handling
 
-+ (void)setErrorHandler:(MRErrorBlock)block;
-+ (MRErrorBlock)errorHandler;
++ (void) handleError: (NSError *) error;
 
-+ (void)setErrorHandlerTarget:(id <MRErrorHandler>)target;
-+ (id <MRErrorHandler>)errorHandlerTarget;
++ (MRErrorBlock) errorHandler;
++ (void) setErrorHandler: (MRErrorBlock) block;
 
-/** @name Data commit */
++ (id<MRErrorHandler>) errorHandlerTarget;
++ (void) setErrorHandlerTarget: (id<MRErrorHandler>) target;
 
-+ (void) saveDataWithBlock:(MRContextBlock)block;
+#pragma mark - Data Commit
 
-+ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block;
-+ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block completion:(MRBlock)callback;
++ (void) saveDataWithBlock: (MRContextBlock) block;
 
-+ (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block;
-+ (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block success:(MRBlock)callback;
-+ (void) saveDataWithOptions:(MRCoreDataSaveOption)options block:(MRContextBlock)block success:(MRBlock)callback failure:(MRErrorBlock)errorCallback;
++ (void) saveDataInBackgroundWithBlock: (MRContextBlock) block;
++ (void) saveDataInBackgroundWithBlock: (MRContextBlock) block completion: (MRBlock) callback;
+
++ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block;
++ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback;
++ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback;
+
+#pragma mark Deprecated
+
++ (void) cleanUp DEPRECATED_ATTRIBUTE_M("Your app will do this automatically on exit.");
+
++ (void) handleErrors: (NSError *) error DEPRECATED_ATTRIBUTE;
+
++ (void) setupAutoMigratingCoreDataStack DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreAtURL/Named:storeType:automaticLightweightMigrationEnabled:] instead");
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreAtURL:storeType:automaticLightweightMigrationEnabled:] instead");
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreNamed:storeType:automaticLightweightMigrationEnabled:] instead");
++ (void) setupCoreDataStackWithInMemoryStore DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithInMemoryStore]");
++ (void) setupCoreDataStackWithStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreAtURL:ofType:]");
++ (void) setupCoreDataStackWithStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreNamed:ofType:]");
 
 @end
 

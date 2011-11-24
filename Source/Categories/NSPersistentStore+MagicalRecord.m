@@ -1,6 +1,6 @@
 //
 //  NSPersistentStore+MagicalRecord.m
-//  MagicalRecord
+//  Magical Record
 //
 //  Created by Saul Mora on 3/11/10.
 //  Copyright 2011 Magical Panda Software. All rights reserved.
@@ -10,56 +10,72 @@
 
 NSString *const kMagicalRecordDefaultStoreFileName = @"CoreDataStore.sqlite";
 
-static NSPersistentStore *defaultPersistentStore_ = nil;
+static NSPersistentStore *_defaultPersistentStore = nil;
+
+@interface NSPersistentStore ()
+
++ (NSString *) _directory: (NSSearchPathDirectory) type;
+
+@end
 
 @implementation NSPersistentStore (MagicalRecord)
 
-+ (NSPersistentStore *)defaultPersistentStore
++ (NSPersistentStore *) defaultPersistentStore
 {
-	return defaultPersistentStore_;
+	return _defaultPersistentStore;
 }
 
-+ (void)_setDefaultPersistentStore:(NSPersistentStore *) store
++ (BOOL) _hasDefaultPersistentStore
 {
-	defaultPersistentStore_ = store;
+	return !!_defaultPersistentStore;
+}
++ (void) _setDefaultPersistentStore: (NSPersistentStore *) store
+{
+	_defaultPersistentStore = store;
 }
 
-+ (NSString *)_directory:(NSSearchPathDirectory) type
++ (NSString *) _applicationDocumentsDirectory 
+{
+	return [self _directory: NSDocumentDirectory];
+}
++ (NSString *) _applicationStorageDirectory
+{
+    NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *) kCFBundleNameKey];
+    return [[self _directory: NSApplicationSupportDirectory] stringByAppendingPathComponent: applicationName];
+}
++ (NSString *) _directory: (NSSearchPathDirectory) type
 {	
 	return [NSSearchPathForDirectoriesInDomains(type, NSUserDomainMask, YES) lastObject];
 }
 
-+ (NSString *)_applicationDocumentsDirectory 
++ (NSURL *) URLForStoreName: (NSString *) storeFileName
 {
-	return [self _directory:NSDocumentDirectory];
-}
-
-+ (NSString *)_applicationStorageDirectory
-{
-    NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
-    return [[self _directory:NSApplicationSupportDirectory] stringByAppendingPathComponent:applicationName];
-}
-
-+ (NSURL *)URLForStoreName:(NSString *)storeFileName
-{
-	NSArray *paths = [NSArray arrayWithObjects:[self _applicationDocumentsDirectory], [self _applicationStorageDirectory], nil];
 	NSFileManager *fm = [NSFileManager new];
-
-	for (NSString *path in paths) 
-	{
-		NSString *filepath = [path stringByAppendingPathComponent:storeFileName];
-		if ([fm fileExistsAtPath:filepath])
+	NSString *documentsDir = [self _applicationDocumentsDirectory];
+	NSString *appSupportDir = [self _applicationStorageDirectory];
+	
+	NSArray *paths = [NSArray arrayWithObjects: documentsDir, appSupportDir, nil];
+	
+	// Set default URL (just in case)
+	__block NSURL *storeURL = [NSURL fileURLWithPath: [appSupportDir stringByAppendingPathComponent: storeFileName]];
+	
+	[paths enumerateObjectsUsingBlock: ^(NSString *directory, NSUInteger idx, BOOL *stop) {
+		NSString *filePath = [directory stringByAppendingPathComponent: storeFileName];
+		if ([fm fileExistsAtPath: filePath])
 		{
-			return [NSURL fileURLWithPath:filepath];
+			// Replace `storeURL`, then return
+			storeURL = [NSURL fileURLWithPath: filePath];
+			*stop = YES;
 		}
-	}
-
-    //set default url
-    return [NSURL fileURLWithPath:[[self _applicationStorageDirectory] stringByAppendingPathComponent:storeFileName]];
+	}];
+	
+	// Guaranteed to be non-nil
+	return storeURL;
 }
 
-+ (NSURL *)defaultLocalStoreURL {
-	return [self URLForStoreName:kMagicalRecordDefaultStoreFileName];
++ (NSURL *) defaultLocalStoreURL
+{
+	return [self URLForStoreName: kMagicalRecordDefaultStoreFileName];
 }
 
 @end

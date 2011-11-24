@@ -7,21 +7,41 @@
 
 @interface NSPersistentStoreCoordinator (MagicalRecord)
 
-+ (NSPersistentStoreCoordinator *)defaultStoreCoordinator;
+#pragma mark - Default Store Coordinator
 
-+ (NSPersistentStoreCoordinator *)coordinator;
-+ (NSPersistentStoreCoordinator *)coordinatorWithInMemoryStore;
++ (NSPersistentStoreCoordinator *) defaultStoreCoordinator;
 
-+ (NSPersistentStoreCoordinator *)coordinatorWithPersistentStore:(NSPersistentStore *)persistentStore;
+#pragma mark - Store Coordinator Factory Methods
 
-+ (NSPersistentStoreCoordinator *)coordinatorWithSqliteStoreNamed:(NSString *)storeFileName;
-+ (NSPersistentStoreCoordinator *)coordinatorWithAutoMigratingSqliteStoreNamed:(NSString *)storeFileName;
++ (NSPersistentStoreCoordinator *) coordinator;
++ (NSPersistentStoreCoordinator *) coordinatorWithPersistentStore: (NSPersistentStore *) persistentStore;
 
-+ (NSPersistentStoreCoordinator *)coordinatorWithSqliteStoreAtURL:(NSURL *)storeURL;
-+ (NSPersistentStoreCoordinator *)coordinatorWithAutoMigratingSqliteStoreAtURL:(NSURL *)storeURL;
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType;
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType options: (NSDictionary *) options;
 
-- (NSPersistentStore *)addInMemoryStore;
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType;
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType options: (NSDictionary *) options;
 
-+ (NSPersistentStoreCoordinator *)newPersistentStoreCoordinator DEPRECATED_ATTRIBUTE;
+#pragma mark - Automatic Lightweight Migration
+
++ (NSDictionary *) automaticLightweightMigrationOptions;
+
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled;
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled;
+
+#pragma mark - In-Memory Store
+
++ (NSPersistentStoreCoordinator *) coordinatorWithInMemoryStore;
+
+- (NSPersistentStore *) addInMemoryStore;
+
+#pragma mark Deprecated
+
++ (NSPersistentStoreCoordinator *) coordinatorWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE;
++ (NSPersistentStoreCoordinator *) coordinatorWithAutoMigratingSqliteStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE;
++ (NSPersistentStoreCoordinator *) coordinatorWithSqliteStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE;
++ (NSPersistentStoreCoordinator *) coordinatorWithSqliteStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE;
+
++ (NSPersistentStoreCoordinator *) newPersistentStoreCoordinator DEPRECATED_ATTRIBUTE;
 
 @end

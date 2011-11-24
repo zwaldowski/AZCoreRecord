@@ -1,6 +1,6 @@
 //
 //  DataImportTests.m
-//  MagicalRecord
+//  Magical Record
 //
 //  Created by Saul Mora on 7/15/11.
 //  Copyright 2011 Magical Panda Software LLC. All rights reserved.
@@ -21,8 +21,9 @@
 
 - (void) setUpClass
 {
-	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];
-	[MagicalRecord setupCoreDataStackWithInMemoryStore];
+	[MagicalRecord _cleanUp];
+	[NSManagedObjectModel modelNamed: @"TestModel.momd"];
+	[NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
     
 	id singleEntity = [self dataFromJSONFixture];
 	
@@ -94,9 +95,9 @@
 	assertThat(testEntity.notInJsonAttribute, containsString(@"Core Data Model"));
 }
 
-#if TARGET_OS_IPHONE 
+#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 
-#if defined(__IPHONE_5_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_5_0
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 50000
 
 - (void) testImportUIColorAttributeToEntity
 {
@@ -113,6 +114,7 @@
 		assertThatFloat(blue, is(equalToFloat(225./255.)));
 	}
 }
+
 #endif
 
 - (NSDate *) dateFromString:(NSString *)date

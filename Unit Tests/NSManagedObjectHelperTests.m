@@ -1,6 +1,6 @@
 //
 //  NSManagedObjectHelperTests.m
-//  MagicalRecord
+//  Magical Record
 //
 //  Created by Saul Mora on 7/15/11.
 //  Copyright 2011 Magical Panda Software LLC. All rights reserved.
@@ -12,19 +12,11 @@
 
 @implementation NSManagedObjectHelperTests
 
-- (void) setUpClass
-{
-	[NSManagedObjectModel _setDefaultManagedObjectModel:[NSManagedObjectModel newManagedObjectModelNamed:@"TestModel.momd"]];   
-}
-
 - (void) setUp
 {
-	[MagicalRecord setupCoreDataStackWithInMemoryStore];
-}
-
-- (void) tearDown
-{
 	[MagicalRecord _cleanUp];
+	[NSManagedObjectModel modelNamed: @"TestModel.momd"];
+	[NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
 }
 
 -(BOOL)shouldRunOnMainThread

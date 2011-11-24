@@ -1,6 +1,6 @@
 //
 //  FixtureHelpers.m
-//  MagicalRecord
+//  Magical Record
 //
 //  Created by Saul Mora on 7/15/11.
 //  Copyright 2011 Magical Panda Software LLC. All rights reserved.
@@ -34,7 +34,7 @@
 
 @implementation GHTestCase (FixtureHelpers)
 
-- (id) dataFromJSONFixture;
+- (id) dataFromJSONFixture
 {
 	NSString *className = NSStringFromClass([self class]);
 	className = [className stringByReplacingOccurrencesOfString:@"Import" withString:@""];
