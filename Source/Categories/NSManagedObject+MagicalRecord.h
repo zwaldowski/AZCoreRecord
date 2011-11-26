@@ -144,14 +144,14 @@
 + (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm;
 + (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-+ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm andRetrieveAttributes: (id) attributes, ...;
-+ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context andRetrieveAttributes: (id) attributes, ...;
++ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm andRetrieveAttributes: (id) attributes, ... NS_REQUIRES_NIL_TERMINATION;
++ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context andRetrieveAttributes: (id) attributes, ... NS_REQUIRES_NIL_TERMINATION;
 
 + (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm attributesToRetrieve: (NSArray *) attributes;
 + (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm attributesToRetrieve: (NSArray *) attributes inContext: (NSManagedObjectContext *) context;
 
-+ (id) findFirstWithPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortBy ascending: (BOOL) ascending andRetrieveAttributes: (id) attributes, ... DEPRECATED_ATTRIBUTE;
-+ (id) findFirstWithPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortBy ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context andRetrieveAttributes: (id) attributes, ... DEPRECATED_ATTRIBUTE;
++ (id) findFirstWithPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortBy ascending: (BOOL) ascending andRetrieveAttributes: (id) attributes, ... NS_REQUIRES_NIL_TERMINATION DEPRECATED_ATTRIBUTE;
++ (id) findFirstWithPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortBy ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context andRetrieveAttributes: (id) attributes, ... NS_REQUIRES_NIL_TERMINATION DEPRECATED_ATTRIBUTE;
 + (id) findFirstByAttribute: (NSString *) attribute withValue: (id) searchValue DEPRECATED_ATTRIBUTE;
 + (id) findFirstByAttribute: (NSString *) attribute withValue: (id) searchValue inContext: (NSManagedObjectContext *) context DEPRECATED_ATTRIBUTE;
 + (id) findFirstWithPredicate: (NSPredicate *) searchterm sortedBy: (NSString *) property ascending: (BOOL) ascending DEPRECATED_ATTRIBUTE;
