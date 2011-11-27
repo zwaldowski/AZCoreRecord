@@ -20,6 +20,11 @@
 + (NSManagedObjectModel *) modelNamed: (NSString *) modelName inBundle: (NSBundle *) bundle;
 + (NSManagedObjectModel *) modelNamed: (NSString *) modelName inBundleNamed: (NSString *) bundleName;
 
+#pragma mark - URL Methods
+
++ (NSURL *)URLForModelNamed: (NSString *) modelName inBundle: (NSBundle *) bundle;
++ (NSURL *)URLForModelNamed: (NSString *) modelName inBundleNamed: (NSString *) bundleName;
+
 #pragma mark Deprecated
 
 + (NSManagedObjectModel *) newManagedObjectModel DEPRECATED_ATTRIBUTE;

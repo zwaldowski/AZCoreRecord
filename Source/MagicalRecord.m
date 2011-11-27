@@ -11,18 +11,18 @@
 #import "MagicalRecord+Private.h"
 #import <objc/runtime.h>
 
-static BOOL _shouldAutoCreateDefaultModel = YES;
-
 static dispatch_queue_t backgroundQueue = nil;
 
-static void *kErrorHandlerTargetKey;
-static void *kErrorHandlerIsClassKey;
-static void *kErrorHandlerBlockKey;
+static char *kErrorHandlerTargetKey = "MRErrorTarget";
+static char *kErrorHandlerIsClassKey = "MRErrorTargetHasClassMethod";
+static char *kErrorHandlerBlockKey = "MRErrorHandler";
 
-static void *kStackShouldAutoMigrateKey;
-static void *kStackShouldUseInMemoryStoreKey;
-static void *kStackStoreNameKey;
-static void *kStackStoreURLKey;
+static char *kStackShouldAutoMigrateKey = "MRStoreAutoMigrates";
+static char *kStackShouldUseInMemoryStoreKey = "MRStoreIsInMemory";
+static char *kStackStoreNameKey = "MRStoreName";
+static char *kStackStoreURLKey = "MRStoreURL";
+static char *kStackModelNameKey = "MRModelName";
+static char *kStackModelURLKey = "MRModelURL";
 
 dispatch_queue_t mr_get_background_queue(void)
 {
@@ -159,6 +159,26 @@ IMP mr_getSupersequent(id obj, SEL selector)
 	reset_storeCoordinator();
 }
 
++ (NSString *)_stackModelName
+{
+	return objc_getAssociatedObject(self, kStackModelNameKey);
+}
++ (void)setStackModelName:(NSString *)name
+{
+	objc_setAssociatedObject(self, kStackModelNameKey, name, OBJC_ASSOCIATION_COPY_NONATOMIC);
+	[self _cleanUp];
+}
+
++ (NSURL *)_stackModelURL
+{
+	return objc_getAssociatedObject(self, kStackModelURLKey);
+}
++ (void)setStackModelURL:(NSURL *)name
+{
+	objc_setAssociatedObject(self, kStackModelURLKey, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	[self _cleanUp];
+}
+
 + (void) setupAutoMigratingCoreDataStack
 {
 	[MagicalRecord setStackShouldAutoMigrateStore:YES];
@@ -199,17 +219,6 @@ IMP mr_getSupersequent(id obj, SEL selector)
 	[NSManagedObjectModel _setDefaultModel: nil];
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: nil];
 	[NSPersistentStore _setDefaultPersistentStore: nil];
-}
-
-#pragma mark - Auto Creation of Default Model / Store Coordinator
-
-+ (BOOL) shouldAutoCreateDefaultModel
-{
-	return _shouldAutoCreateDefaultModel;
-}
-+ (void) setShouldAutoCreateDefaultModel: (BOOL) shouldAutoCreate
-{
-	_shouldAutoCreateDefaultModel = shouldAutoCreate;
 }
 
 #pragma mark - Error Handling

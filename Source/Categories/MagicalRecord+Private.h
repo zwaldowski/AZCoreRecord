@@ -49,6 +49,8 @@ extern IMP mr_getSupersequent(id obj, SEL selector); // Defined in MagicalRecord
 + (BOOL) _stackShouldUseInMemoryStore;
 + (NSString *) _stackStoreName;
 + (NSURL *) _stackStoreURL;
++ (NSString *) _stackModelName;
++ (NSURL *) _stackModelURL;
 
 @end
 

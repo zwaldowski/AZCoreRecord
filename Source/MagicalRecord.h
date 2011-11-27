@@ -44,11 +44,8 @@ typedef enum {
 + (void)setStackShouldUseInMemoryStore:(BOOL)inMemory;
 + (void)setStackStoreName:(NSString *)name;
 + (void)setStackStoreURL:(NSURL *)name;
-
-#pragma mark - Auto Creation of Default Model / Store Coordinator
-
-+ (BOOL) shouldAutoCreateDefaultModel;
-+ (void) setShouldAutoCreateDefaultModel: (BOOL) shouldAutoCreate;
++ (void)setStackModelName:(NSString *)name;
++ (void)setStackModelURL:(NSURL *)name;
 
 #pragma mark - Error Handling
 
