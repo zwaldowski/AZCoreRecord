@@ -119,7 +119,7 @@ IMP mr_getSupersequent(id obj, SEL selector)
 			[NSManagedObjectContext _setDefaultContext:nil]; \
 	} while (0)
 
-+ (BOOL)_setStackShouldAutoMigrateStore
++ (BOOL)_stackShouldAutoMigrateStore
 {
 	return [objc_getAssociatedObject(self, kStackShouldAutoMigrateKey) boolValue];
 }
