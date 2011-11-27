@@ -23,7 +23,8 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 			NSString *storeName = [MagicalRecord _stackStoreName] ?: kMagicalRecordDefaultStoreFileName;
 			storeURL = [NSPersistentStore URLForStoreName:storeName];
 		}
-		NSString *storeType = [MagicalRecord _stackShouldUseInMemoryStore] ? NSSQLiteStoreType : NSInMemoryStoreType;
+		
+		NSString *storeType = [MagicalRecord _stackShouldUseInMemoryStore] ? NSInMemoryStoreType : NSSQLiteStoreType;
 		BOOL shouldAutoMigrate = [MagicalRecord _stackShouldAutoMigrateStore];
 		
 		NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL:storeURL ofType:storeType automaticLightweightMigrationEnabled:shouldAutoMigrate];
