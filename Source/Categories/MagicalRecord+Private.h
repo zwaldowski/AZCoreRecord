@@ -45,6 +45,11 @@ extern IMP mr_getSupersequent(id obj, SEL selector); // Defined in MagicalRecord
 
 + (void) _cleanUp;
 
++ (BOOL) _stackShouldAutoMigrateStore;
++ (BOOL) _stackShouldUseInMemoryStore;
++ (NSString *) _stackStoreName;
++ (NSURL *) _stackStoreURL;
+
 @end
 
 extern NSString *const kMagicalRecordDefaultStoreFileName;

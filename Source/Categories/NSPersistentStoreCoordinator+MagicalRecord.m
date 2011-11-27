@@ -8,14 +8,6 @@
 #import "NSPersistentStoreCoordinator+MagicalRecord.h"
 #import "MagicalRecord+Private.h"
 
-#define return_storeCoordinator(x) \
-	do { \
-		NSPersistentStoreCoordinator *_storeCoordinator = (x); \
-		if (!_defaultCoordinator && [MagicalRecord shouldAutoCreateDefaultStoreCoordinator]) \
-			[self _setDefaultStoreCoordinator: _storeCoordinator]; \
-		return _storeCoordinator; \
-	} while (0)
-
 static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 
 @implementation NSPersistentStoreCoordinator (MagicalRecord)
@@ -24,9 +16,18 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 
 + (NSPersistentStoreCoordinator *) defaultStoreCoordinator
 {
-	if (!_defaultCoordinator && [MagicalRecord shouldAutoCreateDefaultStoreCoordinator])
+	if (!_defaultCoordinator)
 	{
-		[self _setDefaultStoreCoordinator: [self coordinator]];
+		NSURL *storeURL = [MagicalRecord _stackStoreURL];
+		if (!storeURL) {
+			NSString *storeName = [MagicalRecord _stackStoreName] ?: kMagicalRecordDefaultStoreFileName;
+			storeURL = [NSPersistentStore URLForStoreName:storeName];
+		}
+		NSString *storeType = [MagicalRecord _stackShouldUseInMemoryStore] ? NSSQLiteStoreType : NSInMemoryStoreType;
+		BOOL shouldAutoMigrate = [MagicalRecord _stackShouldAutoMigrateStore];
+		
+		NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL:storeURL ofType:storeType automaticLightweightMigrationEnabled:shouldAutoMigrate];
+		[self _setDefaultStoreCoordinator:psc];
 	}
 	
 	return _defaultCoordinator;
@@ -41,7 +42,7 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	_defaultCoordinator = coordinator;
 	
 	// NB: If `_defaultCoordinator` is nil, then `persistentStores` is also nil, so `count` returns 0
-	if (_defaultCoordinator.persistentStores.count && ![NSPersistentStore defaultPersistentStore])
+	if (_defaultCoordinator.persistentStores.count && ![NSPersistentStore _hasDefaultPersistentStore])
 	{
 		NSPersistentStore *defaultStore = [_defaultCoordinator.persistentStores objectAtIndex: 0];
 		[NSPersistentStore _setDefaultPersistentStore: defaultStore];
@@ -64,7 +65,7 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	[psc addPersistentStoreWithType: persistentStore.type configuration: persistentStore.configurationName URL: persistentStore.URL options: persistentStore.options error: &error];
 	[MagicalRecord handleError: error];
 	
-	return_storeCoordinator(psc);
+	return psc;
 }
 
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType
@@ -100,7 +101,7 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	[psc addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &pscError];
 	[MagicalRecord handleError: pscError];
 	
-	return_storeCoordinator(psc);
+	return psc;
 }
 
 #pragma mark - Automatic Lightweight Migration
@@ -131,7 +132,7 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	if (!psc.persistentStores.count)
 	{
 		dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC);
-		dispatch_after(when, dispatch_get_main_queue(), ^(void) {
+		dispatch_after(when, dispatch_get_main_queue(), ^ {
 			NSError *error = nil;
 			[psc addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &error];
 			[MagicalRecord handleError: error];
@@ -155,7 +156,7 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
 	[psc addInMemoryStore];
 	
-	return_storeCoordinator(psc);
+	return psc;
 }
 
 - (NSPersistentStore *) addInMemoryStore

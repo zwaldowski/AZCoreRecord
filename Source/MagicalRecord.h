@@ -38,13 +38,17 @@ typedef enum {
 
 @interface MagicalRecord : NSObject
 
+#pragma mark - Stack settings
+
++ (void)setStackShouldAutoMigrateStore:(BOOL)shouldMigrate;
++ (void)setStackShouldUseInMemoryStore:(BOOL)inMemory;
++ (void)setStackStoreName:(NSString *)name;
++ (void)setStackStoreURL:(NSURL *)name;
+
 #pragma mark - Auto Creation of Default Model / Store Coordinator
 
 + (BOOL) shouldAutoCreateDefaultModel;
 + (void) setShouldAutoCreateDefaultModel: (BOOL) shouldAutoCreate;
-
-+ (BOOL) shouldAutoCreateDefaultStoreCoordinator;
-+ (void) setShouldAutoCreateDefaultStoreCoordinator: (BOOL) shouldAutoCreate;
 
 #pragma mark - Error Handling
 
@@ -73,12 +77,12 @@ typedef enum {
 
 + (void) handleErrors: (NSError *) error DEPRECATED_ATTRIBUTE;
 
-+ (void) setupAutoMigratingCoreDataStack DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreAtURL/Named:storeType:automaticLightweightMigrationEnabled:] instead");
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreAtURL:storeType:automaticLightweightMigrationEnabled:] instead");
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreNamed:storeType:automaticLightweightMigrationEnabled:] instead");
-+ (void) setupCoreDataStackWithInMemoryStore DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithInMemoryStore]");
-+ (void) setupCoreDataStackWithStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreAtURL:ofType:]");
-+ (void) setupCoreDataStackWithStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE_M("Use +[NSPersistentStoreCoordinator coordinatorWithStoreNamed:ofType:]");
++ (void) setupAutoMigratingCoreDataStack DEPRECATED_ATTRIBUTE_M("Use +[MagicalRecord setStackShouldAutoMigrateStore:] instead");
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE_M("Use +[MagicalRecord setStackShouldAutoMigrateStore:] and +[MagicalRecord setStackStoreURL:] instead");
++ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE_M("Use  +[MagicalRecord setStackShouldAutoMigrateStore:] and +[MagicalRecord setStackStoreName:] instead");
++ (void) setupCoreDataStackWithInMemoryStore DEPRECATED_ATTRIBUTE_M("Use +[MagicalRecord setStackShouldUseInMemoryStore:] instead");
++ (void) setupCoreDataStackWithStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE_M("Use +[MagicalRecord setStackStoreURL:]");
++ (void) setupCoreDataStackWithStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE_M("Use +[MagicalRecord setStackStoreName:]");
 
 @end
 

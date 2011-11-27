@@ -39,7 +39,7 @@
 
 - (void) testCreateInMemoryCoreDataStack
 {
-	[NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
+	[MagicalRecord setStackShouldUseInMemoryStore:YES];
 	
 	[self assertDefaultStack];
 	
@@ -53,10 +53,7 @@
 	{
 		NSString *testStoreName = @"MyTestDataStore.sqlite";
 		
-		NSURL *testStoreURL = [NSPersistentStore URLForStoreName:testStoreName];
-		[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
-		
-		[NSPersistentStoreCoordinator coordinatorWithStoreNamed: testStoreName ofType: NSSQLiteStoreType];
+		[MagicalRecord setStackStoreName:testStoreName];
 		
 		[self assertDefaultStack];
 		

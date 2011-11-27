@@ -12,13 +12,17 @@
 #import <objc/runtime.h>
 
 static BOOL _shouldAutoCreateDefaultModel = YES;
-static BOOL _shouldAutoCreateDefaultStoreCoordinator = YES;
 
 static dispatch_queue_t backgroundQueue = nil;
 
 static void *kErrorHandlerTargetKey;
 static void *kErrorHandlerIsClassKey;
 static void *kErrorHandlerBlockKey;
+
+static void *kStackShouldAutoMigrateKey;
+static void *kStackShouldUseInMemoryStoreKey;
+static void *kStackStoreNameKey;
+static void *kStackStoreURLKey;
 
 dispatch_queue_t mr_get_background_queue(void)
 {
@@ -105,36 +109,81 @@ IMP mr_getSupersequent(id obj, SEL selector)
 
 @implementation MagicalRecord
 
-#pragma mark - Stack Setup
+#pragma mark - Stack settings
+
+#define reset_storeCoordinator() \
+	do { \
+		if ([NSPersistentStoreCoordinator _hasDefaultStoreCoordinator]) \
+			[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:nil]; \
+		if ([NSManagedObjectContext _hasDefaultContext]) \
+			[NSManagedObjectContext _setDefaultContext:nil]; \
+	} while (0)
+
++ (BOOL)_setStackShouldAutoMigrateStore
+{
+	return [objc_getAssociatedObject(self, kStackShouldAutoMigrateKey) boolValue];
+}
++ (void)setStackShouldAutoMigrateStore:(BOOL)shouldMigrate
+{
+	objc_setAssociatedObject(self, kStackShouldAutoMigrateKey, [NSNumber numberWithBool:shouldMigrate], OBJC_ASSOCIATION_RETAIN_NONATOMIC);	
+	reset_storeCoordinator();
+}
+
++ (BOOL)_stackShouldUseInMemoryStore
+{
+	return [objc_getAssociatedObject(self, kStackShouldUseInMemoryStoreKey) boolValue];
+}
++ (void)setStackShouldUseInMemoryStore:(BOOL)inMemory
+{
+	objc_setAssociatedObject(self, kStackShouldUseInMemoryStoreKey, [NSNumber numberWithBool:inMemory], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	reset_storeCoordinator();
+}
+
++ (NSString *)_stackStoreName
+{
+	return objc_getAssociatedObject(self, kStackStoreNameKey);
+}
++ (void)setStackStoreName:(NSString *)name
+{
+	objc_setAssociatedObject(self, kStackStoreNameKey, name, OBJC_ASSOCIATION_COPY_NONATOMIC);
+	reset_storeCoordinator();
+}
+
++ (NSURL *)_stackStoreURL
+{
+	return objc_getAssociatedObject(self, kStackStoreURLKey);
+}
++ (void)setStackStoreURL:(NSURL *)name
+{
+	objc_setAssociatedObject(self, kStackStoreURLKey, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	reset_storeCoordinator();
+}
 
 + (void) setupAutoMigratingCoreDataStack
 {
-	[self setupCoreDataStackWithAutoMigratingSqliteStoreNamed: kMagicalRecordDefaultStoreFileName];
+	[MagicalRecord setStackShouldAutoMigrateStore:YES];
 }
 + (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithStoreAtURL: storeURL ofType: NSSQLiteStoreType automaticLightweightMigrationEnabled: YES];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
+	[MagicalRecord setStackShouldAutoMigrateStore:YES];
+	[MagicalRecord setStackStoreURL:storeURL];
 }
 + (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed: (NSString *) storeName
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithStoreNamed: storeName ofType: NSSQLiteStoreType automaticLightweightMigrationEnabled: YES];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
+	[MagicalRecord setStackShouldAutoMigrateStore:YES];
+	[MagicalRecord setStackStoreName:storeName];
 }
 + (void) setupCoreDataStackWithInMemoryStore
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
+	[MagicalRecord setStackShouldUseInMemoryStore:YES];
 }
 + (void) setupCoreDataStackWithStoreAtURL: (NSURL *) storeURL
-{
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithStoreAtURL: storeURL ofType: NSSQLiteStoreType];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
+{	
+	[MagicalRecord setStackStoreURL:storeURL];
 }
 + (void) setupCoreDataStackWithStoreNamed: (NSString *) storeName
 {
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator coordinatorWithStoreNamed: storeName ofType: NSSQLiteStoreType];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: coordinator];
+	[MagicalRecord setStackStoreName:storeName];
 }
 
 + (void) cleanUp
@@ -161,15 +210,6 @@ IMP mr_getSupersequent(id obj, SEL selector)
 + (void) setShouldAutoCreateDefaultModel: (BOOL) shouldAutoCreate
 {
 	_shouldAutoCreateDefaultModel = shouldAutoCreate;
-}
-
-+ (BOOL) shouldAutoCreateDefaultStoreCoordinator
-{
-	return _shouldAutoCreateDefaultStoreCoordinator;
-}
-+ (void) setShouldAutoCreateDefaultStoreCoordinator: (BOOL) shouldAutoCreate
-{
-	_shouldAutoCreateDefaultStoreCoordinator = shouldAutoCreate;
 }
 
 #pragma mark - Error Handling
