@@ -91,10 +91,10 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	
 	// Create path to store (if necessary)
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSURL *storeDirectory = [storeURL URLByDeletingLastPathComponent];
+	NSString *storePath = [[storeURL URLByDeletingLastPathComponent] path];
 	
 	NSError *fmError = nil;
-	[fileManager createDirectoryAtURL: storeDirectory withIntermediateDirectories: YES attributes: nil error: &fmError];
+	[fileManager createDirectoryAtPath: storePath withIntermediateDirectories: YES attributes: nil error: &fmError];
     [MagicalRecord handleError: fmError];
 	
 	// Add the persistent store
