@@ -15,7 +15,7 @@
 - (void) setUp
 {
 	[MagicalRecord _cleanUp];
-	[NSManagedObjectModel modelNamed: @"TestModel.momd"];
+	[MagicalRecord setStackModelName:@"TestModel.momd"];
 	[MagicalRecord setStackShouldUseInMemoryStore:YES];
 }
 
