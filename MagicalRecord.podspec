@@ -1,7 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = 'MagicalRecord'
-  # change the version when I tag a version. Or completely fork. Which I might.
-  s.version  = '1.7.1'
+  s.version  = '1.8'
   s.license  = 'MIT'
   s.summary  = 'Effortless fetching, saving, and importing for Core Data.'
   s.homepage = 'http://github.com/magicalpanda/MagicalRecord'
