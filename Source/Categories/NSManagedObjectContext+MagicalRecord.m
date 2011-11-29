@@ -109,7 +109,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 
 - (NSManagedObjectContext *) parentContext
 {
-	NSManagedObjectContext *parentContext = objc_getAssociatedObject(self, kParentContextKey);
+	NSManagedObjectContext *parentContext = objc_getAssociatedObject(self, &kParentContextKey);
 	
 	if (!parentContext && [parentContext respondsToSelector: @selector(concurrencyType)])
 	{
@@ -128,7 +128,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 	
 	NSNotificationCenter *dnc = [NSNotificationCenter defaultCenter];
 	if (self.parentContext) [dnc removeObserver: self.parentContext name: NSManagedObjectContextDidSaveNotification object: self];
-	objc_setAssociatedObject(self, kParentContextKey, parentContext, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	objc_setAssociatedObject(self, &kParentContextKey, parentContext, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 	[dnc addObserver: parentContext selector: @selector(mergeChangesFromContextDidSaveNotification:) name: NSManagedObjectContextDidSaveNotification object: self];
 }
 

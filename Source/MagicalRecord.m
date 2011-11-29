@@ -13,16 +13,16 @@
 
 static dispatch_queue_t backgroundQueue = nil;
 
-static char *kErrorHandlerTargetKey = "MRErrorTarget";
-static char *kErrorHandlerIsClassKey = "MRErrorTargetHasClassMethod";
-static char *kErrorHandlerBlockKey = "MRErrorHandler";
+static void *kErrorHandlerTargetKey;
+static void *kErrorHandlerIsClassKey;
+static void *kErrorHandlerBlockKey;
 
-static char *kStackShouldAutoMigrateKey = "MRStoreAutoMigrates";
-static char *kStackShouldUseInMemoryStoreKey = "MRStoreIsInMemory";
-static char *kStackStoreNameKey = "MRStoreName";
-static char *kStackStoreURLKey = "MRStoreURL";
-static char *kStackModelNameKey = "MRModelName";
-static char *kStackModelURLKey = "MRModelURL";
+static void *kStackShouldAutoMigrateKey;
+static void *kStackShouldUseInMemoryStoreKey;
+static void *kStackStoreNameKey;
+static void *kStackStoreURLKey;
+static void *kStackModelNameKey;
+static void *kStackModelURLKey;
 
 dispatch_queue_t mr_get_background_queue(void)
 {
@@ -121,61 +121,61 @@ IMP mr_getSupersequent(id obj, SEL selector)
 
 + (BOOL)_stackShouldAutoMigrateStore
 {
-	return [objc_getAssociatedObject(self, kStackShouldAutoMigrateKey) boolValue];
+	return [objc_getAssociatedObject(self, &kStackShouldAutoMigrateKey) boolValue];
 }
 + (void)setStackShouldAutoMigrateStore:(BOOL)shouldMigrate
 {
-	objc_setAssociatedObject(self, kStackShouldAutoMigrateKey, [NSNumber numberWithBool:shouldMigrate], OBJC_ASSOCIATION_RETAIN_NONATOMIC);	
+	objc_setAssociatedObject(self, &kStackShouldAutoMigrateKey, [NSNumber numberWithBool:shouldMigrate], OBJC_ASSOCIATION_RETAIN_NONATOMIC);	
 	reset_storeCoordinator();
 }
 
 + (BOOL)_stackShouldUseInMemoryStore
 {
-	return [objc_getAssociatedObject(self, kStackShouldUseInMemoryStoreKey) boolValue];
+	return [objc_getAssociatedObject(self, &kStackShouldUseInMemoryStoreKey) boolValue];
 }
 + (void)setStackShouldUseInMemoryStore:(BOOL)inMemory
 {
-	objc_setAssociatedObject(self, kStackShouldUseInMemoryStoreKey, [NSNumber numberWithBool:inMemory], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	objc_setAssociatedObject(self, &kStackShouldUseInMemoryStoreKey, [NSNumber numberWithBool:inMemory], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 	reset_storeCoordinator();
 }
 
 + (NSString *)_stackStoreName
 {
-	return objc_getAssociatedObject(self, kStackStoreNameKey);
+	return objc_getAssociatedObject(self, &kStackStoreNameKey);
 }
 + (void)setStackStoreName:(NSString *)name
 {
-	objc_setAssociatedObject(self, kStackStoreNameKey, name, OBJC_ASSOCIATION_COPY_NONATOMIC);
+	objc_setAssociatedObject(self, &kStackStoreNameKey, name, OBJC_ASSOCIATION_COPY_NONATOMIC);
 	reset_storeCoordinator();
 }
 
 + (NSURL *)_stackStoreURL
 {
-	return objc_getAssociatedObject(self, kStackStoreURLKey);
+	return objc_getAssociatedObject(self, &kStackStoreURLKey);
 }
 + (void)setStackStoreURL:(NSURL *)name
 {
-	objc_setAssociatedObject(self, kStackStoreURLKey, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	objc_setAssociatedObject(self, &kStackStoreURLKey, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 	reset_storeCoordinator();
 }
 
 + (NSString *)_stackModelName
 {
-	return objc_getAssociatedObject(self, kStackModelNameKey);
+	return objc_getAssociatedObject(self, &kStackModelNameKey);
 }
 + (void)setStackModelName:(NSString *)name
 {
-	objc_setAssociatedObject(self, kStackModelNameKey, name, OBJC_ASSOCIATION_COPY_NONATOMIC);
+	objc_setAssociatedObject(self, &kStackModelNameKey, name, OBJC_ASSOCIATION_COPY_NONATOMIC);
 	[self _cleanUp];
 }
 
 + (NSURL *)_stackModelURL
 {
-	return objc_getAssociatedObject(self, kStackModelURLKey);
+	return objc_getAssociatedObject(self, &kStackModelURLKey);
 }
 + (void)setStackModelURL:(NSURL *)name
 {
-	objc_setAssociatedObject(self, kStackModelURLKey, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	objc_setAssociatedObject(self, &kStackModelURLKey, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 	[self _cleanUp];
 }
 
