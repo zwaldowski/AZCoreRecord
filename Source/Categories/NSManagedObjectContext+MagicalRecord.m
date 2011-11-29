@@ -113,7 +113,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 	
 	if (!parentContext && [parentContext respondsToSelector: @selector(concurrencyType)])
 	{
-		parentContext = invokeSupersequent();
+		parentContext = mr_invokeSupersequent();
 	}
 	
 	return parentContext;
@@ -122,7 +122,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 {
 	if ([parentContext respondsToSelector: @selector(concurrencyType)] && parentContext.concurrencyType != NSConfinementConcurrencyType)
 	{
-		invokeSupersequent(parentContext);
+		mr_invokeSupersequent(parentContext);
 		return;
 	}
 	

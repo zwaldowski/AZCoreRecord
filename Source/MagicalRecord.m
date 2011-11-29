@@ -39,7 +39,7 @@ dispatch_queue_t mr_get_background_queue(void)
 	return backgroundQueue;
 }
 
-IMP mr_getSupersequent(id obj, SEL selector)
+IMP _mr_getSupersequent(id obj, SEL selector)
 {
 	BOOL found = NO;
 	
