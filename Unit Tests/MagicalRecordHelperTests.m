@@ -19,6 +19,11 @@
 
 - (void) assertDefaultStack
 {
+	NSLog(@"%@", [NSManagedObjectContext defaultContext]);
+	NSLog(@"%@", [NSManagedObjectModel defaultModel]);
+	NSLog(@"%@", [NSPersistentStoreCoordinator defaultStoreCoordinator]);
+	NSLog(@"%@", [NSPersistentStore defaultPersistentStore]);
+	
 	assertThat([NSManagedObjectContext defaultContext], is(notNilValue()));
 	assertThat([NSManagedObjectModel defaultModel], is(notNilValue()));
 	assertThat([NSPersistentStoreCoordinator defaultStoreCoordinator], is(notNilValue()));
@@ -27,13 +32,14 @@
 
 - (void) testCreateDefaultCoreDataStack
 {
-	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:kMagicalRecordDefaultStoreFileName];
+	NSString *storeName = [NSPersistentStoreCoordinator _defaultStoreName];
+	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:storeName];
 	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 	
 	[self assertDefaultStack];
-	
+
 	NSPersistentStore *defaultStore = [NSPersistentStore defaultPersistentStore];
-	assertThat([[defaultStore URL] absoluteString], endsWith(kMagicalRecordDefaultStoreFileName));
+	assertThat([[defaultStore URL] lastPathComponent] , endsWith(storeName));
 	assertThat([defaultStore type], is(equalTo(NSSQLiteStoreType)));
 }
 

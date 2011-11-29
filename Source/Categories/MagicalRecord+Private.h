@@ -39,6 +39,8 @@ extern IMP mr_getSupersequent(id obj, SEL selector); // Defined in MagicalRecord
 + (BOOL) _hasDefaultStoreCoordinator;
 + (void) _setDefaultStoreCoordinator: (NSPersistentStoreCoordinator *)coordinator;
 
++ (NSString *)_defaultStoreName;
+
 @end
 
 @interface MagicalRecord (MagicalRecordPrivate)

@@ -275,18 +275,18 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 
 #pragma mark - Import from Dictionary
 
-+ (id) importFromDictionary: (NSDictionary *) objectData
++ (id) importFromDictionary: (id) objectData
 {
 	return [self importFromDictionary: objectData inContext: [NSManagedObjectContext defaultContext]];
 }
-+ (id) importFromDictionary: (NSDictionary *) objectData inContext: (NSManagedObjectContext *) context
++ (id) importFromDictionary: (id) objectData inContext: (NSManagedObjectContext *) context
 {
 	NSManagedObject *managedObject = [self createInContext: context];
 	[managedObject importValuesFromDictionary: objectData];
 	return managedObject;
 }
 
-- (void) importValuesFromDictionary: (NSDictionary *) objectData
+- (void) importValuesFromDictionary: (id) objectData
 {
 	@autoreleasepool
 	{
@@ -326,11 +326,11 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 
 #pragma mark - Update from Dictionary
 
-+ (id) updateFromDictionary: (NSDictionary *) objectData
++ (id) updateFromDictionary: (id) objectData
 {
 	return [self updateFromDictionary: objectData inContext: [NSManagedObjectContext defaultContext]];
 }
-+ (id) updateFromDictionary: (NSDictionary *) objectData inContext: (NSManagedObjectContext *) context
++ (id) updateFromDictionary: (id) objectData inContext: (NSManagedObjectContext *) context
 {
 	NSEntityDescription *entity = self.entityDescription;
 	NSString *attributeKey = [entity.userInfo valueForKey: kMagicalRecordImportPrimaryAttributeKey] ?: primaryKeyNameFromString(entity.name);
@@ -349,7 +349,7 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 	return managedObject;
 }
 
-- (void) updateValuesFromDictionary: (NSDictionary *) objectData
+- (void) updateValuesFromDictionary: (id) objectData
 {
 	@autoreleasepool
 	{
@@ -432,7 +432,7 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 	[MagicalRecord saveDataWithBlock: ^(NSManagedObjectContext *localContext) {
 		NSMutableArray *objects = [NSMutableArray array];
 		
-		[listOfObjectData enumerateObjectsUsingBlock: ^(NSDictionary *objectData, NSUInteger idx, BOOL *stop) {
+		[listOfObjectData enumerateObjectsUsingBlock: ^(id objectData, NSUInteger idx, BOOL *stop) {
 			[objects addObject: [self updateFromDictionary: objectData inContext: localContext]];
 		}];
 		

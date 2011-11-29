@@ -19,8 +19,9 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	if (!_defaultCoordinator)
 	{
 		NSURL *storeURL = [MagicalRecord _stackStoreURL];
-		if (!storeURL) {
-			NSString *storeName = [MagicalRecord _stackStoreName] ?: kMagicalRecordDefaultStoreFileName;
+		if (!storeURL || ![[storeURL pathExtension] isEqualToString:@"sqlite"])
+		{
+			NSString *storeName = [MagicalRecord _stackStoreName] ?: [self _defaultStoreName];
 			storeURL = [NSPersistentStore URLForStoreName:storeName];
 		}
 		
@@ -48,6 +49,21 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 		NSPersistentStore *defaultStore = [_defaultCoordinator.persistentStores objectAtIndex: 0];
 		[NSPersistentStore _setDefaultPersistentStore: defaultStore];
 	}
+}
+
++ (NSString *)_defaultStoreName {
+	NSString *defaultName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(id)kCFBundleNameKey];
+	if (!defaultName)
+	{
+		defaultName = kMagicalRecordDefaultStoreFileName;
+	}
+	
+	if (![defaultName hasSuffix:@"sqlite"]) 
+	{
+		defaultName = [defaultName stringByAppendingPathExtension:@"sqlite"];
+	}
+
+	return defaultName;
 }
 
 #pragma mark - Store Coordinator Factory Methods
