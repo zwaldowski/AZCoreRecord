@@ -13,16 +13,21 @@
 
 static dispatch_queue_t backgroundQueue = nil;
 
-static void *kErrorHandlerTargetKey;
-static void *kErrorHandlerIsClassKey;
-static void *kErrorHandlerBlockKey;
+#if __has_feature(objc_arc_weak)
+static __weak id <MRErrorHandler> errorHandlerTarget = nil;
+#else
+static __unsafe_unretained id <MRErrorHandler> errorHandlerTarget = nil;
+#endif
 
-static void *kStackShouldAutoMigrateKey;
-static void *kStackShouldUseInMemoryStoreKey;
-static void *kStackStoreNameKey;
-static void *kStackStoreURLKey;
-static void *kStackModelNameKey;
-static void *kStackModelURLKey;
+static MRErrorBlock errorHandlerBlock = NULL;
+static BOOL errorHandlerIsClassMethod = NO;
+
+static BOOL stackShouldAutoMigrate = NO;
+static BOOL stackShouldUseInMemoryStore = NO;
+static NSString *stackStoreName = nil;
+static NSURL *stackStoreURL = nil;
+static NSString *stackModelName = nil;
+static NSURL *stackModelURL = nil;
 
 dispatch_queue_t mr_get_background_queue(void)
 {
@@ -112,70 +117,70 @@ IMP mr_getSupersequent(id obj, SEL selector)
 #pragma mark - Stack settings
 
 #define reset_storeCoordinator() \
-	do { \
-		if ([NSPersistentStoreCoordinator _hasDefaultStoreCoordinator]) \
-			[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:nil]; \
-		if ([NSManagedObjectContext _hasDefaultContext]) \
-			[NSManagedObjectContext _setDefaultContext:nil]; \
-	} while (0)
+do { \
+if ([NSPersistentStoreCoordinator _hasDefaultStoreCoordinator]) \
+[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:nil]; \
+if ([NSManagedObjectContext _hasDefaultContext]) \
+[NSManagedObjectContext _setDefaultContext:nil]; \
+} while (0)
 
 + (BOOL)_stackShouldAutoMigrateStore
 {
-	return [objc_getAssociatedObject(self, &kStackShouldAutoMigrateKey) boolValue];
+	return stackShouldAutoMigrate;
 }
 + (void)setStackShouldAutoMigrateStore:(BOOL)shouldMigrate
 {
-	objc_setAssociatedObject(self, &kStackShouldAutoMigrateKey, [NSNumber numberWithBool:shouldMigrate], OBJC_ASSOCIATION_RETAIN_NONATOMIC);	
+	stackShouldAutoMigrate = shouldMigrate;	
 	reset_storeCoordinator();
 }
 
 + (BOOL)_stackShouldUseInMemoryStore
 {
-	return [objc_getAssociatedObject(self, &kStackShouldUseInMemoryStoreKey) boolValue];
+	return stackShouldUseInMemoryStore;
 }
 + (void)setStackShouldUseInMemoryStore:(BOOL)inMemory
 {
-	objc_setAssociatedObject(self, &kStackShouldUseInMemoryStoreKey, [NSNumber numberWithBool:inMemory], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	stackShouldUseInMemoryStore = inMemory;
 	reset_storeCoordinator();
 }
 
 + (NSString *)_stackStoreName
 {
-	return objc_getAssociatedObject(self, &kStackStoreNameKey);
+	return stackStoreName;
 }
 + (void)setStackStoreName:(NSString *)name
 {
-	objc_setAssociatedObject(self, &kStackStoreNameKey, name, OBJC_ASSOCIATION_COPY_NONATOMIC);
+	stackStoreName = [name copy];
 	reset_storeCoordinator();
 }
 
 + (NSURL *)_stackStoreURL
 {
-	return objc_getAssociatedObject(self, &kStackStoreURLKey);
+	return stackStoreURL;
 }
-+ (void)setStackStoreURL:(NSURL *)name
++ (void)setStackStoreURL:(NSURL *)URL
 {
-	objc_setAssociatedObject(self, &kStackStoreURLKey, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	stackStoreURL = URL;
 	reset_storeCoordinator();
 }
 
 + (NSString *)_stackModelName
 {
-	return objc_getAssociatedObject(self, &kStackModelNameKey);
+	return stackModelName;
 }
 + (void)setStackModelName:(NSString *)name
 {
-	objc_setAssociatedObject(self, &kStackModelNameKey, name, OBJC_ASSOCIATION_COPY_NONATOMIC);
+	stackModelName = [name copy];
 	[self _cleanUp];
 }
 
 + (NSURL *)_stackModelURL
 {
-	return objc_getAssociatedObject(self, &kStackModelURLKey);
+	return stackModelURL;
 }
-+ (void)setStackModelURL:(NSURL *)name
++ (void)setStackModelURL:(NSURL *)URL
 {
-	objc_setAssociatedObject(self, &kStackModelURLKey, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	stackModelURL = URL;
 	[self _cleanUp];
 }
 
@@ -212,7 +217,17 @@ IMP mr_getSupersequent(id obj, SEL selector)
 }
 + (void) _cleanUp
 {
-	objc_removeAssociatedObjects(self);
+	errorHandlerTarget = nil;
+	errorHandlerBlock = NULL;
+	errorHandlerIsClassMethod = NO;
+	
+	stackShouldAutoMigrate = NO;
+	stackShouldUseInMemoryStore = NO;
+	stackStoreName = nil;
+	stackStoreURL = nil;
+	stackModelName = nil;
+	stackModelURL = nil;
+	
 	if (backgroundQueue) dispatch_release(backgroundQueue), backgroundQueue = nil;
 	
 	[NSManagedObjectContext _setDefaultContext: nil];
@@ -249,8 +264,8 @@ IMP mr_getSupersequent(id obj, SEL selector)
 	id target = [self errorHandlerTarget];
 	if (target)
 	{
-		BOOL isClassSelector = [objc_getAssociatedObject(self, &kErrorHandlerIsClassKey) boolValue];
-		[(isClassSelector ? [target class] : target) performSelector: @selector(handleError:) withObject: error];
+		if (errorHandlerIsClassMethod) target = [target class];
+		[target performSelector: @selector(handleError:) withObject: error];
 		return;
 	}
 	
@@ -264,33 +279,30 @@ IMP mr_getSupersequent(id obj, SEL selector)
 
 + (MRErrorBlock) errorHandler
 {
-	return objc_getAssociatedObject(self, &kErrorHandlerBlockKey);
+	return errorHandlerBlock;
 }
 + (void) setErrorHandler: (MRErrorBlock) block
 {
-	objc_setAssociatedObject(self, &kErrorHandlerBlockKey, block, OBJC_ASSOCIATION_COPY_NONATOMIC);
+	errorHandlerBlock = [block copy];
 }
 
 + (id<MRErrorHandler>) errorHandlerTarget
 {
-	return objc_getAssociatedObject(self, &kErrorHandlerTargetKey);
+	return errorHandlerTarget;
 }
 + (void) setErrorHandlerTarget: (id<MRErrorHandler>) target
-{
-	NSNumber *isClassMethodNumber = nil;
-	
+{	
 	if (target)
 	{
 		if ([target respondsToSelector: @selector(handleError:)])
-			isClassMethodNumber = [NSNumber numberWithBool: NO];
+			errorHandlerIsClassMethod = NO;
 		else if ([[target class] respondsToSelector: @selector(handleError:)])
-			isClassMethodNumber = [NSNumber numberWithBool: YES];
+			errorHandlerIsClassMethod = YES;
 		else
 			NSAssert(NO, @"Error handler target must conform to the MRErrorHandler protocol");
 	}
 	
-	objc_setAssociatedObject(self, &kErrorHandlerIsClassKey, isClassMethodNumber, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-	objc_setAssociatedObject(self, &kErrorHandlerTargetKey, target, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	errorHandlerTarget = target;
 }
 
 #pragma mark - Data Commit
