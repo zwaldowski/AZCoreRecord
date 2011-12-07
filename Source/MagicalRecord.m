@@ -344,7 +344,7 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 		id bkpMergyPolicy = mainContext.mergePolicy;
 		
 		if (!wantsBackground || wantsNewContext) {
-			localContext = [[self defaultContext] newChildContext];
+			localContext = [[NSManagedObjectContext defaultContext] newChildContext];
 			
 			mainContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
 			localContext.mergePolicy = NSOverwriteMergePolicy;
