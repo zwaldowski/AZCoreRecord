@@ -1,4 +1,4 @@
-# MagicalRecord for Core Data
+# Magical Record for Core Data
 
 In software engineering, the active record pattern is a design pattern found in software that stores its data in relational databases. It was named by Martin Fowler in his book Patterns of Enterprise Application Architecture. The interface to such an object would include functions such as Insert, Update, and Delete, plus properties that correspond more-or-less directly to the columns in the underlying database table.
 
@@ -12,28 +12,28 @@ Magical Record for Core Data was inspired by the ease of Ruby on Rails’ Active
 * Allow for clear, simple, one-line fetches.
 * Still allow the modification of the `NSFetchRequest` when request optimizations are needed.
 
+Magical Record requires iOS 4.0 or Mac OS 10.6.
+
 # Installation
 
 1. In your Xcode Project, add all the `.h` and `.m` files from the *Source* folder into your project. 
-2. Add *CoreData+MagicalRecord.h* file to your `.pch` file or your `AppDelegate` file.
+2. Add *MagicalRecord.h* file to your `.pch` file or your `AppDelegate` file.
 3. Start writing code! There is no step 3!
 
 # Usage
 
 ## Setting up the Core Data Stack
 
-To get started, first, import the header file *CoreData+MagicalRecord.h* in your project’s `.pch` file. This will allow a global include of all the required headers. If you don’t want auto migration, an in-memory store, or a special name for your stack, simply start working! Otherwise, somewhere in your app delegate, in either the `-applicationDidFinishLaunching:withOptions:` method, or `-awakeFromNib`, use **one** of the following setup calls with the `MagicalRecord` metaclass:
+To get started, first, import the header file *MagicalRecord.h* in your project’s `.pch` file. This will allow a global include of all the required headers. If you don’t want auto migration, an in-memory store, or a special name for your stack, simply start working! Otherwise, somewhere in your app delegate, in either the `-applicationDidFinishLaunching:withOptions:` method, or `-awakeFromNib`, use any combination of the following setup calls from the `MagicalRecord` metaclass:
 
-	+ (void) setupAutoMigratingDefaultCoreDataStack;
-	+ (void) setupCoreDataStackWithInMemoryStore;
-	+ (void) setupCoreDataStackWithStoreNamed:(NSString *)storeName;
-	+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(NSString *)storeName;
+	+ (void)setStackShouldAutoMigrateStore: (BOOL) shouldMigrate;
+	+ (void)setStackShouldUseInMemoryStore: (BOOL) inMemory;
+	+ (void)setStackStoreName: (NSString *) name;
+	+ (void)setStackStoreURL: (NSURL *) name;
+	+ (void)setStackModelName: (NSString *) name;
+	+ (void)setStackModelURL: (NSURL *) name;
 
-Each call instantiates one of each piece of the Core Data stack, and provides getter and setter methods for these instances. These well known instances to Magical Record, and are recognized as “defaults”.
-
-And, before your app exits, you can use the clean up method:
-
-	[MagicalRecord cleanUp];
+Each call configures a piece of your Core Data stack, and will automatically get used whenever your app tries to use a Magical Record method.
 
 ### Default Managed Object Context 
 
@@ -48,8 +48,6 @@ This context will be used if a find or request method (described below) is not s
 This will use the same object model and persistent store, but create an entirely new context for use with threads other than the main thread. 
 
 	[NSManagedObjectContext contextForCurrentThread];
-
-**It is *highly* recommended that the default context is created and set using the main thread**
 
 ### Fetching
 
@@ -164,7 +162,7 @@ or, to specify a context:
 
 	[deleteMe deleteInContext:otherContext];
 
-There is no *truncate* (delete all entities) operation in core data, so one is provided for you with Active Record for Core Data:
+There is also a *truncate* (delete all entities) operation  provided for you by Magical Record:
 
 	[Person truncateAll];
 
@@ -175,22 +173,20 @@ or, with a specific context:
 
 ## Performing Core Data operations on Threads
 
-Available only on iOS 4.0 and Mac OS X 10.6.
+Available starting on iOS 4.0 and Mac OS X 10.6.
 
 Paraphrasing the [Apple documentation on Core Data and Threading]("http://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CoreData/Articles/cdConcurrency.html#//apple_ref/doc/uid/TP40003385-SW1"), you should always:
 
 * Use a new, dedicated `NSManagedObjectContext` instance for every thread.
-* Use an instance of your `NSManagedObjects` that is local for the new `NSManagedObjectContext`.
+* Use an instance of your `NSManagedObject` that is local for the new `NSManagedObjectContext`.
 * Notify other contexts that the background is updated or saved.
 
-The Magical Record library is trying to make these steps more reusable with the following methods:
+Magical Record library is trying to make these steps more reusable with the following methods:
 
-	+ (void) performSaveDataOperationWithBlock:(CoreDataBlock)block;
-	+ (void) performSaveDataOperationInBackgroundWithBlock:(CoreDataBlock)block;
+	+ (void) saveDataWithBlock: (MRContextBlock)block;
+	+ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block;
 
-`CoreDataBlock` is typedef’d as:
-
-	typedef void (^CoreDataBlock)(NSManagedObjectContext *);
+An `MRContextBlock` is a non-returning block that has an automatically-generated `NSManagedObjectContext` passed as an argument.
 	
 All the boilerplate operations that need to be done when saving are done in these methods. To use this method from the *main thread*:
 
@@ -202,12 +198,12 @@ All the boilerplate operations that need to be done when saving are done in thes
 		localPerson.lastName = @"Smith";
 	}];
 	
-In this method, the `CoreDataBlock` provides you with the proper context in which to perform your operations, you don’t need to worry about setting up the context so that it tells the default context that it’s done, and should update because changes were performed on another thread.
+In this method, the block provides you with the proper context in which to perform your operations, you don’t need to worry about setting up the context so that it tells the default context that it’s done, and should update because changes were performed on another thread.
 
 To perform an action after this save block is completed, you can fill in a completion block:
 
 	Person *person = ...;
-	[MRCoreDataAction saveDataInBackgroundWithBlock:^(NSManagedObjectContext *localContext){
+	[MagicalRecord saveDataInBackgroundWithBlock:^(NSManagedObjectContext *localContext){
 		Person *localPerson = [person inContext:localContext];
 
 		localPerson.firstName = @"Chuck";
@@ -223,7 +219,7 @@ Magical Record has a dedicated GCD queue on which it operates. This means that t
 # Data Import
 
 
-Magical Record can now import data from `NSDictionary`s into your Core Data store. This feature is currently under development, and is undergoing updates. Feel free to try it out, add tests and send in your feedback.
+Magical Record can now import data from `NSDictionary` into your Core Data store. This feature is currently under development, and is undergoing updates. Feel free to try it out, add tests and send in your feedback.
 	
 # Extra Bits
 

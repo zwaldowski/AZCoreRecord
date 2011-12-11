@@ -1,10 +1,22 @@
 //
-//  MagicalRecord.h
-//  Magical Record
+//  Magical Record for Core Data
 //
 //  Created by Saul Mora on 3/11/10.
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
+
+#import <CoreData/CoreData.h>
+
+typedef void (^MRBlock)(void);
+typedef void (^MRContextBlock)(NSManagedObjectContext *);
+typedef void (^MRErrorBlock)(NSError *);
+
+#import "NSManagedObject+MagicalRecord.h"
+#import "NSManagedObjectContext+MagicalRecord.h"
+#import "NSPersistentStoreCoordinator+MagicalRecord.h"
+#import "NSManagedObjectModel+MagicalRecord.h"
+#import "NSPersistentStore+MagicalRecord.h"
+#import "NSManagedObject+MagicalDataImport.h"
 
 #if __has_attribute(deprecated)
 	#define DEPRECATED_ATTRIBUTE_M(...) __attribute__((deprecated(__VA_ARGS__)))
@@ -17,10 +29,6 @@
 #else
 	#define MRLog(...)
 #endif
-
-typedef void (^MRBlock)(void);
-typedef void (^MRContextBlock)(NSManagedObjectContext *);
-typedef void (^MRErrorBlock)(NSError *);
 
 typedef enum {
 	MRCoreDataSaveOptionNone			= 0,
@@ -40,12 +48,12 @@ typedef enum {
 
 #pragma mark - Stack settings
 
-+ (void)setStackShouldAutoMigrateStore:(BOOL)shouldMigrate;
-+ (void)setStackShouldUseInMemoryStore:(BOOL)inMemory;
-+ (void)setStackStoreName:(NSString *)name;
-+ (void)setStackStoreURL:(NSURL *)name;
-+ (void)setStackModelName:(NSString *)name;
-+ (void)setStackModelURL:(NSURL *)name;
++ (void)setStackShouldAutoMigrateStore: (BOOL) shouldMigrate;
++ (void)setStackShouldUseInMemoryStore: (BOOL) inMemory;
++ (void)setStackStoreName: (NSString *) name;
++ (void)setStackStoreURL: (NSURL *) name;
++ (void)setStackModelName: (NSString *) name;
++ (void)setStackModelURL: (NSURL *) name;
 
 #pragma mark - Error Handling
 
