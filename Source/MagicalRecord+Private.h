@@ -13,8 +13,8 @@ extern IMP _mr_getSupersequent(id obj, SEL selector); // Defined in MagicalRecor
 #define mr_getSupersequent() (_mr_getSupersequent(self, _cmd))
 #define mr_invokeSupersequent(...)  mr_getSupersequent()(self, _cmd, ## __VA_ARGS__)
 
-extern void _mr_copyImplementation(Class cls, SEL newSelector, SEL oldSelector);
-#define mr_copyImplementation(selWithoutImp, selWithImp) _mr_copyImplementation([self class], selWithoutImp, selWithImp)
+extern void _mr_swizzle(Class cls, SEL oldSel, SEL newSel);
+#define mr_swizzle(oldSelector, newSelector) _mr_swizzle([self class], oldSelector, newSelector)
 
 @interface NSManagedObjectContext (MagicalRecordPrivate)
 

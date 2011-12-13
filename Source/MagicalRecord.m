@@ -111,9 +111,14 @@ IMP _mr_getSupersequent(id obj, SEL selector)
     return nil;
 }
 
-extern void _mr_copyImplementation(Class cls, SEL newSelector, SEL oldSelector) {
-	Method oldMethod = class_getInstanceMethod(cls, oldSelector);
-	class_addMethod(cls, newSelector, method_getImplementation(oldMethod), method_getTypeEncoding(oldMethod));
+extern void _mr_swizzle(Class cls, SEL oldSel, SEL newSel) {
+	Method origMethod = class_getInstanceMethod(cls, oldSel);
+	Method newMethod = class_getInstanceMethod(cls, newSel);
+	
+	if (class_addMethod(cls, oldSel, method_getImplementation(newMethod), method_getTypeEncoding(newMethod)))
+		class_replaceMethod(cls, newSel, method_getImplementation(origMethod), method_getTypeEncoding(origMethod));
+	else
+		method_exchangeImplementations(origMethod, newMethod);
 }
 
 @implementation MagicalRecord

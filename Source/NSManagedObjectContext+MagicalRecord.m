@@ -53,8 +53,8 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 @implementation NSManagedObjectContext (MagicalRecord)
 
 + (void)load {
-	mr_copyImplementation(@selector(setParentContext:), @selector(_mr_setParentContext:));
-	mr_copyImplementation(@selector(parentContext), @selector(_mr_parentContext));
+	mr_swizzle(@selector(_mr_setParentContext:), @selector(setParentContext:));
+	mr_swizzle(@selector(_mr_parentContext), @selector(parentContext));
 }
 
 #pragma mark - Instance Methods
@@ -92,19 +92,17 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 
 - (NSManagedObjectContext *) newChildContext
 {
-	if ([self respondsToSelector: @selector(concurrencyType)] && self.concurrencyType != NSConfinementConcurrencyType)
-	{
-		return [self newChildContextWithConcurrencyType: NSConfinementConcurrencyType];
-	}
-	
-	NSManagedObjectContext *child = [NSManagedObjectContext context];
-	child.parentContext = self;
-	
-	return child;
+	return [self newChildContextWithConcurrencyType:NSConfinementConcurrencyType];
 }
 - (NSManagedObjectContext *) newChildContextWithConcurrencyType: (NSManagedObjectContextConcurrencyType) concurrencyType
 {
-	NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType: concurrencyType];
+	NSManagedObjectContext *context = nil;
+
+	if ([self respondsToSelector:@selector(initWithConcurrencyType:)] && self.concurrencyType != NSConfinementConcurrencyType)
+		context = [[NSManagedObjectContext alloc] initWithConcurrencyType: concurrencyType];
+	else
+		context = [NSManagedObjectContext contextWithStoreCoordinator:self.persistentStoreCoordinator];
+	
 	context.parentContext = self;
 	
 	return context;
@@ -116,10 +114,20 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 
 - (NSManagedObjectContext *) _mr_parentContext
 {
-	return objc_getAssociatedObject(self, &kParentContextKey);
+	NSManagedObjectContext *parentContext = objc_getAssociatedObject(self, &kParentContextKey);	
+	if (!parentContext && [parentContext respondsToSelector: @selector(concurrencyType)])
+	{
+		return [self _mr_parentContext];
+	}
+	return parentContext;
 }
 - (void) _mr_setParentContext:(NSManagedObjectContext *)parentContext
 {
+	if ([parentContext respondsToSelector:@selector(concurrencyType)] && parentContext.concurrencyType != NSConfinementConcurrencyType)
+	{
+		[self _mr_setParentContext:parentContext];
+		return;
+	}
 	NSNotificationCenter *dnc = [NSNotificationCenter defaultCenter];
 	if (self.parentContext) [dnc removeObserver: self.parentContext name: NSManagedObjectContextDidSaveNotification object: self];
 	objc_setAssociatedObject(self, &kParentContextKey, parentContext, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
