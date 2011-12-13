@@ -31,6 +31,7 @@ extern IMP _mr_getSupersequent(id obj, SEL selector); // Defined in MagicalRecor
 
 + (BOOL) _hasDefaultPersistentStore;
 + (void) _setDefaultPersistentStore: (NSPersistentStore *) store;
++ (NSString *) _directory: (NSSearchPathDirectory) type;
 
 @end
 
@@ -42,6 +43,8 @@ extern IMP _mr_getSupersequent(id obj, SEL selector); // Defined in MagicalRecor
 + (NSString *)_defaultStoreName;
 
 @end
+
+
 
 @interface MagicalRecord (MagicalRecordPrivate)
 
