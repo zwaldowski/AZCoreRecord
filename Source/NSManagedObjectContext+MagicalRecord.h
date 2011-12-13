@@ -32,8 +32,6 @@ extern NSString *const MagicalRecordDidMergeUbiquitousChangesNotification;
 + (NSManagedObjectContext *) defaultContext;
 + (NSManagedObjectContext *) contextForCurrentThread;
 
-+ (void) setDefaultConcurrencyType: (NSManagedObjectContextConcurrencyType) concurrencyType NS_AVAILABLE(10_7, 5_0);
-
 #pragma mark - Context Factory Methods
 
 + (NSManagedObjectContext *) context;

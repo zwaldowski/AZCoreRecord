@@ -12,7 +12,6 @@
 
 NSString *const MagicalRecordDidMergeUbiquitousChangesNotification = @"MagicalRecordDidMergeUbiquitousChanges";
 static NSManagedObjectContext *_defaultManagedObjectContext = nil;
-static NSManagedObjectContextConcurrencyType _concurrencyType = NSConfinementConcurrencyType;
 static NSString const *kMagicalRecordManagedObjectContextKey = @"MRManagedObjectContext";
 static void *kParentContextKey;
 
@@ -148,7 +147,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 	{
         if ([self instancesRespondToSelector: @selector(initWithConcurrencyType:)])
 		{
-            _defaultManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType: _concurrencyType];
+            _defaultManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         }
 		else
 		{
@@ -187,11 +186,6 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 	_defaultManagedObjectContext = newDefault;
 	if (isUbiquitous)
 		[_defaultManagedObjectContext startObservingUbiquitousChangesInCoordinator:coordinator];
-}
-+ (void) setDefaultConcurrencyType: (NSManagedObjectContextConcurrencyType) type
-{
-	NSAssert(!_defaultManagedObjectContext, @"%s must be run before the default managed object context is created");
-	_concurrencyType = type;
 }
 
 #pragma mark - Context Factory Methods
