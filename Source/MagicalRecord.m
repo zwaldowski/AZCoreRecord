@@ -111,6 +111,11 @@ IMP _mr_getSupersequent(id obj, SEL selector)
     return nil;
 }
 
+extern void _mr_copyImplementation(Class cls, SEL newSelector, SEL oldSelector) {
+	Method oldMethod = class_getInstanceMethod(cls, oldSelector);
+	class_addMethod(cls, newSelector, method_getImplementation(oldMethod), method_getTypeEncoding(oldMethod));
+}
+
 @implementation MagicalRecord
 
 #pragma mark - Stack settings

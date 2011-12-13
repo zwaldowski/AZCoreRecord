@@ -52,6 +52,11 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 
 @implementation NSManagedObjectContext (MagicalRecord)
 
++ (void)load {
+	mr_copyImplementation(@selector(setParentContext:), @selector(_mr_setParentContext:));
+	mr_copyImplementation(@selector(parentContext), @selector(_mr_parentContext));
+}
+
 #pragma mark - Instance Methods
 
 - (BOOL) save
@@ -107,25 +112,14 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 
 #pragma mark Parent Context
 
-- (NSManagedObjectContext *) parentContext
+@dynamic parentContext;
+
+- (NSManagedObjectContext *) _mr_parentContext
 {
-	NSManagedObjectContext *parentContext = objc_getAssociatedObject(self, &kParentContextKey);
-	
-	if (!parentContext && [parentContext respondsToSelector: @selector(concurrencyType)])
-	{
-		parentContext = mr_invokeSupersequent();
-	}
-	
-	return parentContext;
+	return objc_getAssociatedObject(self, &kParentContextKey);
 }
-- (void) setParentContext: (NSManagedObjectContext *) parentContext
+- (void) _mr_setParentContext:(NSManagedObjectContext *)parentContext
 {
-	if ([parentContext respondsToSelector: @selector(concurrencyType)] && parentContext.concurrencyType != NSConfinementConcurrencyType)
-	{
-		mr_invokeSupersequent(parentContext);
-		return;
-	}
-	
 	NSNotificationCenter *dnc = [NSNotificationCenter defaultCenter];
 	if (self.parentContext) [dnc removeObserver: self.parentContext name: NSManagedObjectContextDidSaveNotification object: self];
 	objc_setAssociatedObject(self, &kParentContextKey, parentContext, OBJC_ASSOCIATION_RETAIN_NONATOMIC);

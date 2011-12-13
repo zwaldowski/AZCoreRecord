@@ -13,10 +13,16 @@ extern IMP _mr_getSupersequent(id obj, SEL selector); // Defined in MagicalRecor
 #define mr_getSupersequent() (_mr_getSupersequent(self, _cmd))
 #define mr_invokeSupersequent(...)  mr_getSupersequent()(self, _cmd, ## __VA_ARGS__)
 
+extern void _mr_copyImplementation(Class cls, SEL newSelector, SEL oldSelector);
+#define mr_copyImplementation(selWithoutImp, selWithImp) _mr_copyImplementation([self class], selWithoutImp, selWithImp)
+
 @interface NSManagedObjectContext (MagicalRecordPrivate)
 
 + (BOOL) _hasDefaultContext;
 + (void) _setDefaultContext: (NSManagedObjectContext *) newDefault;
+
+- (void) _mr_setParentContext: (NSManagedObjectContext *) context;
+- (NSManagedObjectContext *) _mr_parentContext;
 
 @end
 
