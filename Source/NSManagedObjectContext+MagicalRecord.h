@@ -23,7 +23,7 @@
 - (NSManagedObjectContext *) newChildContext;
 - (NSManagedObjectContext *) newChildContextWithConcurrencyType: (NSManagedObjectContextConcurrencyType) concurrencyType NS_AVAILABLE(10_7, 5_0);
 
-@property (nonatomic, strong) NSManagedObjectContext *parentContext;
+@property (nonatomic, strong) NSManagedObjectContext *parentContext NS_AVAILABLE(10_6, 4_0);
 
 #pragma mark - Default Contexts
 
