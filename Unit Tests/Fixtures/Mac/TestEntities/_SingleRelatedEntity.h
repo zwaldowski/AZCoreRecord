@@ -5,6 +5,7 @@
 
 
 extern const struct SingleRelatedEntityAttributes {
+	__unsafe_unretained NSString *mappedStringAttribute;
 } SingleRelatedEntityAttributes;
 
 extern const struct SingleRelatedEntityRelationships {
@@ -17,6 +18,7 @@ extern const struct SingleRelatedEntityFetchedProperties {
 @class ConcreteRelatedEntity;
 
 
+
 @interface SingleRelatedEntityID : NSManagedObjectID {}
 @end
 
@@ -25,6 +27,14 @@ extern const struct SingleRelatedEntityFetchedProperties {
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;
 - (SingleRelatedEntityID*)objectID;
+
+
+
+
+@property (nonatomic, strong) NSString *mappedStringAttribute;
+
+
+//- (BOOL)validateMappedStringAttribute:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -44,6 +54,12 @@ extern const struct SingleRelatedEntityFetchedProperties {
 @end
 
 @interface _SingleRelatedEntity (CoreDataGeneratedPrimitiveAccessors)
+
+
+- (NSString*)primitiveMappedStringAttribute;
+- (void)setPrimitiveMappedStringAttribute:(NSString*)value;
+
+
 
 
 

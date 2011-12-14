@@ -21,7 +21,6 @@
 
 - (void) setUpClass
 {
-	[MagicalRecord _cleanUp];
 	[MagicalRecord setStackModelName:@"TestModel.momd"];
 	[MagicalRecord setStackShouldUseInMemoryStore:YES];
     

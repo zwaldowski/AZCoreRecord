@@ -47,7 +47,7 @@ NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCo
 	_defaultCoordinator = coordinator;
 	
 	// NB: If `_defaultCoordinator` is nil, then `persistentStores` is also nil, so `count` returns 0
-	if (_defaultCoordinator.persistentStores.count && ![NSPersistentStore _hasDefaultPersistentStore])
+	if (![NSPersistentStore _hasDefaultPersistentStore] && _defaultCoordinator.persistentStores.count)
 	{
 		NSPersistentStore *defaultStore = [_defaultCoordinator.persistentStores objectAtIndex: 0];
 		[NSPersistentStore _setDefaultPersistentStore: defaultStore];
@@ -116,7 +116,7 @@ NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCo
 	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
 	
 	// Create path to store (if necessary)
-	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSFileManager *fileManager = [NSFileManager new];
 	NSString *storePath = [[storeURL URLByDeletingLastPathComponent] path];
 	
 	NSError *fmError = nil;
@@ -165,7 +165,7 @@ NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCo
 
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled ubiquityEnabled:(BOOL)ubiquity
 {	
-	NSMutableDictionary *options = [NSMutableDictionary dictionary];
+	NSMutableDictionary *options = enabled || ubiquity ? [NSMutableDictionary dictionary] : nil;
 	
 	if (enabled)
 		[options addEntriesFromDictionary:[self automaticLightweightMigrationOptions]];
@@ -176,7 +176,7 @@ NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCo
 	NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
 	
 	// HACK: Lame solution to fix automigration error "Migration failed after first pass"
-	if (enabled && !psc.persistentStores.count)
+	if (!psc.persistentStores.count)
 	{
 		dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC);
 		dispatch_after(when, dispatch_get_main_queue(), ^ {

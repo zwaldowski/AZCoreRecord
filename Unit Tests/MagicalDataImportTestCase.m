@@ -16,7 +16,6 @@
 
 - (void) setUp
 {
-	[MagicalRecord _cleanUp];
 	[MagicalRecord setStackModelName:@"TestModel.momd"];
 	[MagicalRecord setStackShouldUseInMemoryStore:YES];
 	
@@ -26,6 +25,10 @@
 	}
 	
 	self.testEntityData = [self dataFromJSONFixture];
+}
+
+- (void)tearDown {
+	[MagicalRecord _cleanUp];
 }
 
 - (Class) testEntityClass

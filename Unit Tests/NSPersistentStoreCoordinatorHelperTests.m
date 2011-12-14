@@ -11,8 +11,7 @@
 
 @implementation NSPersistentStoreCoordinatorHelperTests
 
-- (void) setUp
-{
+- (void)tearDown {
 	[MagicalRecord _cleanUp];
 	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:@"TestStore.sqlite"];
 	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];

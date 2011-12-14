@@ -19,6 +19,11 @@
 	[MagicalRecord setStackShouldUseInMemoryStore:YES];
 }
 
+- (void) tearDown
+{
+	[MagicalRecord _cleanUp];
+}
+
 -(BOOL)shouldRunOnMainThread
 {
 	return YES;

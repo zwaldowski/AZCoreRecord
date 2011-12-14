@@ -4,6 +4,7 @@
 #import "_SingleRelatedEntity.h"
 
 const struct SingleRelatedEntityAttributes SingleRelatedEntityAttributes = {
+	.mappedStringAttribute = @"mappedStringAttribute",
 };
 
 const struct SingleRelatedEntityRelationships SingleRelatedEntityRelationships = {
@@ -42,6 +43,13 @@ const struct SingleRelatedEntityFetchedProperties SingleRelatedEntityFetchedProp
 
 	return keyPaths;
 }
+
+
+
+
+@dynamic mappedStringAttribute;
+
+
 
 
 

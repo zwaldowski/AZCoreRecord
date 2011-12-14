@@ -21,6 +21,8 @@
 		6C93DA56149522350074327E /* NSPersistentStore+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA4A149522350074327E /* NSPersistentStore+MagicalRecord.m */; };
 		6C93DA57149522350074327E /* NSPersistentStoreCoordinator+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA4C149522350074327E /* NSPersistentStoreCoordinator+MagicalRecord.m */; };
 		6C93DA58149522350074327E /* NSPersistentStoreCoordinator+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA4C149522350074327E /* NSPersistentStoreCoordinator+MagicalRecord.m */; };
+		6C968EA51498265A00AC03B0 /* OCMock.framework in Copy Unit Test Frameworks into App Bundle */ = {isa = PBXBuildFile; fileRef = C721C84313D0C6460097AB6F /* OCMock.framework */; };
+		6C968EA61498266700AC03B0 /* GHUnit.framework in Copy Unit Test Frameworks into App Bundle */ = {isa = PBXBuildFile; fileRef = C721C84113D0C6460097AB6F /* GHUnit.framework */; };
 		6CDA7E26148247B1009B99A9 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CDA7E25148247B1009B99A9 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		6CDA7E27148247B1009B99A9 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CDA7E25148247B1009B99A9 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		C70B6E7113D0F62500709450 /* NSPersisentStoreHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C70B6E7013D0F62500709450 /* NSPersisentStoreHelperTests.m */; };
@@ -42,7 +44,6 @@
 		C738127A1410398A0054EEF0 /* ImportSingleEntityRelatedToManyMappedEntitiesUsingListOfPrimaryKeysTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C73812781410383B0054EEF0 /* ImportSingleEntityRelatedToManyMappedEntitiesUsingListOfPrimaryKeysTests.m */; };
 		C738127B141039900054EEF0 /* SingleEntityRelatedToManyMappedEntitiesUsingListOfPrimaryKeys.json in Resources */ = {isa = PBXBuildFile; fileRef = C7381275141037E80054EEF0 /* SingleEntityRelatedToManyMappedEntitiesUsingListOfPrimaryKeys.json */; };
 		C753897413DB61CE002B2F57 /* GHUnitTestMain.m in Sources */ = {isa = PBXBuildFile; fileRef = C753897313DB61CE002B2F57 /* GHUnitTestMain.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		C753897613DB6322002B2F57 /* GHUnit.framework in Copy GHUnit into App Bundle */ = {isa = PBXBuildFile; fileRef = C721C84113D0C6460097AB6F /* GHUnit.framework */; };
 		C763783213E10BEC0009A6CA /* GHUnitIOSTestMain.m in Sources */ = {isa = PBXBuildFile; fileRef = C763783113E10BEC0009A6CA /* GHUnitIOSTestMain.m */; };
 		C76AF7E513DBC08F00CE2E05 /* FixtureHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = C77E5FBA13D0D2AE00298F87 /* FixtureHelpers.m */; };
 		C76AF7E613DBC08F00CE2E05 /* MagicalRecordHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C77E5FA713D0CBDE00298F87 /* MagicalRecordHelperTests.m */; };
@@ -55,7 +56,7 @@
 		C76AF7ED13DBC09800CE2E05 /* SampleJSONDataForImport.json in Resources */ = {isa = PBXBuildFile; fileRef = C77E5FB413D0D1EC00298F87 /* SampleJSONDataForImport.json */; };
 		C76AF7EE13DBC09B00CE2E05 /* SingleEntityWithNoRelationships.plist in Resources */ = {isa = PBXBuildFile; fileRef = C77E5FB213D0D1D100298F87 /* SingleEntityWithNoRelationships.plist */; };
 		C76AF7F213DBC12500CE2E05 /* OCHamcrest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C721C84213D0C6460097AB6F /* OCHamcrest.framework */; };
-		C76AF7F413DBC34300CE2E05 /* OCHamcrest.framework in Copy OCHamcrest into App Bundle */ = {isa = PBXBuildFile; fileRef = C721C84213D0C6460097AB6F /* OCHamcrest.framework */; };
+		C76AF7F413DBC34300CE2E05 /* OCHamcrest.framework in Copy Unit Test Frameworks into App Bundle */ = {isa = PBXBuildFile; fileRef = C721C84213D0C6460097AB6F /* OCHamcrest.framework */; };
 		C76AF7FC13DBEB5500CE2E05 /* ImportSingleRelatedEntityTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C76AF7FA13DBEB5500CE2E05 /* ImportSingleRelatedEntityTests.m */; };
 		C76AF82A13DBEE5A00CE2E05 /* SingleRelatedEntity.json in Resources */ = {isa = PBXBuildFile; fileRef = C76AF82913DBEE5A00CE2E05 /* SingleRelatedEntity.json */; };
 		C76AF82B13DBEE5A00CE2E05 /* SingleRelatedEntity.json in Resources */ = {isa = PBXBuildFile; fileRef = C76AF82913DBEE5A00CE2E05 /* SingleRelatedEntity.json */; };
@@ -118,26 +119,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C753897513DB6310002B2F57 /* Copy GHUnit into App Bundle */ = {
+		C76AF7F313DBC33100CE2E05 /* Copy Unit Test Frameworks into App Bundle */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C753897613DB6322002B2F57 /* GHUnit.framework in Copy GHUnit into App Bundle */,
+				C76AF7F413DBC34300CE2E05 /* OCHamcrest.framework in Copy Unit Test Frameworks into App Bundle */,
+				6C968EA51498265A00AC03B0 /* OCMock.framework in Copy Unit Test Frameworks into App Bundle */,
+				6C968EA61498266700AC03B0 /* GHUnit.framework in Copy Unit Test Frameworks into App Bundle */,
 			);
-			name = "Copy GHUnit into App Bundle";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C76AF7F313DBC33100CE2E05 /* Copy OCHamcrest into App Bundle */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 16;
-			files = (
-				C76AF7F413DBC34300CE2E05 /* OCHamcrest.framework in Copy OCHamcrest into App Bundle */,
-			);
-			name = "Copy OCHamcrest into App Bundle";
+			name = "Copy Unit Test Frameworks into App Bundle";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C7E37A7B14157BE600CE9BF5 /* CopyFiles */ = {
@@ -729,8 +721,7 @@
 				C721C7D813D0C3A00097AB6F /* Sources */,
 				C721C7D913D0C3A00097AB6F /* Frameworks */,
 				C721C7DA13D0C3A00097AB6F /* Resources */,
-				C753897513DB6310002B2F57 /* Copy GHUnit into App Bundle */,
-				C76AF7F313DBC33100CE2E05 /* Copy OCHamcrest into App Bundle */,
+				C76AF7F313DBC33100CE2E05 /* Copy Unit Test Frameworks into App Bundle */,
 			);
 			buildRules = (
 			);

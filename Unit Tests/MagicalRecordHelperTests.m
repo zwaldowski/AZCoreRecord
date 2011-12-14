@@ -13,8 +13,11 @@
 
 - (void) setUp
 {
-	[MagicalRecord _cleanUp];
 	[MagicalRecord setStackModelName:@"TestModel.momd"];
+}
+
+- (void) tearDown {
+	[MagicalRecord _cleanUp];
 }
 
 - (void) assertDefaultStack
@@ -54,18 +57,16 @@
 
 - (void) testCreateSqliteStackWithCustomName
 {
-	@autoreleasepool
-	{
-		NSString *testStoreName = @"MyTestDataStore.sqlite";
-		
-		[MagicalRecord setStackStoreName:testStoreName];
-		
-		[self assertDefaultStack];
-		
-		NSPersistentStore *defaultStore = [NSPersistentStore defaultPersistentStore];
-		assertThat([defaultStore type], is(equalTo(NSSQLiteStoreType)));
-		assertThat([[defaultStore URL] absoluteString], endsWith(testStoreName));
-	}
+	NSString *testStoreName = @"MyTestDataStore.sqlite";
+	[MagicalRecord setStackStoreName:testStoreName];
+	
+	[self assertDefaultStack];
+	
+	NSPersistentStore *defaultStore = [NSPersistentStore defaultPersistentStore];
+	assertThat([defaultStore type], is(equalTo(NSSQLiteStoreType)));
+	assertThat([[defaultStore URL] absoluteString], endsWith(testStoreName));
+	
+	[[NSFileManager defaultManager] removeItemAtURL:[defaultStore URL] error:NULL];
 }
 
 - (void) testCanSetAUserSpecifiedErrorHandler

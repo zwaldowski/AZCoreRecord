@@ -256,10 +256,16 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	
 	if (backgroundQueue) dispatch_release(backgroundQueue), backgroundQueue = nil;
 	
-	[NSManagedObjectContext _setDefaultContext: nil];
-	[NSManagedObjectModel _setDefaultModel: nil];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: nil];
-	[NSPersistentStore _setDefaultPersistentStore: nil];
+	if ([NSManagedObjectContext _hasDefaultContext])
+		[NSManagedObjectContext _setDefaultContext: nil];
+	
+	if ([NSManagedObjectModel _hasDefaultModel])
+		[NSManagedObjectModel _setDefaultModel: nil];
+	
+	if ([NSPersistentStoreCoordinator _hasDefaultStoreCoordinator]) {
+		[NSPersistentStore _setDefaultPersistentStore: nil];
+		[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: nil];		
+	}
 }
 
 #pragma mark - Ubiquity Support

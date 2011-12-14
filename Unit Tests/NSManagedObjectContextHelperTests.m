@@ -13,8 +13,12 @@
 
 - (void)setUp
 {
-	[MagicalRecord _cleanUp];
 	[MagicalRecord setStackShouldUseInMemoryStore:YES];
+}
+
+- (void)tearDown
+{
+	[MagicalRecord _cleanUp];
 }
 
 - (void) testCanCreateContextForCurrentThead
