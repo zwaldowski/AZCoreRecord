@@ -4,6 +4,25 @@
 #import <CoreData/CoreData.h>
 
 
+extern const struct SingleEntityWithNoRelationshipsAttributes {
+	__unsafe_unretained NSString *booleanTestAttribute;
+	__unsafe_unretained NSString *colorTestAttribute;
+	__unsafe_unretained NSString *dateTestAttribute;
+	__unsafe_unretained NSString *decimalTestAttribute;
+	__unsafe_unretained NSString *doubleTestAttribute;
+	__unsafe_unretained NSString *floatTestAttribute;
+	__unsafe_unretained NSString *int16TestAttribute;
+	__unsafe_unretained NSString *int32TestAttribute;
+	__unsafe_unretained NSString *int64TestAttribute;
+	__unsafe_unretained NSString *stringTestAttribute;
+} SingleEntityWithNoRelationshipsAttributes;
+
+extern const struct SingleEntityWithNoRelationshipsRelationships {
+} SingleEntityWithNoRelationshipsRelationships;
+
+extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
+} SingleEntityWithNoRelationshipsFetchedProperties;
+
 
 
 @class NSColor;
@@ -28,7 +47,7 @@
 
 
 
-@property (nonatomic, retain) NSNumber *booleanTestAttribute;
+@property (nonatomic, strong) NSNumber *booleanTestAttribute;
 
 
 @property BOOL booleanTestAttributeValue;
@@ -40,7 +59,7 @@
 
 
 
-@property (nonatomic, retain) NSColor *colorTestAttribute;
+@property (nonatomic, strong) NSColor *colorTestAttribute;
 
 
 //- (BOOL)validateColorTestAttribute:(id*)value_ error:(NSError**)error_;
@@ -48,7 +67,7 @@
 
 
 
-@property (nonatomic, retain) NSDate *dateTestAttribute;
+@property (nonatomic, strong) NSDate *dateTestAttribute;
 
 
 //- (BOOL)validateDateTestAttribute:(id*)value_ error:(NSError**)error_;
@@ -56,7 +75,7 @@
 
 
 
-@property (nonatomic, retain) NSDecimalNumber *decimalTestAttribute;
+@property (nonatomic, strong) NSDecimalNumber *decimalTestAttribute;
 
 
 //- (BOOL)validateDecimalTestAttribute:(id*)value_ error:(NSError**)error_;
@@ -64,7 +83,7 @@
 
 
 
-@property (nonatomic, retain) NSNumber *doubleTestAttribute;
+@property (nonatomic, strong) NSNumber *doubleTestAttribute;
 
 
 @property double doubleTestAttributeValue;
@@ -76,7 +95,7 @@
 
 
 
-@property (nonatomic, retain) NSNumber *floatTestAttribute;
+@property (nonatomic, strong) NSNumber *floatTestAttribute;
 
 
 @property float floatTestAttributeValue;
@@ -88,7 +107,7 @@
 
 
 
-@property (nonatomic, retain) NSNumber *int16TestAttribute;
+@property (nonatomic, strong) NSNumber *int16TestAttribute;
 
 
 @property short int16TestAttributeValue;
@@ -100,7 +119,7 @@
 
 
 
-@property (nonatomic, retain) NSNumber *int32TestAttribute;
+@property (nonatomic, strong) NSNumber *int32TestAttribute;
 
 
 @property int int32TestAttributeValue;
@@ -112,7 +131,7 @@
 
 
 
-@property (nonatomic, retain) NSNumber *int64TestAttribute;
+@property (nonatomic, strong) NSNumber *int64TestAttribute;
 
 
 @property long long int64TestAttributeValue;
@@ -124,7 +143,7 @@
 
 
 
-@property (nonatomic, retain) NSString *stringTestAttribute;
+@property (nonatomic, strong) NSString *stringTestAttribute;
 
 
 //- (BOOL)validateStringTestAttribute:(id*)value_ error:(NSError**)error_;

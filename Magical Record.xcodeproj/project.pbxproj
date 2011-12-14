@@ -833,7 +833,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"Unit Tests/Fixtures/Mac\" && mogenerator -m TestModel.xcdatamodeld/TestModel.xcdatamodel -O TestEntities";
+			shellScript = "cd \"Unit Tests/Fixtures/Mac\" && mogenerator -m TestModel.xcdatamodeld/TestModel.xcdatamodel -O TestEntities --template-var arc=true";
 		};
 		C7BD887613DBF8FA00274567 /* Regenerate Core Data Entities */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -847,7 +847,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"Unit Tests/Fixtures/iOS\" && mogenerator -m TestModel.xcdatamodeld/TestModel.xcdatamodel -O TestEntities";
+			shellScript = "cd \"Unit Tests/Fixtures/iOS\" && mogenerator -m TestModel.xcdatamodeld/TestModel.xcdatamodel -O TestEntities --template-var arc=true";
 		};
 /* End PBXShellScriptBuildPhase section */
 

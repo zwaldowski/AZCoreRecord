@@ -8,6 +8,13 @@ extern const struct AbstractRelatedEntityAttributes {
 	__unsafe_unretained NSString *sampleBaseAttribute;
 } AbstractRelatedEntityAttributes;
 
+extern const struct AbstractRelatedEntityRelationships {
+} AbstractRelatedEntityRelationships;
+
+extern const struct AbstractRelatedEntityFetchedProperties {
+} AbstractRelatedEntityFetchedProperties;
+
+
 
 
 @interface AbstractRelatedEntityID : NSManagedObjectID {}

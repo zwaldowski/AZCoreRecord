@@ -4,6 +4,16 @@
 #import <CoreData/CoreData.h>
 
 
+extern const struct SingleRelatedEntityAttributes {
+} SingleRelatedEntityAttributes;
+
+extern const struct SingleRelatedEntityRelationships {
+	__unsafe_unretained NSString *testRelationship;
+} SingleRelatedEntityRelationships;
+
+extern const struct SingleRelatedEntityFetchedProperties {
+} SingleRelatedEntityFetchedProperties;
+
 @class ConcreteRelatedEntity;
 
 
@@ -20,7 +30,7 @@
 
 
 
-@property (nonatomic, retain) ConcreteRelatedEntity* testRelationship;
+@property (nonatomic, strong) ConcreteRelatedEntity* testRelationship;
 
 //- (BOOL)validateTestRelationship:(id*)value_ error:(NSError**)error_;
 
