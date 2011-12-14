@@ -33,7 +33,7 @@
             </userInfo>
         </attribute>
         <attribute name="notInJsonAttribute" optional="YES" attributeType="String" defaultValueString="Set From Core Data Model Editor" syncable="YES"/>
-        <attribute name="nullTestAttribute" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="nullTestAttribute" optional="YES" attributeType="Integer 64" defaultValueString="100" syncable="YES"/>
         <attribute name="stringTestAttribute" optional="YES" attributeType="String"/>
     </entity>
     <entity name="SingleRelatedEntity" representedClassName="SingleRelatedEntity">
