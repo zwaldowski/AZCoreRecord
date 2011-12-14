@@ -98,7 +98,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 {
 	NSManagedObjectContext *context = nil;
 
-	if ([self respondsToSelector:@selector(initWithConcurrencyType:)] && self.concurrencyType != NSConfinementConcurrencyType)
+	if ([self respondsToSelector:@selector(initWithConcurrencyType:)])
 		context = [[NSManagedObjectContext alloc] initWithConcurrencyType: concurrencyType];
 	else
 		context = [NSManagedObjectContext contextWithStoreCoordinator:self.persistentStoreCoordinator];
@@ -115,7 +115,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 - (NSManagedObjectContext *) _mr_parentContext
 {
 	NSManagedObjectContext *parentContext = objc_getAssociatedObject(self, &kParentContextKey);	
-	if (!parentContext && [parentContext respondsToSelector: @selector(concurrencyType)])
+	if (!parentContext && [self respondsToSelector: @selector(_mr_parentContext)])
 	{
 		return [self _mr_parentContext];
 	}
@@ -128,6 +128,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 		[self _mr_setParentContext:parentContext];
 		return;
 	}
+	
 	NSNotificationCenter *dnc = [NSNotificationCenter defaultCenter];
 	if (self.parentContext) [dnc removeObserver: self.parentContext name: NSManagedObjectContextDidSaveNotification object: self];
 	objc_setAssociatedObject(self, &kParentContextKey, parentContext, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
