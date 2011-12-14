@@ -96,8 +96,6 @@
 
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 50000
-
 - (void) testImportUIColorAttributeToEntity
 {
 	id actualColor = testEntity.colorTestAttribute;
@@ -114,6 +112,18 @@
 	}
 }
 
+#else
+
+- (void) testImportNSColorAttributeToEntity
+{
+	id actualColor = testEntity.colorTestAttribute;
+    
+	assertThatFloat([actualColor alphaComponent], is(equalToFloat(255./255.)));
+	assertThatFloat([actualColor redComponent], is(equalToFloat(64./255.)));
+	assertThatFloat([actualColor greenComponent], is(equalToFloat(128./255.)));
+	assertThatFloat([actualColor blueComponent], is(equalToFloat(225./255.)));
+}
+
 #endif
 
 - (NSDate *) dateFromString:(NSString *)date
@@ -127,26 +137,6 @@
     
 	return expectedDate;
 }
-
-#else
-
-- (void) testImportNSColorAttributeToEntity
-{
-	id actualColor = testEntity.colorTestAttribute;
-    
-	assertThatFloat([actualColor alphaComponent], is(equalToFloat(255./255.)));
-	assertThatFloat([actualColor redComponent], is(equalToFloat(64./255.)));
-	assertThatFloat([actualColor greenComponent], is(equalToFloat(128./255.)));
-	assertThatFloat([actualColor blueComponent], is(equalToFloat(225./255.)));
-}
-
-- (NSDate *) dateFromString:(NSString *)date
-{
-	NSDate *expectedDate = [NSDate dateWithString:date];
-	return expectedDate;
-}
-
-#endif
 
 - (void) testImportDateAttributeToEntity
 {

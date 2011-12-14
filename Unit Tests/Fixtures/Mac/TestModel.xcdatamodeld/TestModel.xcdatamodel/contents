@@ -16,6 +16,11 @@
             </userInfo>
         </attribute>
         <attribute name="dateTestAttribute" optional="YES" attributeType="Date"/>
+        <attribute name="dateWithCustomFormat" optional="YES" attributeType="Date" syncable="YES">
+            <userInfo>
+                <entry key="dateFormat" value="M/d/yyyy H-mm-ss a"/>
+            </userInfo>
+        </attribute>
         <attribute name="decimalTestAttribute" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
         <attribute name="doubleTestAttribute" optional="YES" attributeType="Double" defaultValueString="0.0"/>
         <attribute name="floatTestAttribute" optional="YES" attributeType="Float" defaultValueString="0"/>
@@ -33,7 +38,7 @@
         <element name="AbstractRelatedEntity" positionX="-81" positionY="-149679" width="128" height="75"/>
         <element name="ConcreteRelatedEntity" positionX="-119" positionY="-1764" width="128" height="60"/>
         <element name="EntityWithDiffernentClassName" positionX="-540" positionY="-1665" width="173" height="45"/>
-        <element name="SingleEntityWithNoRelationships" positionX="-108" positionY="-1521" width="180" height="195"/>
+        <element name="SingleEntityWithNoRelationships" positionX="-108" positionY="-1521" width="180" height="225"/>
         <element name="SingleRelatedEntity" positionX="-362" positionY="-149631" width="128" height="75"/>
     </elements>
 </model>

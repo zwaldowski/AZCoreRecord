@@ -7,6 +7,7 @@ const struct SingleEntityWithNoRelationshipsAttributes SingleEntityWithNoRelatio
 	.booleanTestAttribute = @"booleanTestAttribute",
 	.colorTestAttribute = @"colorTestAttribute",
 	.dateTestAttribute = @"dateTestAttribute",
+	.dateWithCustomFormat = @"dateWithCustomFormat",
 	.decimalTestAttribute = @"decimalTestAttribute",
 	.doubleTestAttribute = @"doubleTestAttribute",
 	.floatTestAttribute = @"floatTestAttribute",
@@ -114,6 +115,13 @@ const struct SingleEntityWithNoRelationshipsFetchedProperties SingleEntityWithNo
 
 
 @dynamic dateTestAttribute;
+
+
+
+
+
+
+@dynamic dateWithCustomFormat;
 
 
 

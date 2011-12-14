@@ -8,6 +8,7 @@ extern const struct SingleEntityWithNoRelationshipsAttributes {
 	__unsafe_unretained NSString *booleanTestAttribute;
 	__unsafe_unretained NSString *colorTestAttribute;
 	__unsafe_unretained NSString *dateTestAttribute;
+	__unsafe_unretained NSString *dateWithCustomFormat;
 	__unsafe_unretained NSString *decimalTestAttribute;
 	__unsafe_unretained NSString *doubleTestAttribute;
 	__unsafe_unretained NSString *floatTestAttribute;
@@ -27,6 +28,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 @class NSColor;
+
 
 
 
@@ -73,6 +75,14 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 //- (BOOL)validateDateTestAttribute:(id*)value_ error:(NSError**)error_;
+
+
+
+
+@property (nonatomic, strong) NSDate *dateWithCustomFormat;
+
+
+//- (BOOL)validateDateWithCustomFormat:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -188,6 +198,12 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 - (NSDate*)primitiveDateTestAttribute;
 - (void)setPrimitiveDateTestAttribute:(NSDate*)value;
+
+
+
+
+- (NSDate*)primitiveDateWithCustomFormat;
+- (void)setPrimitiveDateWithCustomFormat:(NSDate*)value;
 
 
 
