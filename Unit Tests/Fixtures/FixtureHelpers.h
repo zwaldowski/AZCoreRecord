@@ -8,7 +8,6 @@
 
 @interface FixtureHelpers : NSObject
 
-+ (id) dataFromPListFixtureNamed:(NSString *)fixtureName;
 + (id) dataFromJSONFixtureNamed:(NSString *)fixtureName;
 
 @end

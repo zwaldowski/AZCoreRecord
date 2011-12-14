@@ -11,14 +11,6 @@
 
 @implementation FixtureHelpers
 
-+ (id) dataFromPListFixtureNamed:(NSString *)fixtureName
-{
-	NSString *resource = [[NSBundle mainBundle] pathForResource:fixtureName ofType:@"plist"];
-	NSData *plistData = [NSData dataWithContentsOfFile:resource];
-	
-	return [NSPropertyListSerialization propertyListWithData:plistData options:NSPropertyListImmutable format:nil error:nil];
-}
-
 + (id) dataFromJSONFixtureNamed:(NSString *)fixtureName
 {
 	NSString *resource = [[NSBundle mainBundle] pathForResource:fixtureName ofType:@"json"];

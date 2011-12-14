@@ -22,6 +22,7 @@
         <attribute name="int16TestAttribute" optional="YES" attributeType="Integer 16" defaultValueString="0"/>
         <attribute name="int32TestAttribute" optional="YES" attributeType="Integer 32" defaultValueString="0"/>
         <attribute name="int64TestAttribute" optional="YES" attributeType="Integer 64" defaultValueString="0"/>
+        <attribute name="notInJsonAttribute" optional="YES" attributeType="String" defaultValueString="Set From Core Data Model Editor" syncable="YES"/>
         <attribute name="stringTestAttribute" optional="YES" attributeType="String"/>
     </entity>
     <entity name="SingleRelatedEntity" representedClassName="SingleRelatedEntity">

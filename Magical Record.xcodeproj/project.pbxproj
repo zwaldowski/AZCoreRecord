@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		000C4315146F86FD006174F3 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C721C84313D0C6460097AB6F /* OCMock.framework */; };
 		000C4316146F8931006174F3 /* MagicalDataImportTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = C7913B9C13FAFC13007E09CC /* MagicalDataImportTestCase.m */; };
+		6C1CA768149835FF009EF494 /* SingleEntityWithNoRelationships.json in Resources */ = {isa = PBXBuildFile; fileRef = C7E736DE1402FE64005657C9 /* SingleEntityWithNoRelationships.json */; };
 		6C93DA4D149522350074327E /* NSManagedObject+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA42149522350074327E /* NSManagedObject+MagicalDataImport.m */; };
 		6C93DA4E149522350074327E /* NSManagedObject+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA42149522350074327E /* NSManagedObject+MagicalDataImport.m */; };
 		6C93DA4F149522350074327E /* NSManagedObject+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA44149522350074327E /* NSManagedObject+MagicalRecord.m */; };
@@ -54,7 +55,6 @@
 		C76AF7EB13DBC08F00CE2E05 /* NSManagedObjectContextHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C70B6E7913D0F68400709450 /* NSManagedObjectContextHelperTests.m */; };
 		C76AF7EC13DBC08F00CE2E05 /* NSManagedObjectHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C70B6E7C13D0F69A00709450 /* NSManagedObjectHelperTests.m */; };
 		C76AF7ED13DBC09800CE2E05 /* SampleJSONDataForImport.json in Resources */ = {isa = PBXBuildFile; fileRef = C77E5FB413D0D1EC00298F87 /* SampleJSONDataForImport.json */; };
-		C76AF7EE13DBC09B00CE2E05 /* SingleEntityWithNoRelationships.plist in Resources */ = {isa = PBXBuildFile; fileRef = C77E5FB213D0D1D100298F87 /* SingleEntityWithNoRelationships.plist */; };
 		C76AF7F213DBC12500CE2E05 /* OCHamcrest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C721C84213D0C6460097AB6F /* OCHamcrest.framework */; };
 		C76AF7F413DBC34300CE2E05 /* OCHamcrest.framework in Copy Unit Test Frameworks into App Bundle */ = {isa = PBXBuildFile; fileRef = C721C84213D0C6460097AB6F /* OCHamcrest.framework */; };
 		C76AF7FC13DBEB5500CE2E05 /* ImportSingleRelatedEntityTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C76AF7FA13DBEB5500CE2E05 /* ImportSingleRelatedEntityTests.m */; };
@@ -64,7 +64,6 @@
 		C77E5F9E13D0CA2100298F87 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C77E5F9C13D0CA1800298F87 /* CoreGraphics.framework */; };
 		C77E5FA113D0CA3000298F87 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C77E5F9F13D0CA2700298F87 /* UIKit.framework */; };
 		C77E5FA813D0CBDE00298F87 /* MagicalRecordHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C77E5FA713D0CBDE00298F87 /* MagicalRecordHelperTests.m */; };
-		C77E5FB313D0D1D100298F87 /* SingleEntityWithNoRelationships.plist in Resources */ = {isa = PBXBuildFile; fileRef = C77E5FB213D0D1D100298F87 /* SingleEntityWithNoRelationships.plist */; };
 		C77E5FB513D0D1EC00298F87 /* SampleJSONDataForImport.json in Resources */ = {isa = PBXBuildFile; fileRef = C77E5FB413D0D1EC00298F87 /* SampleJSONDataForImport.json */; };
 		C77E5FB813D0D25100298F87 /* ImportSingleEntityWithNoRelationshipsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C77E5FB713D0D25100298F87 /* ImportSingleEntityWithNoRelationshipsTests.m */; };
 		C77E5FBB13D0D2AE00298F87 /* FixtureHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = C77E5FBA13D0D2AE00298F87 /* FixtureHelpers.m */; };
@@ -215,7 +214,6 @@
 		C77E5F9F13D0CA2700298F87 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		C77E5FA613D0CBDE00298F87 /* MagicalRecordHelperTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MagicalRecordHelperTests.h; path = "Unit Tests/MagicalRecordHelperTests.h"; sourceTree = "<group>"; };
 		C77E5FA713D0CBDE00298F87 /* MagicalRecordHelperTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = MagicalRecordHelperTests.m; path = "Unit Tests/MagicalRecordHelperTests.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		C77E5FB213D0D1D100298F87 /* SingleEntityWithNoRelationships.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = SingleEntityWithNoRelationships.plist; path = "Unit Tests/Fixtures/SingleEntityWithNoRelationships.plist"; sourceTree = "<group>"; };
 		C77E5FB413D0D1EC00298F87 /* SampleJSONDataForImport.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = SampleJSONDataForImport.json; path = "Unit Tests/Fixtures/SampleJSONDataForImport.json"; sourceTree = "<group>"; };
 		C77E5FB713D0D25100298F87 /* ImportSingleEntityWithNoRelationshipsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = ImportSingleEntityWithNoRelationshipsTests.m; path = "Unit Tests/ImportSingleEntityWithNoRelationshipsTests.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		C77E5FB913D0D2AE00298F87 /* FixtureHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FixtureHelpers.h; path = "Unit Tests/Fixtures/FixtureHelpers.h"; sourceTree = "<group>"; };
@@ -590,7 +588,6 @@
 		C77E5FB113D0D18D00298F87 /* Sample Data Files */ = {
 			isa = PBXGroup;
 			children = (
-				C77E5FB213D0D1D100298F87 /* SingleEntityWithNoRelationships.plist */,
 				C7E736DE1402FE64005657C9 /* SingleEntityWithNoRelationships.json */,
 				C77E5FB413D0D1EC00298F87 /* SampleJSONDataForImport.json */,
 				C76AF82913DBEE5A00CE2E05 /* SingleRelatedEntity.json */,
@@ -786,7 +783,7 @@
 				C721C7E913D0C3A00097AB6F /* InfoPlist.strings in Resources */,
 				C721C7EF13D0C3A00097AB6F /* Credits.rtf in Resources */,
 				C76AF7ED13DBC09800CE2E05 /* SampleJSONDataForImport.json in Resources */,
-				C76AF7EE13DBC09B00CE2E05 /* SingleEntityWithNoRelationships.plist in Resources */,
+				6C1CA768149835FF009EF494 /* SingleEntityWithNoRelationships.json in Resources */,
 				C76AF82A13DBEE5A00CE2E05 /* SingleRelatedEntity.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -796,7 +793,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C721C80713D0C3CD0097AB6F /* InfoPlist.strings in Resources */,
-				C77E5FB313D0D1D100298F87 /* SingleEntityWithNoRelationships.plist in Resources */,
 				C77E5FB513D0D1EC00298F87 /* SampleJSONDataForImport.json in Resources */,
 				C76AF82B13DBEE5A00CE2E05 /* SingleRelatedEntity.json in Resources */,
 				C7C9A37D13F44B08002C5B0C /* SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey.json in Resources */,
