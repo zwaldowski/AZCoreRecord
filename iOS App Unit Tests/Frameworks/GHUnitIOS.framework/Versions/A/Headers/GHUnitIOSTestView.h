@@ -1,9 +1,9 @@
 //
-//  GHUnitIPhoneView.h
-//  GHUnitIPhone
+//  GHUnitIOSTestView.h
+//  GHUnitIOS
 //
-//  Created by Gabriel Handford on 4/12/10.
-//  Copyright 2010. All rights reserved.
+//  Created by John Boiles on 8/8/11.
+//  Copyright 2011. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -27,26 +27,33 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#import <UIKit/UIKit.h>
+#import "YKUIImageViewControl.h"
 
-@interface GHUnitIPhoneView : UIView {
-  UISearchBar *searchBar_;
-  
-  UITableView *tableView_;
-  
-  //! Status label at bottom of the view
-  UILabel *statusLabel_;
- 
-  UISegmentedControl *filterControl_;
-    
-  UIToolbar *runToolbar_;  
-  
-  UIView *footerView_;
+@class GHUnitIOSTestView;
+
+@protocol GHUnitIOSTestViewDelegate <NSObject>
+- (void)testViewDidSelectOriginalImage:(GHUnitIOSTestView *)testView;
+- (void)testViewDidSelectNewImage:(GHUnitIOSTestView *)testView;
+- (void)testViewDidApproveChange:(GHUnitIOSTestView *)testView;
+@end
+
+@interface GHUnitIOSTestView : UIScrollView {
+  id<GHUnitIOSTestViewDelegate> controlDelegate_;
+
+  // TODO(johnb): Perhaps hold a scrollview here as subclassing UIViews can be weird.
+
+  YKUIImageViewControl *originalImageView_;
+  YKUIImageViewControl *newImageView_;
+
+  UIButton *approveButton_;
+
+  UILabel *textLabel_;
 }
+@property(assign, nonatomic) id<GHUnitIOSTestViewDelegate> controlDelegate;
 
-@property (readonly, nonatomic) UILabel *statusLabel;
-@property (readonly, nonatomic) UISegmentedControl *filterControl;
-@property (readonly, nonatomic) UISearchBar *searchBar;
-@property (readonly, nonatomic) UITableView *tableView;
+- (void)setOriginalImage:(UIImage *)originalImage newImage:(UIImage *)newImage text:(NSString *)text;
 
+- (void)setText:(NSString *)text;
 
 @end

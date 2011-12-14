@@ -14,6 +14,7 @@ const struct SingleEntityWithNoRelationshipsAttributes SingleEntityWithNoRelatio
 	.int16TestAttribute = @"int16TestAttribute",
 	.int32TestAttribute = @"int32TestAttribute",
 	.int64TestAttribute = @"int64TestAttribute",
+	.mappedStringAttribute = @"mappedStringAttribute",
 	.notInJsonAttribute = @"notInJsonAttribute",
 	.stringTestAttribute = @"stringTestAttribute",
 };
@@ -260,6 +261,13 @@ const struct SingleEntityWithNoRelationshipsFetchedProperties SingleEntityWithNo
 - (void)setPrimitiveInt64TestAttributeValue:(long long)value_ {
 	[self setPrimitiveInt64TestAttribute:[NSNumber numberWithLongLong:value_]];
 }
+
+
+
+
+
+@dynamic mappedStringAttribute;
+
 
 
 

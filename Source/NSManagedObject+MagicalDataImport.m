@@ -20,10 +20,10 @@ static id colorFromString(NSString *serializedColor)
 	NSCharacterSet *delimiters = [[NSCharacterSet characterSetWithCharactersInString: @"0.123456789"] invertedSet];
 	[colorScanner scanUpToCharactersFromSet: delimiters intoString: NULL];
 	
-	CGFLOAT_TYPE *componentValues = calloc(4, sizeof(CGFLOAT_TYPE));
+	CGFloat *componentValues = calloc(4, sizeof(CGFloat));
 	componentValues[3] = 1.0;
 	
-	CGFLOAT_TYPE *componentValue = componentValues;
+	CGFloat *componentValue = componentValues;
 	while (![colorScanner isAtEnd])
 	{
 		[colorScanner scanCharactersFromSet: delimiters intoString: NULL];
@@ -41,17 +41,22 @@ static id colorFromString(NSString *serializedColor)
 	// Convert HSB to HSV
 	if (isHSV) componentValues[3] = divisor - componentValues[3];
 	
-#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-	Class cls = [UIColor class];
-	SEL selector = @selector(colorWithRed:green:blue:alpha:);
-	if (isHSB || isHSV) selector = @selector(colorWithHue:saturation:brightness:alpha:);
-#else
-	Class cls = [NSColor class];
-	SEL selector = @selector(colorWithDeviceRed:green:blue:alpha:);
-	if (isHSB || isHSV) selector = @selector(colorWithDeviceHue:saturation:brightness:alpha:);
-#endif
+	id color = nil;
 	
-	id color = ((id (*)(id, SEL, CGFLOAT_TYPE, CGFLOAT_TYPE, CGFLOAT_TYPE, CGFLOAT_TYPE)) objc_msgSend)(cls, selector, componentValues[0], componentValues[1], componentValues[2], componentValues[3]);
+#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
+	if (isHSB || isHSV) {
+		color = [UIColor colorWithHue:componentValues[0] saturation:componentValues[1] brightness:componentValues[2] alpha:componentValues[3]];
+	} else {
+		color = [UIColor colorWithRed:componentValues[0] green:componentValues[1] blue:componentValues[2] alpha:componentValues[3]];
+	}
+#else
+	if (isHSB || isHSV) {
+		color = [NSColor colorWithDeviceHue:componentValues[0] saturation:componentValues[1] brightness:componentValues[2] alpha:componentValues[3]];
+	} else {
+		color = [NSColor colorWithDeviceRed:componentValues[0] green:componentValues[1] blue:componentValues[2] alpha:componentValues[3]];
+	}
+#endif
+
 	free(componentValues);
 	return color;
 }

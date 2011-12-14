@@ -10,6 +10,7 @@
 		000C4315146F86FD006174F3 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C721C84313D0C6460097AB6F /* OCMock.framework */; };
 		000C4316146F8931006174F3 /* MagicalDataImportTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = C7913B9C13FAFC13007E09CC /* MagicalDataImportTestCase.m */; };
 		6C1CA768149835FF009EF494 /* SingleEntityWithNoRelationships.json in Resources */ = {isa = PBXBuildFile; fileRef = C7E736DE1402FE64005657C9 /* SingleEntityWithNoRelationships.json */; };
+		6C89C14C1498406800591F9C /* OCHamcrest.framework in Copy OCHamcrest Framework */ = {isa = PBXBuildFile; fileRef = C721C84213D0C6460097AB6F /* OCHamcrest.framework */; };
 		6C93DA4D149522350074327E /* NSManagedObject+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA42149522350074327E /* NSManagedObject+MagicalDataImport.m */; };
 		6C93DA4E149522350074327E /* NSManagedObject+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA42149522350074327E /* NSManagedObject+MagicalDataImport.m */; };
 		6C93DA4F149522350074327E /* NSManagedObject+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA44149522350074327E /* NSManagedObject+MagicalRecord.m */; };
@@ -55,8 +56,7 @@
 		C76AF7EB13DBC08F00CE2E05 /* NSManagedObjectContextHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C70B6E7913D0F68400709450 /* NSManagedObjectContextHelperTests.m */; };
 		C76AF7EC13DBC08F00CE2E05 /* NSManagedObjectHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C70B6E7C13D0F69A00709450 /* NSManagedObjectHelperTests.m */; };
 		C76AF7ED13DBC09800CE2E05 /* SampleJSONDataForImport.json in Resources */ = {isa = PBXBuildFile; fileRef = C77E5FB413D0D1EC00298F87 /* SampleJSONDataForImport.json */; };
-		C76AF7F213DBC12500CE2E05 /* OCHamcrest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C721C84213D0C6460097AB6F /* OCHamcrest.framework */; };
-		C76AF7F413DBC34300CE2E05 /* OCHamcrest.framework in Copy Unit Test Frameworks into App Bundle */ = {isa = PBXBuildFile; fileRef = C721C84213D0C6460097AB6F /* OCHamcrest.framework */; };
+		C76AF7F413DBC34300CE2E05 /* OCHamcrest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C721C84213D0C6460097AB6F /* OCHamcrest.framework */; };
 		C76AF7FC13DBEB5500CE2E05 /* ImportSingleRelatedEntityTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C76AF7FA13DBEB5500CE2E05 /* ImportSingleRelatedEntityTests.m */; };
 		C76AF82A13DBEE5A00CE2E05 /* SingleRelatedEntity.json in Resources */ = {isa = PBXBuildFile; fileRef = C76AF82913DBEE5A00CE2E05 /* SingleRelatedEntity.json */; };
 		C76AF82B13DBEE5A00CE2E05 /* SingleRelatedEntity.json in Resources */ = {isa = PBXBuildFile; fileRef = C76AF82913DBEE5A00CE2E05 /* SingleRelatedEntity.json */; };
@@ -118,13 +118,23 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		6C89C14B1498405400591F9C /* Copy OCHamcrest Framework */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				6C89C14C1498406800591F9C /* OCHamcrest.framework in Copy OCHamcrest Framework */,
+			);
+			name = "Copy OCHamcrest Framework";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C76AF7F313DBC33100CE2E05 /* Copy Unit Test Frameworks into App Bundle */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C76AF7F413DBC34300CE2E05 /* OCHamcrest.framework in Copy Unit Test Frameworks into App Bundle */,
 				6C968EA51498265A00AC03B0 /* OCMock.framework in Copy Unit Test Frameworks into App Bundle */,
 				6C968EA61498266700AC03B0 /* GHUnit.framework in Copy Unit Test Frameworks into App Bundle */,
 			);
@@ -306,8 +316,8 @@
 			files = (
 				C721C7DF13D0C3A00097AB6F /* Cocoa.framework in Frameworks */,
 				C721C82413D0C45E0097AB6F /* Foundation.framework in Frameworks */,
-				C76AF7F213DBC12500CE2E05 /* OCHamcrest.framework in Frameworks */,
 				000C4315146F86FD006174F3 /* OCMock.framework in Frameworks */,
+				C76AF7F413DBC34300CE2E05 /* OCHamcrest.framework in Frameworks */,
 				C721C84E13D0C6460097AB6F /* GHUnit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -719,6 +729,7 @@
 				C721C7D913D0C3A00097AB6F /* Frameworks */,
 				C721C7DA13D0C3A00097AB6F /* Resources */,
 				C76AF7F313DBC33100CE2E05 /* Copy Unit Test Frameworks into App Bundle */,
+				6C89C14B1498405400591F9C /* Copy OCHamcrest Framework */,
 			);
 			buildRules = (
 			);
@@ -1010,7 +1021,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "Mac App Unit Tests/Mac App Unit Tests-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Library/Frameworks @loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Mac App Unit Tests/Frameworks/OCMockLibrary\"",
@@ -1051,7 +1062,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "Mac App Unit Tests/Mac App Unit Tests-Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Library/Frameworks @loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Mac App Unit Tests/Frameworks/OCMockLibrary\"",

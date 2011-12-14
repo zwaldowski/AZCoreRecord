@@ -27,6 +27,11 @@
         <attribute name="int16TestAttribute" optional="YES" attributeType="Integer 16" defaultValueString="0"/>
         <attribute name="int32TestAttribute" optional="YES" attributeType="Integer 32" defaultValueString="0"/>
         <attribute name="int64TestAttribute" optional="YES" attributeType="Integer 64" defaultValueString="0"/>
+        <attribute name="mappedStringAttribute" optional="YES" attributeType="String" syncable="YES">
+            <userInfo>
+                <entry key="mappedKey" value="mappedAttributeWithStringValue"/>
+            </userInfo>
+        </attribute>
         <attribute name="notInJsonAttribute" optional="YES" attributeType="String" defaultValueString="Set From Core Data Model Editor" syncable="YES"/>
         <attribute name="stringTestAttribute" optional="YES" attributeType="String"/>
     </entity>
@@ -38,7 +43,7 @@
         <element name="AbstractRelatedEntity" positionX="-81" positionY="-149679" width="128" height="75"/>
         <element name="ConcreteRelatedEntity" positionX="-119" positionY="-1764" width="128" height="60"/>
         <element name="EntityWithDiffernentClassName" positionX="-540" positionY="-1665" width="173" height="45"/>
-        <element name="SingleEntityWithNoRelationships" positionX="-108" positionY="-1521" width="180" height="225"/>
+        <element name="SingleEntityWithNoRelationships" positionX="-108" positionY="-1521" width="180" height="240"/>
         <element name="SingleRelatedEntity" positionX="-362" positionY="-149631" width="128" height="75"/>
     </elements>
 </model>

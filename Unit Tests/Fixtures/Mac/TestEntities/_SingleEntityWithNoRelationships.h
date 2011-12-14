@@ -15,6 +15,7 @@ extern const struct SingleEntityWithNoRelationshipsAttributes {
 	__unsafe_unretained NSString *int16TestAttribute;
 	__unsafe_unretained NSString *int32TestAttribute;
 	__unsafe_unretained NSString *int64TestAttribute;
+	__unsafe_unretained NSString *mappedStringAttribute;
 	__unsafe_unretained NSString *notInJsonAttribute;
 	__unsafe_unretained NSString *stringTestAttribute;
 } SingleEntityWithNoRelationshipsAttributes;
@@ -28,6 +29,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 @class NSColor;
+
 
 
 
@@ -155,6 +157,14 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
+@property (nonatomic, strong) NSString *mappedStringAttribute;
+
+
+//- (BOOL)validateMappedStringAttribute:(id*)value_ error:(NSError**)error_;
+
+
+
+
 @property (nonatomic, strong) NSString *notInJsonAttribute;
 
 
@@ -255,6 +265,12 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 - (long long)primitiveInt64TestAttributeValue;
 - (void)setPrimitiveInt64TestAttributeValue:(long long)value_;
+
+
+
+
+- (NSString*)primitiveMappedStringAttribute;
+- (void)setPrimitiveMappedStringAttribute:(NSString*)value;
 
 
 

@@ -1,9 +1,9 @@
 //
-//  GHUnitIPhoneTestViewController.h
-//  GHUnitIPhone
+//  GHImageDiffView.h
+//  GHUnitIOS
 //
-//  Created by Gabriel Handford on 2/20/09.
-//  Copyright 2009. All rights reserved.
+//  Created by John Boiles on 10/27/11.
+//  Copyright (c) 2011. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -27,16 +27,23 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#import "GHTestViewModel.h"
+#import <UIKit/UIKit.h>
 
-@interface GHUnitIPhoneTestViewController : UIViewController <GHTestRunnerDelegate> {
-  UITextView *textView_;
+@interface GHImageDiffView : UIView {
+  UIScrollView *scrollView_;
+  UISegmentedControl *segmentedControl_;
 
-  GHTestNode *testNode_;
-  
-  GHTestRunner *runner_;
+  UIImageView *originalImageView_;
+  UIImageView *newImageView_;
+  UIImageView *diffImageView_;
 }
 
-- (void)setTest:(id<GHTest>)test;
+- (void)setOriginalImage:(UIImage *)originalImage newImage:(UIImage *)newImage diffImage:(UIImage *)diffImage;
+
+- (void)showOriginalImage;
+
+- (void)showNewImage;
+
+- (void)showDiffImage;
 
 @end
