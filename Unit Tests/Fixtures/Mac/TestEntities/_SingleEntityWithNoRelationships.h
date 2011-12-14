@@ -17,6 +17,7 @@ extern const struct SingleEntityWithNoRelationshipsAttributes {
 	__unsafe_unretained NSString *int64TestAttribute;
 	__unsafe_unretained NSString *mappedStringAttribute;
 	__unsafe_unretained NSString *notInJsonAttribute;
+	__unsafe_unretained NSString *nullTestAttribute;
 	__unsafe_unretained NSString *stringTestAttribute;
 } SingleEntityWithNoRelationshipsAttributes;
 
@@ -28,7 +29,8 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@class NSColor;
+@class NSObject;
+
 
 
 
@@ -65,7 +67,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSColor *colorTestAttribute;
+@property (nonatomic, strong) NSObject *colorTestAttribute;
 
 
 //- (BOOL)validateColorTestAttribute:(id*)value_ error:(NSError**)error_;
@@ -173,6 +175,18 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
+@property (nonatomic, strong) NSNumber *nullTestAttribute;
+
+
+@property long long nullTestAttributeValue;
+- (long long)nullTestAttributeValue;
+- (void)setNullTestAttributeValue:(long long)value_;
+
+//- (BOOL)validateNullTestAttribute:(id*)value_ error:(NSError**)error_;
+
+
+
+
 @property (nonatomic, strong) NSString *stringTestAttribute;
 
 
@@ -200,8 +214,8 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-- (NSColor*)primitiveColorTestAttribute;
-- (void)setPrimitiveColorTestAttribute:(NSColor*)value;
+- (NSObject*)primitiveColorTestAttribute;
+- (void)setPrimitiveColorTestAttribute:(NSObject*)value;
 
 
 
@@ -277,6 +291,15 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 - (NSString*)primitiveNotInJsonAttribute;
 - (void)setPrimitiveNotInJsonAttribute:(NSString*)value;
+
+
+
+
+- (NSNumber*)primitiveNullTestAttribute;
+- (void)setPrimitiveNullTestAttribute:(NSNumber*)value;
+
+- (long long)primitiveNullTestAttributeValue;
+- (void)setPrimitiveNullTestAttributeValue:(long long)value_;
 
 
 

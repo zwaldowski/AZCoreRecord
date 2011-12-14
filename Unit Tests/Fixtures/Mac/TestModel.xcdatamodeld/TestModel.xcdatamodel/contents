@@ -12,7 +12,7 @@
         <attribute name="booleanTestAttribute" optional="YES" attributeType="Boolean"/>
         <attribute name="colorTestAttribute" optional="YES" attributeType="Transformable">
             <userInfo>
-                <entry key="attributeValueClassName" value="NSColor"/>
+                <entry key="className" value="NSColor"/>
             </userInfo>
         </attribute>
         <attribute name="dateTestAttribute" optional="YES" attributeType="Date"/>
@@ -33,6 +33,7 @@
             </userInfo>
         </attribute>
         <attribute name="notInJsonAttribute" optional="YES" attributeType="String" defaultValueString="Set From Core Data Model Editor" syncable="YES"/>
+        <attribute name="nullTestAttribute" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="stringTestAttribute" optional="YES" attributeType="String"/>
     </entity>
     <entity name="SingleRelatedEntity" representedClassName="SingleRelatedEntity">
@@ -43,7 +44,7 @@
         <element name="AbstractRelatedEntity" positionX="-81" positionY="-149679" width="128" height="75"/>
         <element name="ConcreteRelatedEntity" positionX="-119" positionY="-1764" width="128" height="60"/>
         <element name="EntityWithDiffernentClassName" positionX="-540" positionY="-1665" width="173" height="45"/>
-        <element name="SingleEntityWithNoRelationships" positionX="-108" positionY="-1521" width="180" height="240"/>
+        <element name="SingleEntityWithNoRelationships" positionX="-108" positionY="-1521" width="180" height="255"/>
         <element name="SingleRelatedEntity" positionX="-362" positionY="-149631" width="128" height="75"/>
     </elements>
 </model>
