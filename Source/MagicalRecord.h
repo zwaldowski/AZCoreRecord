@@ -55,6 +55,11 @@ typedef enum {
 + (void)setStackModelName: (NSString *) name;
 + (void)setStackModelURL: (NSURL *) name;
 
+#pragma mark - Ubiquity Support
+
++ (void)setUbiquitousContainer:(NSString *)containerID;
++ (void)setUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key cloudStorePathComponent:(NSString *)pathComponent;
+
 #pragma mark - Error Handling
 
 + (void) handleError: (NSError *) error;

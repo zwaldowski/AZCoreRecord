@@ -5,6 +5,8 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
+extern NSString *const MagicalRecordCompletedCloudSetupNotification;
+
 @interface NSPersistentStoreCoordinator (MagicalRecord)
 
 #pragma mark - Default Store Coordinator
@@ -18,16 +20,18 @@
 
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType;
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType options: (NSDictionary *) options;
++ (NSPersistentStoreCoordinator *) coordinatorWithContainer: (NSString *) containerID contentNameKey: (NSString *) key storeAtURL: (NSURL *) storeURL cloudStorePathComponent: (NSString *) pathComponent;
 
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType;
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType options: (NSDictionary *) options;
++ (NSPersistentStoreCoordinator *) coordinatorWithContainer: (NSString *) containerID contentNameKey: (NSString *) key storeNamed: (NSString *) storeName cloudStorePathComponent: (NSString *) pathComponent;
 
-#pragma mark - Automatic Lightweight Migration
+#pragma mark - Migration and Ubiquity Support
 
 + (NSDictionary *) automaticLightweightMigrationOptions;
 
-+ (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled;
-+ (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled;
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled ubiquityEnabled:(BOOL)ubiquity;
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled ubiquityEnabled:(BOOL)ubiquity;
 
 #pragma mark - In-Memory Store
 
@@ -41,6 +45,9 @@
 + (NSPersistentStoreCoordinator *) coordinatorWithAutoMigratingSqliteStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE;
 + (NSPersistentStoreCoordinator *) coordinatorWithSqliteStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE;
 + (NSPersistentStoreCoordinator *) coordinatorWithSqliteStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE;
+
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled DEPRECATED_ATTRIBUTE;
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled DEPRECATED_ATTRIBUTE;
 
 + (NSPersistentStoreCoordinator *) newPersistentStoreCoordinator DEPRECATED_ATTRIBUTE;
 

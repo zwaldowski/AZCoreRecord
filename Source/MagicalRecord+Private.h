@@ -62,6 +62,9 @@ extern void _mr_swizzle(Class cls, SEL oldSel, SEL newSel);
 + (NSURL *) _stackStoreURL;
 + (NSString *) _stackModelName;
 + (NSURL *) _stackModelURL;
++ (NSDictionary *) _stackUbiquityOptions;
+
++ (BOOL)_isUbiquityEnabled;
 
 @end
 

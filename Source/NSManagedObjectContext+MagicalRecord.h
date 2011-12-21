@@ -6,6 +6,8 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
+extern NSString *const MagicalRecordDidMergeUbiquitousChangesNotification;
+
 @interface NSManagedObjectContext (MagicalRecord)
 
 #pragma mark - Instance Methods
@@ -36,6 +38,11 @@
 
 + (NSManagedObjectContext *) context;
 + (NSManagedObjectContext *) contextWithStoreCoordinator: (NSPersistentStoreCoordinator *) coordinator;
+
+#pragma mark - Ubiquity Support
+
+- (void)startObservingUbiquitousChangesInCoordinator:(NSPersistentStoreCoordinator *)coordinator;
+- (void)stopObservingUbiquitousChangesInCoordinator:(NSPersistentStoreCoordinator *)coordinator;
 
 #pragma mark - Reset Context
 

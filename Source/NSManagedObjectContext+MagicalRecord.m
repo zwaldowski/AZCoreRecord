@@ -10,6 +10,7 @@
 #import "NSManagedObjectContext+MagicalRecord.h"
 #import <objc/runtime.h>
 
+NSString *const MagicalRecordDidMergeUbiquitousChangesNotification = @"MagicalRecordDidMergeUbiquitousChanges";
 static NSManagedObjectContext *_defaultManagedObjectContext = nil;
 static NSManagedObjectContextConcurrencyType _concurrencyType = NSConfinementConcurrencyType;
 static NSString const *kMagicalRecordManagedObjectContextKey = @"MRManagedObjectContext";
@@ -108,7 +109,7 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 	return context;
 }
 
-#pragma mark Parent Context
+#pragma mark - Parent Context
 
 @dynamic parentContext;
 
@@ -148,7 +149,9 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
         if ([self instancesRespondToSelector: @selector(initWithConcurrencyType:)])
 		{
             _defaultManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType: _concurrencyType];
-        } else {
+        }
+		else
+		{
             _defaultManagedObjectContext = [NSManagedObjectContext new];
         }
 		
@@ -177,7 +180,13 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 
 + (void) _setDefaultContext: (NSManagedObjectContext *) newDefault
 {
+	BOOL isUbiquitous = [MagicalRecord _isUbiquityEnabled];
+	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
+	if (isUbiquitous)
+		[_defaultManagedObjectContext stopObservingUbiquitousChangesInCoordinator:coordinator];
 	_defaultManagedObjectContext = newDefault;
+	if (isUbiquitous)
+		[_defaultManagedObjectContext startObservingUbiquitousChangesInCoordinator:coordinator];
 }
 + (void) setDefaultConcurrencyType: (NSManagedObjectContextConcurrencyType) type
 {
@@ -197,10 +206,37 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 	
 	MRLog(@"Creating managed object context%@...", [NSThread isMainThread] ? @" on main thread" : @"");
 	
-	NSManagedObjectContext *context = [NSManagedObjectContext new];
+	NSManagedObjectContext *context = nil;
+	
+	if ([self instancesRespondToSelector:@selector(initWithConcurrencyType:)]) {
+		context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+	} else {
+		context = [NSManagedObjectContext new];
+	}
+
 	context.persistentStoreCoordinator = coordinator;
 	
 	return context;
+}
+
+#pragma mark - Ubiquity Support
+
+- (void)_mergeUbiquitousChanges:(NSNotification *)notification {
+	[self performBlock:^{
+		MRLog(@"Merging changes From iCloud %@context%@", self == [NSManagedObjectContext MR_defaultContext] ? @"*** DEFAULT *** " : @"", ([NSThread isMainThread] ? @" *** on Main Thread ***" : @""));
+		[self mergeChangesFromContextDidSaveNotification:notification];
+		[[NSNotificationCenter defaultCenter] postNotificationName:MagicalRecordDidMergeUbiquitousChangesNotification object:self userInfo:[notification userInfo]];
+	}];
+}
+
+- (void)startObservingUbiquitousChangesInCoordinator:(NSPersistentStoreCoordinator *)coordinator
+{
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_mergeUbiquitousChanges:) name:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:coordinator];
+}
+
+- (void)stopObservingUbiquitousChangesInCoordinator:(NSPersistentStoreCoordinator *)coordinator
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:coordinator];
 }
 
 #pragma mark - Reset Context

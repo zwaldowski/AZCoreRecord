@@ -24,6 +24,8 @@
  */
 + (NSURL *) URLForStoreName: (NSString *) storeFileName;
 
++ (NSURL *) URLForUbiquitousContainer: (NSString *) bucketName;
+
 /** Creates and returns a URL for the default store
  name in the user's directory.
  

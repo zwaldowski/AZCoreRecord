@@ -186,7 +186,23 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 	NSAssert2([relatedObject.entity isKindOfEntity: relationshipInfo.destinationEntity], @"Related object entity %@ must be same as destination entity %@", relatedObject.entity.name, relationshipInfo.destinationEntity.name);
 	
 	// Add related object to set
-	NSString *selectorFormat = (relationshipInfo.isToMany) ? @"add%@Object:" : @"set%@:";
+	NSString *selectorFormat = @"set%@:";
+	id relationshipSource = self;
+	if ([relationshipInfo isToMany]) {
+		selectorFormat = @"add%@Object:";
+		if ([relationshipInfo isOrdered])
+		{
+			//Need to get the ordered set
+			NSString *selectorName = [[relationshipInfo name] stringByAppendingString:@"Set"];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+			relationshipSource = [self performSelector:NSSelectorFromString(selectorName)];
+#pragma clank diagnostic pop
+			selectorFormat = @"addObject:";
+		}
+	}
+	
+	
 	NSString *selectorString = [NSString stringWithFormat: selectorFormat, attributeNameFromString(relationshipInfo.name)];
 	
 	SEL selector = NSSelectorFromString(selectorString);
@@ -195,7 +211,7 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 	{
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-		[self performSelector: selector withObject: relatedObject];
+		[relationshipSource performSelector: selector withObject: relatedObject];
 #pragma clank diagnostic pop
 	}
 	@catch (NSException *exception)
@@ -258,14 +274,21 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 		if (!relatedObjectData || [relatedObjectData isEqual: [NSNull null]]) 
 			return;
 		
+		SEL shouldImportSelector = @selector(shouldImport:);
+		BOOL implementsShouldImport = [self respondsToSelector:shouldImportSelector];
+		
 		if (relationshipInfo.isToMany)
 		{
 			for (id singleRelatedObjectData in relatedObjectData)
 			{
+				if (implementsShouldImport && !(BOOL)[self performSelector:shouldImportSelector withObject:singleRelatedObjectData])
+				{
+					continue;
+				}
 				NSManagedObject *obj = setRelationship(relationshipInfo, singleRelatedObjectData);
 				[self _addObject: obj forRelationship: relationshipInfo];
 			}
-		} else {
+		} else if (!(implementsShouldImport && !(BOOL)[self performSelector:shouldImportSelector withObject:relatedObjectData])) {
 			NSManagedObject *obj = setRelationship(relationshipInfo, relatedObjectData);
 			[self _addObject: obj forRelationship: relationshipInfo];
 		}

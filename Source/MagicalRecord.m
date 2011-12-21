@@ -27,6 +27,7 @@ static NSString *stackStoreName = nil;
 static NSURL *stackStoreURL = nil;
 static NSString *stackModelName = nil;
 static NSURL *stackModelURL = nil;
+static NSDictionary *stackUbiquityOptions = nil;
 
 dispatch_queue_t mr_get_background_queue(void)
 {
@@ -193,6 +194,21 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	[self _cleanUp];
 }
 
++ (NSDictionary *) _stackUbiquityOptions
+{
+	return stackUbiquityOptions;
+}
++ (void)setStackUbiquityOptions:(NSDictionary *)dict
+{
+	stackUbiquityOptions = dict;
+	reset_storeCoordinator();
+}
+
++ (BOOL)_isUbiquityEnabled
+{
+	return ([NSPersistentStore URLForUbiquitousContainer:nil] != nil);
+}
+
 + (void) setupAutoMigratingCoreDataStack
 {
 	[MagicalRecord setStackShouldAutoMigrateStore:YES];
@@ -236,6 +252,7 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	stackStoreURL = nil;
 	stackModelName = nil;
 	stackModelURL = nil;
+	stackUbiquityOptions = nil;
 	
 	if (backgroundQueue) dispatch_release(backgroundQueue), backgroundQueue = nil;
 	
@@ -243,6 +260,22 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	[NSManagedObjectModel _setDefaultModel: nil];
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: nil];
 	[NSPersistentStore _setDefaultPersistentStore: nil];
+}
+
+#pragma mark - Ubiquity Support
+
++ (void)setUbiquitousContainer:(NSString *)containerID
+{
+	[self setUbiquitousContainer:containerID contentNameKey:nil cloudStorePathComponent:nil];
+}
+
++ (void)setUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key cloudStorePathComponent:(NSString *)pathComponent
+{
+	NSURL *cloudURL = [[NSPersistentStore URLForUbiquitousContainer:containerID] URLByAppendingPathComponent:pathComponent];
+	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+										 key, NSPersistentStoreUbiquitousContentNameKey,
+										 cloudURL, NSPersistentStoreUbiquitousContentURLKey, nil];
+	[self setStackUbiquityOptions:options];
 }
 
 #pragma mark - Error Handling
@@ -344,16 +377,20 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	
 	BOOL wantsBackground = (options & MRCoreDataSaveOptionInBackground);
 	BOOL wantsNewContext = (options & MRCoreDataSaveOptionWithNewContext) || ![NSThread isMainThread];
+	BOOL shouldUseUbiquity = [MagicalRecord _isUbiquityEnabled];
 	
 	dispatch_queue_t queue = (wantsBackground) ? mr_get_background_queue() : dispatch_get_current_queue();
 	dispatch_async(queue, ^{
 		NSManagedObjectContext *mainContext  = [NSManagedObjectContext defaultContext];
 		NSManagedObjectContext *localContext = mainContext;
+		NSPersistentStoreCoordinator *defaultCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 		
 		id bkpMergyPolicy = mainContext.mergePolicy;
 		
 		if (!wantsBackground || wantsNewContext) {
 			localContext = [[NSManagedObjectContext defaultContext] newChildContext];
+			if (shouldUseUbiquity)
+				[localContext startObservingUbiquitousChangesInCoordinator:defaultCoordinator];
 			
 			mainContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
 			localContext.mergePolicy = NSOverwriteMergePolicy;
@@ -365,6 +402,10 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 		{
 			// -[NSManagedObjectContext saveWithErrorHandler:] handles a NULL block
 			[localContext saveWithErrorHandler: errorCallback];
+		}
+		
+		if (shouldUseUbiquity && (!wantsBackground || wantsNewContext)) {
+			[localContext stopObservingUbiquitousChangesInCoordinator:defaultCoordinator];
 		}
 		
 		mainContext.mergePolicy = bkpMergyPolicy;

@@ -9,6 +9,7 @@
 #import "MagicalRecord+Private.h"
 
 static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
+NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCompletedCloudSetupNotification";
 
 @implementation NSPersistentStoreCoordinator (MagicalRecord)
 
@@ -27,8 +28,10 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 		
 		NSString *storeType = [MagicalRecord _stackShouldUseInMemoryStore] ? NSInMemoryStoreType : NSSQLiteStoreType;
 		BOOL shouldAutoMigrate = [MagicalRecord _stackShouldAutoMigrateStore];
+		BOOL shouldUseCloud = ([MagicalRecord _stackUbiquityOptions] != nil);
+				
+		NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL:storeURL ofType:storeType automaticLightweightMigrationEnabled:shouldAutoMigrate ubiquityEnabled:shouldUseCloud];
 		
-		NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL:storeURL ofType:storeType automaticLightweightMigrationEnabled:shouldAutoMigrate];
 		[self _setDefaultStoreCoordinator:psc];
 	}
 	
@@ -94,6 +97,13 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	NSURL *storeURL = [NSPersistentStore URLForStoreName: storeName];
 	return [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
 }
++ (NSPersistentStoreCoordinator *) coordinatorWithContainer: (NSString *) containerID contentNameKey: (NSString *) key storeNamed: (NSString *) storeName cloudStorePathComponent: (NSString *) pathComponent
+{
+	NSManagedObjectModel *model = [NSManagedObjectModel defaultModel];
+	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
+	[psc addUbiquitousContainer:containerID contentNameKey:key storeNamed:storeName cloudStorePathComponent:pathComponent];
+	return psc;
+}
 
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType
 {
@@ -120,6 +130,13 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	
 	return psc;
 }
++ (NSPersistentStoreCoordinator *) coordinatorWithContainer: (NSString *) containerID contentNameKey: (NSString *) key storeAtURL: (NSURL *) storeURL cloudStorePathComponent: (NSString *) pathComponent
+{
+	NSManagedObjectModel *model = [NSManagedObjectModel defaultModel];
+	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
+	[psc addUbiquitousContainer:containerID contentNameKey:key storeAtURL:storeURL cloudStorePathComponent:pathComponent];	
+	return psc;
+}
 
 #pragma mark - Automatic Lightweight Migration
 
@@ -139,14 +156,27 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled
 {
-	// If we don't want ALM...
-	if (!enabled) return [self coordinatorWithStoreAtURL: storeURL ofType: storeType];
+	return [self coordinatorWithStoreAtURL:storeURL ofType:storeType automaticLightweightMigrationEnabled:enabled ubiquityEnabled:NO];
+}
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled
+{
+	return [self coordinatorWithStoreNamed:storeName ofType:storeType automaticLightweightMigrationEnabled:enabled ubiquityEnabled:NO];
+}
+
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled ubiquityEnabled:(BOOL)ubiquity
+{	
+	NSMutableDictionary *options = [NSMutableDictionary dictionary];
 	
-	NSDictionary *options = [self automaticLightweightMigrationOptions];
+	if (enabled)
+		[options addEntriesFromDictionary:[self automaticLightweightMigrationOptions]];
+	
+	if (ubiquity)
+		[options addEntriesFromDictionary:[MagicalRecord _stackUbiquityOptions]];
+	
 	NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
 	
 	// HACK: Lame solution to fix automigration error "Migration failed after first pass"
-	if (!psc.persistentStores.count)
+	if (enabled && !psc.persistentStores.count)
 	{
 		dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC);
 		dispatch_after(when, dispatch_get_main_queue(), ^ {
@@ -158,11 +188,12 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	
 	return psc;
 }
-+ (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled
++ (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled ubiquityEnabled:(BOOL)ubiquity
 {
 	NSURL *storeURL = [NSPersistentStore URLForStoreName: storeName];
-	return [self coordinatorWithStoreAtURL: storeURL ofType: storeType automaticLightweightMigrationEnabled: enabled];
+	return [self coordinatorWithStoreAtURL: storeURL ofType: storeType automaticLightweightMigrationEnabled: enabled ubiquityEnabled:ubiquity];
 }
+
 
 #pragma mark - In-Memory Store
 
@@ -182,6 +213,50 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	NSPersistentStore *store = [self addPersistentStoreWithType: NSInMemoryStoreType configuration: nil URL: nil options: nil error: &error];
     [MagicalRecord handleError: error];
 	return store;
+}
+
+#pragma mark - Ubiquity Support
+
+- (void)addUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key storeNamed:(NSString *)localStoreName cloudStorePathComponent:(NSString *)pathComponent
+{
+	NSURL *URL = [NSPersistentStore URLForStoreName:localStoreName];
+	[self addUbiquitousContainer:containerID contentNameKey:key storeAtURL:URL cloudStorePathComponent:pathComponent];
+}
+
+- (void)addUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key storeAtURL:(NSURL *)localStoreURL cloudStorePathComponent:(NSString *)pathComponent
+{
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		NSURL *cloudURL = [NSPersistentStore URLForUbiquitousContainer:containerID];
+		if (pathComponent) 
+		{
+			cloudURL = [cloudURL URLByAppendingPathComponent:pathComponent];
+		}
+		
+		NSDictionary *options = [[self class] automaticLightweightMigrationOptions];
+		if (cloudURL)   //iCloud is available
+		{
+			NSMutableDictionary *cloudOptions = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+										   key, NSPersistentStoreUbiquitousContentNameKey,
+										   cloudURL, NSPersistentStoreUbiquitousContentURLKey, nil];
+			[cloudOptions addEntriesFromDictionary:options];
+			options = cloudOptions;
+		}
+		else 
+		{
+			MRLog(@"iCloud is not enabled");
+		}
+				
+		[self lock];
+		NSError *error = nil;
+		[self addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:localStoreURL options:options error:&error];
+		[MagicalRecord handleError:error];
+		[self unlock];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			MRLog(@"iCloud Store Enabled: %@", [MagicalRecordHelpers currentStack]);
+			[[NSNotificationCenter defaultCenter] postNotificationName:MagicalRecordCompletedCloudSetupNotification object:nil]; 
+		});
+	});   
 }
 
 #pragma mark Deprecated
