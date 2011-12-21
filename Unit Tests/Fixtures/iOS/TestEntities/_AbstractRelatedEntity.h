@@ -4,6 +4,9 @@
 #import <CoreData/CoreData.h>
 
 
+extern const struct AbstractRelatedEntityAttributes {
+	__unsafe_unretained NSString *sampleBaseAttribute;
+} AbstractRelatedEntityAttributes;
 
 
 
@@ -19,7 +22,7 @@
 
 
 
-@property (nonatomic, retain) NSString *sampleBaseAttribute;
+@property (nonatomic, strong) NSString *sampleBaseAttribute;
 
 
 //- (BOOL)validateSampleBaseAttribute:(id*)value_ error:(NSError**)error_;

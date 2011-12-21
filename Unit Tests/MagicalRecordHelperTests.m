@@ -32,14 +32,13 @@
 
 - (void) testCreateDefaultCoreDataStack
 {
-	NSString *storeName = [NSPersistentStoreCoordinator _defaultStoreName];
-	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:storeName];
+	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:[NSPersistentStoreCoordinator _defaultStoreName]];
 	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 	
 	[self assertDefaultStack];
 
 	NSPersistentStore *defaultStore = [NSPersistentStore defaultPersistentStore];
-	assertThat([[defaultStore URL] lastPathComponent] , endsWith(storeName));
+	assertThat([[defaultStore URL] lastPathComponent] , endsWith(@".sqlite"));
 	assertThat([defaultStore type], is(equalTo(NSSQLiteStoreType)));
 }
 

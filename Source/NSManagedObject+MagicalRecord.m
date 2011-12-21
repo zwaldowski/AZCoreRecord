@@ -229,7 +229,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 + (BOOL) deleteAllMatchingPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context
 {
 	NSFetchRequest *request = [self requestAllWithPredicate: predicate inContext: context];
-	request.includesSubentities = NO;
 	request.includesPropertyValues = NO;
 	
 	NSArray *objects = [self executeFetchRequest: request inContext: context];

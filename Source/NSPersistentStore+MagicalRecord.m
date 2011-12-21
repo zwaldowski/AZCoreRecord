@@ -69,9 +69,12 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 
 + (NSURL *) URLForUbiquitousContainer: (NSString *) bucketName
 {
+	if (![NSFileManager instancesRespondToSelector:@selector(URLForUbiquityContainerIdentifier:)])
+		return nil;
+		
 	NSFileManager *fm = [NSFileManager new];
 	NSURL *cloudURL = [fm URLForUbiquityContainerIdentifier:bucketName];
-	return cloudURL;
+	return cloudURL;	
 }
 
 + (NSURL *) defaultLocalStoreURL

@@ -7,8 +7,15 @@
 //
 
 #import "NSManagedObjectContextHelperTests.h"
+#import "MagicalRecord+Private.h"
 
 @implementation NSManagedObjectContextHelperTests
+
+- (void)setUp
+{
+	[MagicalRecord _cleanUp];
+	[MagicalRecord setStackShouldUseInMemoryStore:YES];
+}
 
 - (void) testCanCreateContextForCurrentThead
 {

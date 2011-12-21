@@ -223,14 +223,20 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 	}];
 }
 
+extern NSString *const NSPersistentStoreDidImportUbiquitousContentChangesNotification;
+
 - (void)startObservingUbiquitousChangesInCoordinator:(NSPersistentStoreCoordinator *)coordinator
 {
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_mergeUbiquitousChanges:) name:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:coordinator];
+	if (&NSPersistentStoreDidImportUbiquitousContentChangesNotification) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_mergeUbiquitousChanges:) name:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:coordinator];
+	}
 }
 
 - (void)stopObservingUbiquitousChangesInCoordinator:(NSPersistentStoreCoordinator *)coordinator
 {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:coordinator];
+	if (&NSPersistentStoreDidImportUbiquitousContentChangesNotification) {
+		[[NSNotificationCenter defaultCenter] removeObserver:self name:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:coordinator];
+	}
 }
 
 #pragma mark - Reset Context
