@@ -194,6 +194,17 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	[self _cleanUp];
 }
 
+#if defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && defined(__MAC_10_4)
++ (void)setUpStackWithManagedDocument: (NSPersistentDocument *) managedDocument
+#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && defined(__IPHONE_5_0)
++ (void)setUpStackWithManagedDocument: (UIManagedDocument *) managedDocument
+{
+	[NSManagedObjectModel _setDefaultModel: managedDocument.managedObjectModel];
+	[NSManagedObjectContext _setDefaultContext: managedDocument.managedObjectContext];
+	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: managedDocument.managedObjectContext.persistentStoreCoordinator];
+}
+#endif
+
 + (NSDictionary *) _stackUbiquityOptions
 {
 	return stackUbiquityOptions;

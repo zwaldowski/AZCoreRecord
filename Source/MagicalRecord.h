@@ -7,6 +7,10 @@
 
 #import <CoreData/CoreData.h>
 
+#if defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && defined(__IPHONE_5_0)
+#import <UIKit/UIManagedDocument.h>
+#endif
+
 typedef void (^MRBlock)(void);
 typedef void (^MRContextBlock)(NSManagedObjectContext *);
 typedef void (^MRErrorBlock)(NSError *);
@@ -54,6 +58,12 @@ typedef enum {
 + (void)setStackStoreURL: (NSURL *) name;
 + (void)setStackModelName: (NSString *) name;
 + (void)setStackModelURL: (NSURL *) name;
+
+#if defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && defined(__MAC_10_4)
++ (void)setUpStackWithManagedDocument: (NSPersistentDocument *) managedDocument NS_AVAILABLE_MAC(10_4)
+#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && defined(__IPHONE_5_0)
++ (void)setUpStackWithManagedDocument: (UIManagedDocument *) managedDocument NS_AVAILABLE_IOS(5_0);
+#endif
 
 #pragma mark - Ubiquity Support
 
