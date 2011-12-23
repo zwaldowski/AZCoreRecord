@@ -33,6 +33,9 @@ extern NSString *const MagicalRecordCompletedCloudSetupNotification;
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled ubiquityEnabled:(BOOL)ubiquity;
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled ubiquityEnabled:(BOOL)ubiquity;
 
+- (void)addUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key storeNamed:(NSString *)localStoreName cloudStorePathComponent:(NSString *)pathComponent;
+- (void)addUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key storeAtURL:(NSURL *)localStoreURL cloudStorePathComponent:(NSString *)pathComponent;
+
 #pragma mark - In-Memory Store
 
 + (NSPersistentStoreCoordinator *) coordinatorWithInMemoryStore;

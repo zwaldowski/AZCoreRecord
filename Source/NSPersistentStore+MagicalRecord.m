@@ -28,6 +28,11 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 	_defaultPersistentStore = store;
 }
 
+
++ (NSString *) _directory: (NSSearchPathDirectory) type
+{	
+	return [NSSearchPathForDirectoriesInDomains(type, NSUserDomainMask, YES) lastObject];
+}
 + (NSString *) _applicationDocumentsDirectory 
 {
 	return [self _directory: NSDocumentDirectory];
@@ -36,10 +41,6 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 {
     NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *) kCFBundleNameKey];
     return [[self _directory: NSApplicationSupportDirectory] stringByAppendingPathComponent: applicationName];
-}
-+ (NSString *) _directory: (NSSearchPathDirectory) type
-{	
-	return [NSSearchPathForDirectoriesInDomains(type, NSUserDomainMask, YES) lastObject];
 }
 
 + (NSURL *) URLForStoreName: (NSString *) storeFileName
