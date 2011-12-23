@@ -279,21 +279,14 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 		if (!relatedObjectData || [relatedObjectData isEqual: [NSNull null]]) 
 			return;
 		
-		SEL shouldImportSelector = @selector(shouldImport:);
-		BOOL implementsShouldImport = [self respondsToSelector:shouldImportSelector];
-		
 		if (relationshipInfo.isToMany)
 		{
 			for (id singleRelatedObjectData in relatedObjectData)
 			{
-				if (implementsShouldImport && !(BOOL)[self performSelector:shouldImportSelector withObject:singleRelatedObjectData])
-				{
-					continue;
-				}
 				NSManagedObject *obj = setRelationship(relationshipInfo, singleRelatedObjectData);
 				[self _addObject: obj forRelationship: relationshipInfo];
 			}
-		} else if (!(implementsShouldImport && !(BOOL)[self performSelector:shouldImportSelector withObject:relatedObjectData])) {
+		} else {
 			NSManagedObject *obj = setRelationship(relationshipInfo, relatedObjectData);
 			[self _addObject: obj forRelationship: relationshipInfo];
 		}
