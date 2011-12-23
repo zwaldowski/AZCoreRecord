@@ -199,8 +199,8 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 + (void)setUpStackWithManagedDocument: (UIManagedDocument *) managedDocument
 {
 	[NSManagedObjectModel _setDefaultModel: managedDocument.managedObjectModel];
-	[NSManagedObjectContext _setDefaultContext: managedDocument.managedObjectContext];
 	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: managedDocument.managedObjectContext.persistentStoreCoordinator];
+	[NSManagedObjectContext _setDefaultContext: managedDocument.managedObjectContext];
 }
 #endif
 
