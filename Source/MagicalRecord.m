@@ -6,7 +6,6 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-#import "MagicalRecord.h"
 #import "MagicalRecord+Private.h"
 #import <objc/runtime.h>
 

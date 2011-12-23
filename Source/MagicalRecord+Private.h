@@ -6,6 +6,9 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
+#import <CoreData/CoreData.h>
+#import "MagicalRecord.h"
+
 DISPATCH_EXPORT DISPATCH_PURE DISPATCH_WARN_RESULT DISPATCH_NOTHROW
 dispatch_queue_t mr_get_background_queue(void);
 
@@ -15,6 +18,8 @@ extern IMP _mr_getSupersequent(id obj, SEL selector); // Defined in MagicalRecor
 
 extern void _mr_swizzle(Class cls, SEL oldSel, SEL newSel);
 #define mr_swizzle(oldSelector, newSelector) _mr_swizzle([self class], oldSelector, newSelector)
+
+@class MagicalRecord;
 
 @interface NSManagedObjectContext (MagicalRecordPrivate)
 

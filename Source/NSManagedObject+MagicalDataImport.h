@@ -6,6 +6,8 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
+#import "MagicalRecord.h"
+
 /** Importing for Core Data.
  
  These utilities do their best to safely, securely, and efficiently import Core

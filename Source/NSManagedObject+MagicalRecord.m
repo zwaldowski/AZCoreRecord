@@ -7,6 +7,7 @@
 //
 
 #import "NSManagedObject+MagicalRecord.h"
+#import "MagicalRecord+Private.h"
 
 static NSUInteger defaultBatchSize = 20;
 static NSString *const kURICodingKey = @"MRManagedObjectURI";

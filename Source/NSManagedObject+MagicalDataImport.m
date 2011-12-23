@@ -6,6 +6,8 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
+#import "NSManagedObject+MagicalDataImport.h"
+#import "MagicalRecord+Private.h"
 #import <objc/message.h>
 
 static id colorFromString(NSString *serializedColor)

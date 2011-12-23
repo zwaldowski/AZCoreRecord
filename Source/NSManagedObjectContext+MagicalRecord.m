@@ -6,8 +6,8 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-#import "MagicalRecord+Private.h"
 #import "NSManagedObjectContext+MagicalRecord.h"
+#import "MagicalRecord+Private.h"
 #import <objc/runtime.h>
 
 NSString *const MagicalRecordDidMergeUbiquitousChangesNotification = @"MagicalRecordDidMergeUbiquitousChanges";

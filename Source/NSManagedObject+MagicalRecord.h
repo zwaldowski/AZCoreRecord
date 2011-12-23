@@ -6,6 +6,8 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
+#import "MagicalRecord.h"
+
 @interface NSManagedObject (MagicalRecord) <NSCoding>
 
 #pragma mark - Instance Methods

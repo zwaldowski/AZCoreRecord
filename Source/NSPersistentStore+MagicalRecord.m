@@ -7,6 +7,7 @@
 //
 
 #import "NSPersistentStore+MagicalRecord.h"
+#import "MagicalRecord+Private.h"
 
 NSString *const kMagicalRecordDefaultStoreFileName = @"CoreDataStore.sqlite";
 

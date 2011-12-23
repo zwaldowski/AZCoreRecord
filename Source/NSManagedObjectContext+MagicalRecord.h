@@ -6,6 +6,8 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
+#import "MagicalRecord.h"
+
 extern NSString *const MagicalRecordDidMergeUbiquitousChangesNotification;
 
 @interface NSManagedObjectContext (MagicalRecord)
