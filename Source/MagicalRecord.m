@@ -216,7 +216,7 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 
 + (BOOL)_isUbiquityEnabled
 {
-	return ([NSPersistentStore URLForUbiquitousContainer:nil] != nil);
+	return ([stackUbiquityOptions count] > 0 && [NSPersistentStore URLForUbiquitousContainer:nil] != nil);
 }
 
 + (void) setupAutoMigratingCoreDataStack
