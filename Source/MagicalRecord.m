@@ -289,8 +289,8 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 {
 	NSURL *cloudURL = [[NSPersistentStore URLForUbiquitousContainer:containerID] URLByAppendingPathComponent:pathComponent];
 	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-										 key, NSPersistentStoreUbiquitousContentNameKey,
-										 cloudURL, NSPersistentStoreUbiquitousContentURLKey, nil];
+							 key, NSPersistentStoreUbiquitousContentNameKey,
+							 cloudURL, NSPersistentStoreUbiquitousContentURLKey, nil];
 	[self setStackUbiquityOptions:options];
 }
 
@@ -396,7 +396,6 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	BOOL shouldUseUbiquity = [MagicalRecord _isUbiquityEnabled];
 	
 	dispatch_queue_t queue = (wantsBackground) ? mr_get_background_queue() : dispatch_get_current_queue();
-	dispatch_queue_t callbackQueue = dispatch_get_current_queue();
 	dispatch_sync(queue, ^{
 		NSManagedObjectContext *mainContext  = [NSManagedObjectContext defaultContext];
 		NSManagedObjectContext *localContext = mainContext;
@@ -427,7 +426,7 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 		
 		mainContext.mergePolicy = bkpMergyPolicy;
 		
-		if (callback) dispatch_sync(callbackQueue, callback);
+		if (callback) dispatch_async(dispatch_get_main_queue(), callback);
 	});
 }
 
