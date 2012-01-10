@@ -70,6 +70,7 @@ extern void _mr_swizzle(Class cls, SEL oldSel, SEL newSel);
 + (NSDictionary *) _stackUbiquityOptions;
 
 + (BOOL)_isUbiquityEnabled;
++ (BOOL)_isDocumentBacked;
 
 @end
 

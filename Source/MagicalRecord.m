@@ -219,6 +219,16 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	return ([stackUbiquityOptions count] > 0 && [NSPersistentStore URLForUbiquitousContainer:nil] != nil);
 }
 
++ (BOOL)_isDocumentBacked
+{
+	BOOL isManagedDocument = NO;
+	NSManagedObjectContext *context = [NSManagedObjectContext defaultContext];
+	if ([context respondsToSelector:@selector(concurrencyType)]) {
+		isManagedDocument = (context.concurrencyType == NSMainQueueConcurrencyType && context.parentContext.concurrencyType == NSPrivateQueueConcurrencyType && !context.parentContext.parentContext);
+	}
+	return isManagedDocument;
+}
+
 + (void) setupAutoMigratingCoreDataStack
 {
 	[MagicalRecord setStackShouldAutoMigrateStore:YES];
@@ -392,8 +402,8 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	NSParameterAssert(block);
 	
 	BOOL wantsBackground = (options & MRCoreDataSaveOptionInBackground);
-	BOOL wantsNewContext = (options & MRCoreDataSaveOptionWithNewContext) || ![NSThread isMainThread] || wantsBackground;
-	BOOL shouldUseUbiquity = [MagicalRecord _isUbiquityEnabled];
+	BOOL wantsNewContext = ![NSThread isMainThread] || wantsBackground;
+	BOOL shouldUseUbiquity = [MagicalRecord _isUbiquityEnabled] && ![MagicalRecord _isDocumentBacked];
 	
 	dispatch_block_t queueBlock = ^{
 		NSManagedObjectContext *mainContext  = [NSManagedObjectContext defaultContext];
