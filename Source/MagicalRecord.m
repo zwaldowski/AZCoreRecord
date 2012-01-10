@@ -392,18 +392,17 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	NSParameterAssert(block);
 	
 	BOOL wantsBackground = (options & MRCoreDataSaveOptionInBackground);
-	BOOL wantsNewContext = (options & MRCoreDataSaveOptionWithNewContext) || ![NSThread isMainThread];
+	BOOL wantsNewContext = (options & MRCoreDataSaveOptionWithNewContext) || ![NSThread isMainThread] || wantsBackground;
 	BOOL shouldUseUbiquity = [MagicalRecord _isUbiquityEnabled];
 	
-	dispatch_queue_t queue = (wantsBackground) ? mr_get_background_queue() : dispatch_get_current_queue();
-	dispatch_sync(queue, ^{
+	dispatch_block_t queueBlock = ^{
 		NSManagedObjectContext *mainContext  = [NSManagedObjectContext defaultContext];
 		NSManagedObjectContext *localContext = mainContext;
 		NSPersistentStoreCoordinator *defaultCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 		
 		id bkpMergyPolicy = mainContext.mergePolicy;
 		
-		if (!wantsBackground || wantsNewContext) {
+		if (wantsNewContext) {
 			localContext = [[NSManagedObjectContext defaultContext] newChildContext];
 			if (shouldUseUbiquity)
 				[localContext startObservingUbiquitousChangesInCoordinator:defaultCoordinator];
@@ -420,14 +419,21 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 			[localContext saveWithErrorHandler: errorCallback];
 		}
 		
-		if (shouldUseUbiquity && (!wantsBackground || wantsNewContext)) {
+		if (shouldUseUbiquity && (wantsNewContext)) {
 			[localContext stopObservingUbiquitousChangesInCoordinator:defaultCoordinator];
 		}
 		
 		mainContext.mergePolicy = bkpMergyPolicy;
 		
 		if (callback) dispatch_async(dispatch_get_main_queue(), callback);
-	});
+	};
+	
+	if (!wantsBackground) {
+		queueBlock();
+		return;
+	}
+	
+	dispatch_async(mr_get_background_queue(), queueBlock);
 }
 
 @end
