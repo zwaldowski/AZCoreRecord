@@ -141,11 +141,16 @@ static void *kParentContextKey;
 + (void) _setDefaultContext: (NSManagedObjectContext *) newDefault
 {
 	BOOL isUbiquitous = [MagicalRecord _isUbiquityEnabled];
+	BOOL isManagedDocument = NO;
+	if ([newDefault respondsToSelector:@selector(concurrencyType)]) {
+		isManagedDocument = (newDefault.concurrencyType == NSMainQueueConcurrencyType && newDefault.parentContext.concurrencyType == NSPrivateQueueConcurrencyType && !newDefault.parentContext.parentContext);
+	}
+	
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
-	if (isUbiquitous)
+	if (isUbiquitous && !isManagedDocument)
 		[_defaultManagedObjectContext stopObservingUbiquitousChangesInCoordinator:coordinator];
 	_defaultManagedObjectContext = newDefault;
-	if (isUbiquitous)
+	if (isUbiquitous && !isManagedDocument)
 		[_defaultManagedObjectContext startObservingUbiquitousChangesInCoordinator:coordinator];
 }
 
