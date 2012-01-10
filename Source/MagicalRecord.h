@@ -36,8 +36,9 @@ typedef void (^MRErrorBlock)(NSError *);
 
 typedef enum {
 	MRCoreDataSaveOptionNone			= 0,
-	MRCoreDataSaveOptionInBackground	= 1 << 0,
-	MRCoreDataSaveOptionWithNewContext	= 1 << 1
+	MRCoreDataSaveOptionBackground		= 1 << 0,
+	MRCoreDataSaveOptionMainThread		= 1 << 1,
+	MRCoreDataSaveOptionAsynchronous	= 1 << 2
 } MRCoreDataSaveOption;
 
 @protocol MRErrorHandler <NSObject>

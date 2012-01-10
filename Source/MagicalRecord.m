@@ -382,11 +382,11 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 
 + (void) saveDataInBackgroundWithBlock: (MRContextBlock) block
 {
-    [self saveDataWithOptions: MRCoreDataSaveOptionInBackground block: block success: NULL failure: NULL];
+    [self saveDataWithOptions: MRCoreDataSaveOptionBackground block: block success: NULL failure: NULL];
 }
 + (void) saveDataInBackgroundWithBlock: (MRContextBlock) block completion: (MRBlock) callback
 {
-    [self saveDataWithOptions: MRCoreDataSaveOptionInBackground block: block success: callback failure: NULL];
+    [self saveDataWithOptions: MRCoreDataSaveOptionBackground block: block success: callback failure: NULL];
 }
 
 + (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block
@@ -399,51 +399,67 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 }
 + (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback
 {
-	NSParameterAssert(block);
+	BOOL wantsBackground = (options & MRCoreDataSaveOptionBackground);
+	BOOL wantsMainThread = (options & MRCoreDataSaveOptionMainThread);
 	
-	BOOL wantsBackground = (options & MRCoreDataSaveOptionInBackground);
-	BOOL wantsNewContext = ![NSThread isMainThread] || wantsBackground;
-	BOOL shouldUseUbiquity = [MagicalRecord _isUbiquityEnabled] && ![MagicalRecord _isDocumentBacked];
+	NSParameterAssert(block);
+	NSParameterAssert(!(wantsBackground && wantsMainThread));
+	
+	BOOL wantsAsync		 = (options & MRCoreDataSaveOptionAsynchronous);
+	BOOL usesNewContext	 = ![NSThread isMainThread] || !wantsMainThread;
+	BOOL usesUbiquity	 = [MagicalRecord _isUbiquityEnabled] && ![MagicalRecord _isDocumentBacked];
+	
+	dispatch_queue_t callbackBlock = wantsMainThread ? dispatch_get_main_queue() : dispatch_get_current_queue();
 	
 	dispatch_block_t queueBlock = ^{
-		NSManagedObjectContext *mainContext  = [NSManagedObjectContext defaultContext];
-		NSManagedObjectContext *localContext = mainContext;
-		NSPersistentStoreCoordinator *defaultCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
+		NSManagedObjectContext *defaultContext  = [NSManagedObjectContext defaultContext];
+		NSManagedObjectContext *localContext = defaultContext;
+		NSPersistentStoreCoordinator *defaultStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 		
-		id bkpMergyPolicy = mainContext.mergePolicy;
+		id backupMergePolicy = defaultContext.mergePolicy;
 		
-		if (wantsNewContext) {
+		if (usesNewContext)
+		{
 			localContext = [[NSManagedObjectContext defaultContext] newChildContext];
-			if (shouldUseUbiquity)
-				[localContext startObservingUbiquitousChangesInCoordinator:defaultCoordinator];
+			if (usesUbiquity)
+				[localContext startObservingUbiquitousChangesInCoordinator:defaultStoreCoordinator];
 			
-			mainContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+			defaultContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
 			localContext.mergePolicy = NSOverwriteMergePolicy;
 		}
 		
 		block(localContext);
 		
 		if (localContext.hasChanges)
-		{
-			// -[NSManagedObjectContext saveWithErrorHandler:] handles a NULL block
 			[localContext saveWithErrorHandler: errorCallback];
-		}
 		
-		if (shouldUseUbiquity && (wantsNewContext)) {
-			[localContext stopObservingUbiquitousChangesInCoordinator:defaultCoordinator];
-		}
+		if (usesNewContext && usesUbiquity)
+			[localContext stopObservingUbiquitousChangesInCoordinator:defaultStoreCoordinator];
 		
-		mainContext.mergePolicy = bkpMergyPolicy;
+		defaultContext.mergePolicy = backupMergePolicy;
 		
-		if (callback) dispatch_async(dispatch_get_main_queue(), callback);
+		if (callback)
+			dispatch_async(callbackBlock, callback);
 	};
 	
-	if (!wantsBackground) {
+	if (!wantsMainThread && !wantsBackground && !wantsAsync) {
 		queueBlock();
 		return;
 	}
 	
-	dispatch_async(mr_get_background_queue(), queueBlock);
+	dispatch_queue_t queue = NULL;
+	
+	if (wantsBackground)
+		queue = mr_get_background_queue();
+	else if (wantsMainThread)
+		queue = dispatch_get_main_queue();
+	else
+		queue = dispatch_get_current_queue();
+	
+	if (wantsAsync)
+		dispatch_async(queue, queueBlock);
+	else
+		dispatch_sync(queue, queueBlock);
 }
 
 @end
