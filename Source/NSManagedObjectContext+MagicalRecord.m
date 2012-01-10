@@ -33,6 +33,9 @@ static void *kParentContextKey;
 	NSError *error = nil;
 	BOOL saved = [self save: &error];
 	
+	if (saved && [self respondsToSelector:@selector(concurrencyType)] && self.parentContext)
+		[self.parentContext saveWithErrorHandler:errorCallback];
+	
 	if (!saved)
 	{
 		if (errorCallback)
