@@ -396,7 +396,8 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	BOOL shouldUseUbiquity = [MagicalRecord _isUbiquityEnabled];
 	
 	dispatch_queue_t queue = (wantsBackground) ? mr_get_background_queue() : dispatch_get_current_queue();
-	dispatch_async(queue, ^{
+	dispatch_queue_t callbackQueue = dispatch_get_current_queue();
+	dispatch_sync(queue, ^{
 		NSManagedObjectContext *mainContext  = [NSManagedObjectContext defaultContext];
 		NSManagedObjectContext *localContext = mainContext;
 		NSPersistentStoreCoordinator *defaultCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
@@ -426,7 +427,7 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 		
 		mainContext.mergePolicy = bkpMergyPolicy;
 		
-		if (callback) dispatch_async(dispatch_get_main_queue(), callback);
+		if (callback) dispatch_sync(callbackQueue, callback);
 	});
 }
 
