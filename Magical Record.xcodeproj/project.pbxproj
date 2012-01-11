@@ -1101,7 +1101,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/iOS App Unit Tests/Frameworks/OCMockLibrary/Headers/OCMock\"",
+					"\"$(SRCROOT)/iOS App Unit Tests/Frameworks/OCMockLibrary/Headers\"",
 					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
 				);
 				INFOPLIST_FILE = "iOS App Unit Tests/iOS App Unit Tests-Info.plist";
@@ -1147,7 +1147,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/iOS App Unit Tests/Frameworks/OCMockLibrary/Headers/OCMock\"",
+					"\"$(SRCROOT)/iOS App Unit Tests/Frameworks/OCMockLibrary/Headers\"",
 					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
 				);
 				INFOPLIST_FILE = "iOS App Unit Tests/iOS App Unit Tests-Info.plist";

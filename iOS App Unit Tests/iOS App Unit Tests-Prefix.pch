@@ -14,7 +14,7 @@
 
 	#import <GHUnitIOS/GHUnit.h>
 	#import <SenTestingKit/SenTestingKit.h>
-	#import "OCMock.h"
+	#import <OCMock/OCMock.h>
 	
 	#define HC_SHORTHAND
 	#import <OCHamcrestIOS/OCHamcrestIOS.h>

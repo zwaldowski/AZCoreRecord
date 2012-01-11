@@ -15,41 +15,6 @@ static NSManagedObjectContext *_defaultManagedObjectContext = nil;
 static NSString const *kMagicalRecordManagedObjectContextKey = @"MRManagedObjectContext";
 static void *kParentContextKey;
 
-static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue, MRErrorBlock errorCallback)
-{
-	BOOL saved = NO;
-	NSError *error = nil;
-	
-	@try
-	{
-		MRLog(@"Saving %@context%@...", 
-			  context == [NSManagedObjectContext defaultContext] ? @"default ": @"", 
-			  ([NSThread isMainThread] ? @" on main thread" : @""));
-		
-		saved = [context save: &error];
-	}
-	@catch (NSException *exception)
-	{
-		MRLog(@"Exception saving context... %@", exception);
-	}
-	@finally
-	{
-		if (!saved)
-		{
-			if (errorCallback)
-			{
-				errorCallback(error);
-			}
-			else
-			{
-				[MagicalRecord handleError: error];
-			}
-		}
-	}
-	
-	return saved;
-}
-
 @implementation NSManagedObjectContext (MagicalRecord)
 
 + (void)load {
@@ -63,29 +28,27 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 {
 	return [self saveWithErrorHandler: NULL];
 }
-- (BOOL) saveOnMainThread
-{
-	return [self saveOnMainThreadWithErrorHandler: NULL];
-}
-- (BOOL) saveOnBackgroundThread
-{
-	return [self saveOnBackgroundThreadWithErrorHandler: NULL];
-}
-
 - (BOOL) saveWithErrorHandler: (MRErrorBlock) errorCallback
 {
-	dispatch_queue_t queue = dispatch_get_current_queue();
-	return saveContext(self, queue, errorCallback);
-}
-- (BOOL) saveOnMainThreadWithErrorHandler: (MRErrorBlock) errorCallback
-{
-	dispatch_queue_t queue = dispatch_get_main_queue();
-	return saveContext(self, queue, errorCallback);
-}
-- (BOOL) saveOnBackgroundThreadWithErrorHandler: (MRErrorBlock) errorCallback
-{
-	dispatch_queue_t queue = mr_get_background_queue();
-	return saveContext(self, queue, errorCallback);
+	NSError *error = nil;
+	BOOL saved = [self save: &error];
+	
+	if (saved && [self respondsToSelector:@selector(concurrencyType)] && self.parentContext)
+		[self.parentContext saveWithErrorHandler:errorCallback];
+	
+	if (!saved)
+	{
+		if (errorCallback)
+		{
+			errorCallback(error);
+		}
+		else
+		{
+			[MagicalRecord handleError: error];
+		}
+	}
+	
+	return saved;
 }
 
 #pragma mark - Child Contexts
@@ -182,10 +145,13 @@ static BOOL saveContext(NSManagedObjectContext *context, dispatch_queue_t queue,
 {
 	BOOL isUbiquitous = [MagicalRecord _isUbiquityEnabled];
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
+	
 	if (isUbiquitous)
 		[_defaultManagedObjectContext stopObservingUbiquitousChangesInCoordinator:coordinator];
+
 	_defaultManagedObjectContext = newDefault;
-	if (isUbiquitous)
+	
+	if (isUbiquitous && ![MagicalRecord _isDocumentBacked])
 		[_defaultManagedObjectContext startObservingUbiquitousChangesInCoordinator:coordinator];
 }
 
