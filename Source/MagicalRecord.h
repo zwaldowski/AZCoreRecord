@@ -35,11 +35,11 @@ typedef void (^MRErrorBlock)(NSError *);
 #endif
 
 typedef enum {
-	MRCoreDataSaveOptionNone			= 0,
-	MRCoreDataSaveOptionBackground		= 1 << 0,
-	MRCoreDataSaveOptionMainThread		= 1 << 1,
-	MRCoreDataSaveOptionAsynchronous	= 1 << 2
-} MRCoreDataSaveOption;
+	MRCoreDataSaveOptionsNone			= 0,
+	MRCoreDataSaveOptionsBackground		= 1 << 0,
+	MRCoreDataSaveOptionsMainThread		= 1 << 1,
+	MRCoreDataSaveOptionsAsynchronous	= 1 << 2
+} MRCoreDataSaveOptions;
 
 @protocol MRErrorHandler <NSObject>
 @optional
@@ -88,9 +88,9 @@ typedef enum {
 + (void) saveDataInBackgroundWithBlock: (MRContextBlock) block;
 + (void) saveDataInBackgroundWithBlock: (MRContextBlock) block completion: (MRBlock) callback;
 
-+ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block;
-+ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback;
-+ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback;
++ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block;
++ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block success: (MRBlock) callback;
++ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback;
 
 #pragma mark Deprecated
 

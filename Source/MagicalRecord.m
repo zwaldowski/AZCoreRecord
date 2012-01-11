@@ -377,35 +377,35 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 
 + (void) saveDataWithBlock: (MRContextBlock) block
 {   
-    [self saveDataWithOptions: MRCoreDataSaveOptionNone block: block success: NULL failure: NULL];
+    [self saveDataWithOptions: MRCoreDataSaveOptionsNone block: block success: NULL failure: NULL];
 }
 
 + (void) saveDataInBackgroundWithBlock: (MRContextBlock) block
 {
-    [self saveDataWithOptions: MRCoreDataSaveOptionBackground block: block success: NULL failure: NULL];
+    [self saveDataWithOptions: MRCoreDataSaveOptionsBackground block: block success: NULL failure: NULL];
 }
 + (void) saveDataInBackgroundWithBlock: (MRContextBlock) block completion: (MRBlock) callback
 {
-    [self saveDataWithOptions: MRCoreDataSaveOptionBackground block: block success: callback failure: NULL];
+    [self saveDataWithOptions: MRCoreDataSaveOptionsBackground block: block success: callback failure: NULL];
 }
 
-+ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block
++ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block
 {
     [self saveDataWithOptions: options block: block success: NULL failure: NULL];
 }
-+ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback
++ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block success: (MRBlock) callback
 {
     [self saveDataWithOptions: options block: block success: callback failure:  NULL];
 }
-+ (void) saveDataWithOptions: (MRCoreDataSaveOption) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback
++ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback
 {
-	BOOL wantsBackground = (options & MRCoreDataSaveOptionBackground);
-	BOOL wantsMainThread = (options & MRCoreDataSaveOptionMainThread);
+	BOOL wantsBackground = (options & MRCoreDataSaveOptionsBackground);
+	BOOL wantsMainThread = (options & MRCoreDataSaveOptionsMainThread);
 	
 	NSParameterAssert(block);
 	NSParameterAssert(!(wantsBackground && wantsMainThread));
 	
-	BOOL wantsAsync		 = (options & MRCoreDataSaveOptionAsynchronous);
+	BOOL wantsAsync		 = (options & MRCoreDataSaveOptionsAsynchronous);
 	BOOL usesNewContext	 = ![NSThread isMainThread] || !wantsMainThread;
 	BOOL usesUbiquity	 = [MagicalRecord _isUbiquityEnabled] && ![MagicalRecord _isDocumentBacked];
 	
