@@ -406,7 +406,7 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	NSParameterAssert(!(wantsBackground && wantsMainThread));
 	
 	BOOL wantsAsync		 = (options & MRCoreDataSaveOptionsAsynchronous);
-	BOOL usesNewContext	 = ![NSThread isMainThread] || !wantsMainThread;
+	BOOL usesNewContext	 = wantsBackground || (![NSThread isMainThread] && !wantsBackground && !wantsMainThread);
 	BOOL usesUbiquity	 = [MagicalRecord _isUbiquityEnabled] && ![MagicalRecord _isDocumentBacked];
 	
 	dispatch_queue_t callbackBlock = wantsMainThread ? dispatch_get_main_queue() : dispatch_get_current_queue();
