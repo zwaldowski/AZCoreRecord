@@ -39,6 +39,9 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 - (id) inContext: (NSManagedObjectContext *) context
 {
+	if ([context isEqual:self.managedObjectContext])
+		return self;
+	
 	if ([self.objectID isTemporaryID])
 	{
 		NSError *error = nil;
