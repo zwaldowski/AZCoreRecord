@@ -37,8 +37,15 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 #pragma mark - Instance Methods
 
-- (id) inContext: (NSManagedObjectContext *) context 
+- (id) inContext: (NSManagedObjectContext *) context
 {
+	if ([self.objectID isTemporaryID])
+	{
+		NSError *error = nil;
+		[self.managedObjectContext obtainPermanentIDsForObjects: [NSArray arrayWithObject: self] error: &error];
+		[MagicalRecord handleError: error];
+	}
+	
 	NSError *error = nil;
 	NSManagedObject *inContext = [context existingObjectWithID: self.objectID error: &error];
 	[MagicalRecord handleError: error];
