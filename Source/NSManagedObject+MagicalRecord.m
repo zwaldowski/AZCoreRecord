@@ -39,13 +39,19 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 - (id) inContext: (NSManagedObjectContext *) context
 {
+	NSParameterAssert(context);
+	
 	if ([context isEqual:self.managedObjectContext])
 		return self;
+	
+	NSManagedObjectContext *myContext = self.managedObjectContext;
+	if (!myContext)
+		myContext = [NSManagedObjectContext defaultContext];
 	
 	if ([self.objectID isTemporaryID])
 	{
 		NSError *error = nil;
-		[self.managedObjectContext obtainPermanentIDsForObjects: [NSArray arrayWithObject: self] error: &error];
+		[myContext obtainPermanentIDsForObjects: [NSArray arrayWithObject: self] error: &error];
 		[MagicalRecord handleError: error];
 	}
 	
