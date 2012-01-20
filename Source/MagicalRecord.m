@@ -420,7 +420,7 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 		
 		if (usesNewContext)
 		{
-			localContext = [[NSManagedObjectContext defaultContext] newChildContext];
+			localContext = [defaultContext newChildContext];
 			if (usesUbiquity)
 				[localContext startObservingUbiquitousChangesInCoordinator:defaultStoreCoordinator];
 			
@@ -430,8 +430,17 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 		
 		block(localContext);
 		
-		if (localContext.hasChanges)
-			[localContext saveWithErrorHandler: errorCallback];
+		if (localContext.hasChanges) {
+			[localContext saveWithErrorHandler:errorCallback];
+			
+			if ([localContext respondsToSelector:@selector(concurrencyType)]) {
+				NSManagedObjectContext *parent = localContext.parentContext;
+				while (parent) {
+					[parent saveWithErrorHandler:errorCallback];
+					parent = parent.parentContext;
+				}
+			}
+		}
 		
 		if (usesNewContext && usesUbiquity)
 			[localContext stopObservingUbiquitousChangesInCoordinator:defaultStoreCoordinator];
