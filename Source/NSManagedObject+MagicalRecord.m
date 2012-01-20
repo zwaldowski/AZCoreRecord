@@ -28,7 +28,12 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	NSPersistentStoreCoordinator *psc = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 	NSURL *URI = [decoder decodeObjectForKey: kURICodingKey];
 	NSManagedObjectID *objectID = [psc managedObjectIDForURIRepresentation: URI];
-	return [[NSManagedObjectContext defaultContext] objectWithID: objectID];
+	
+	NSError *error = nil;
+	id ret = [[NSManagedObjectContext defaultContext] existingObjectWithID:objectID error:&error];
+	[MagicalRecord handleError:error];
+	
+	return ret;
 }
 - (void) encodeWithCoder: (NSCoder *) coder
 {
