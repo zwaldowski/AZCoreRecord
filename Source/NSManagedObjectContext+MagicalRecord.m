@@ -106,16 +106,18 @@ static void *kParentContextKey;
 {
     if (!_defaultManagedObjectContext)
 	{
+		NSManagedObjectContext *newDefault = nil;
         if ([self instancesRespondToSelector: @selector(initWithConcurrencyType:)])
 		{
-            _defaultManagedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+            newDefault = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         }
 		else
 		{
-            _defaultManagedObjectContext = [NSManagedObjectContext new];
+            newDefault = [NSManagedObjectContext new];
         }
 		
-		_defaultManagedObjectContext.persistentStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
+		newDefault.persistentStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
+		[self _setDefaultContext:newDefault];
 	}
 	
 	return _defaultManagedObjectContext;
