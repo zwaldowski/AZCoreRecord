@@ -223,12 +223,14 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 
 + (BOOL)_isDocumentBacked
 {
-	BOOL isManagedDocument = NO;
-	NSManagedObjectContext *context = [NSManagedObjectContext defaultContext];
-	if ([context respondsToSelector:@selector(concurrencyType)]) {
-		isManagedDocument = (context.concurrencyType == NSMainQueueConcurrencyType && context.parentContext.concurrencyType == NSPrivateQueueConcurrencyType && !context.parentContext.parentContext);
+	if ([NSManagedObjectContext instancesRespondToSelector:@selector(concurrencyType)]) {
+		if (![NSManagedObjectContext _hasDefaultContext])
+			return NO;
+		
+		NSManagedObjectContext *context = [NSManagedObjectContext defaultContext];
+		return (context.concurrencyType == NSMainQueueConcurrencyType && context.parentContext.concurrencyType == NSPrivateQueueConcurrencyType && !context.parentContext.parentContext);
 	}
-	return isManagedDocument;
+	return NO;
 }
 
 + (void) setupAutoMigratingCoreDataStack
