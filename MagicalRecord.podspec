@@ -1,6 +1,5 @@
 Pod::Spec.new do |s|
   s.name     = 'MagicalRecord'
-  s.version  = '1.8'
   s.license  = 'MIT'
   s.summary  = 'Effortless fetching, saving, and importing for Core Data.'
   s.homepage = 'http://github.com/magicalpanda/MagicalRecord'
@@ -9,6 +8,7 @@ Pod::Spec.new do |s|
 		 'Alexsander Akers' => 'a2@pandamonia.us' }
   s.source   = { :git => 'http://github.com/zwaldowski/MagicalRecord.git' }
   s.source_dirs = 'Source'
+  s.clean_paths  = 'iOS App Unit Tests/', 'Mac App Unit Tests/', 'Magical Record.xcodeproj/', 'Unit Tests/', '.gitignore'
   s.framework    = 'CoreData'
   s.requires_arc = true
 
