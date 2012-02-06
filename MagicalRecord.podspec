@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
 		 'Zachary Waldowski' => 'zwaldowski@gmail.com',
 		 'Alexsander Akers' => 'a2@pandamonia.us' }
   s.source   = { :git => 'http://github.com/zwaldowski/MagicalRecord.git' }
-  s.source_dirs = 'Source'
+  s.source_files = 'Source/'
   s.clean_paths  = 'iOS App Unit Tests/', 'Mac App Unit Tests/', 'Magical Record.xcodeproj/', 'Unit Tests/', '.gitignore'
   s.framework    = 'CoreData'
   s.requires_arc = true
