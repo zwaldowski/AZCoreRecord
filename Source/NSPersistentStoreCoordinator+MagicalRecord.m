@@ -97,13 +97,6 @@ NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCo
 	NSURL *storeURL = [NSPersistentStore URLForStoreName: storeName];
 	return [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
 }
-+ (NSPersistentStoreCoordinator *) coordinatorWithContainer: (NSString *) containerID contentNameKey: (NSString *) key storeNamed: (NSString *) storeName cloudStorePathComponent: (NSString *) pathComponent
-{
-	NSManagedObjectModel *model = [NSManagedObjectModel defaultModel];
-	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
-	[psc addUbiquitousContainer:containerID contentNameKey:key storeNamed:storeName cloudStorePathComponent:pathComponent];
-	return psc;
-}
 
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType
 {
@@ -128,13 +121,6 @@ NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCo
 	[psc addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &pscError];
 	[MagicalRecord handleError: pscError];
 	
-	return psc;
-}
-+ (NSPersistentStoreCoordinator *) coordinatorWithContainer: (NSString *) containerID contentNameKey: (NSString *) key storeAtURL: (NSURL *) storeURL cloudStorePathComponent: (NSString *) pathComponent
-{
-	NSManagedObjectModel *model = [NSManagedObjectModel defaultModel];
-	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
-	[psc addUbiquitousContainer:containerID contentNameKey:key storeAtURL:storeURL cloudStorePathComponent:pathComponent];	
 	return psc;
 }
 

@@ -22,11 +22,9 @@ extern NSString *const MagicalRecordCompletedCloudSetupNotification;
 
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType;
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType options: (NSDictionary *) options;
-+ (NSPersistentStoreCoordinator *) coordinatorWithContainer: (NSString *) containerID contentNameKey: (NSString *) key storeAtURL: (NSURL *) storeURL cloudStorePathComponent: (NSString *) pathComponent;
 
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType;
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType options: (NSDictionary *) options;
-+ (NSPersistentStoreCoordinator *) coordinatorWithContainer: (NSString *) containerID contentNameKey: (NSString *) key storeNamed: (NSString *) storeName cloudStorePathComponent: (NSString *) pathComponent;
 
 #pragma mark - Migration and Ubiquity Support
 
