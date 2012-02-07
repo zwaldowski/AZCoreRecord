@@ -142,19 +142,15 @@ static void *kParentContextKey;
 
 + (void) _setDefaultContext: (NSManagedObjectContext *) newDefault
 {
-	BOOL isUbiquitous = [MagicalRecord _isUbiquityEnabled];
-	BOOL hasDocument = [MagicalRecord _isDocumentBacked];
-	NSPersistentStoreCoordinator *coordinator = nil;
+	BOOL isUbiquitous = [MagicalRecord isUbiquityEnabled];
+	NSPersistentStoreCoordinator *coordinator = coordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 	
-	if (!hasDocument)
-		coordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
-	
-	if (isUbiquitous && !hasDocument)
+	if (isUbiquitous)
 		[_defaultManagedObjectContext stopObservingUbiquitousChangesInCoordinator:coordinator];
 
 	_defaultManagedObjectContext = newDefault;
 	
-	if (isUbiquitous && !hasDocument)
+	if (isUbiquitous)
 		[_defaultManagedObjectContext startObservingUbiquitousChangesInCoordinator:coordinator];
 }
 

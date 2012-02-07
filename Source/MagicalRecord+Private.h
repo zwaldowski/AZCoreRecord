@@ -51,11 +51,10 @@ extern void _mr_swizzle(Class cls, SEL oldSel, SEL newSel);
 + (BOOL) _hasDefaultStoreCoordinator;
 + (void) _setDefaultStoreCoordinator: (NSPersistentStoreCoordinator *)coordinator;
 
-+ (NSString *)_defaultStoreName;
++ (NSDictionary *)_storeOptions;
+- (void) _setUbiquityEnabled:(BOOL)enabled;
 
 @end
-
-
 
 @interface MagicalRecord (MagicalRecordPrivate)
 
@@ -69,9 +68,4 @@ extern void _mr_swizzle(Class cls, SEL oldSel, SEL newSel);
 + (NSURL *) _stackModelURL;
 + (NSDictionary *) _stackUbiquityOptions;
 
-+ (BOOL)_isUbiquityEnabled;
-+ (BOOL)_isDocumentBacked;
-
 @end
-
-extern NSString *const kMagicalRecordDefaultStoreFileName;

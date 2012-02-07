@@ -21,6 +21,7 @@ static MRErrorBlock errorHandlerBlock = NULL;
 static BOOL errorHandlerIsClassMethod = NO;
 
 static BOOL stackShouldAutoMigrate = NO;
+static BOOL stackShouldUseUbiquity = NO;
 static BOOL stackShouldUseInMemoryStore = NO;
 static NSString *stackStoreName = nil;
 static NSURL *stackStoreURL = nil;
@@ -216,23 +217,6 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	reset_storeCoordinator();
 }
 
-+ (BOOL)_isUbiquityEnabled
-{
-	return ([stackUbiquityOptions count] > 0 && [NSPersistentStore URLForUbiquitousContainer:nil] != nil);
-}
-
-+ (BOOL)_isDocumentBacked
-{
-	if ([NSManagedObjectContext instancesRespondToSelector:@selector(concurrencyType)]) {
-		if (![NSManagedObjectContext _hasDefaultContext])
-			return NO;
-		
-		NSManagedObjectContext *context = [NSManagedObjectContext defaultContext];
-		return (context.concurrencyType == NSMainQueueConcurrencyType && context.parentContext.concurrencyType == NSPrivateQueueConcurrencyType && !context.parentContext.parentContext);
-	}
-	return NO;
-}
-
 + (void) setupAutoMigratingCoreDataStack
 {
 	[MagicalRecord setStackShouldAutoMigrateStore:YES];
@@ -294,14 +278,53 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 
 #pragma mark - Ubiquity Support
 
-+ (void)setUbiquitousContainer:(NSString *)containerID
++ (BOOL)supportsUbiquity
 {
-	[self setUbiquitousContainer:containerID contentNameKey:nil cloudStorePathComponent:nil];
+	return [NSPersistentStore URLForUbiquitousContainer:nil] != nil;
+}
+
++ (BOOL)isUbiquityEnabled
+{
+	if (![self supportsUbiquity])
+		return NO;
+		
+	if (![self _stackUbiquityOptions].count)
+		return NO;
+	
+	return stackShouldUseUbiquity;
+}
+
++ (void)setUbiquityEnabled:(BOOL)enabled {
+	if (stackShouldUseUbiquity == enabled)
+		return;
+	
+	stackShouldUseUbiquity = enabled;
+	
+	if (![self _stackUbiquityOptions])
+		[self setUbiquitousContainer:nil contentNameKey:nil cloudStorePathComponent:nil];
+	
+	if (![NSPersistentStoreCoordinator _hasDefaultStoreCoordinator])
+		return;
+	
+	NSPersistentStoreCoordinator *psc = [NSPersistentStoreCoordinator defaultStoreCoordinator];
+	
+	if ([NSManagedObjectContext _hasDefaultContext]) {
+		NSManagedObjectContext *moc = [NSManagedObjectContext defaultContext];
+		if (enabled)
+			[moc startObservingUbiquitousChangesInCoordinator:psc];
+		else
+			[moc stopObservingUbiquitousChangesInCoordinator:psc];
+	}
+	
+	[psc _setUbiquityEnabled:enabled];
 }
 
 + (void)setUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key cloudStorePathComponent:(NSString *)pathComponent
 {
-	NSURL *cloudURL = [[NSPersistentStore URLForUbiquitousContainer:containerID] URLByAppendingPathComponent:pathComponent];
+	NSURL *cloudURL = [NSPersistentStore URLForUbiquitousContainer: containerID];
+	if (pathComponent) cloudURL = [cloudURL URLByAppendingPathComponent:pathComponent];
+	
+	if (!key) key = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *) kCFBundleNameKey];
 	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
 							 key, NSPersistentStoreUbiquitousContentNameKey,
 							 cloudURL, NSPersistentStoreUbiquitousContentURLKey, nil];
@@ -411,23 +434,18 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	
 	BOOL wantsAsync		 = (options & MRCoreDataSaveOptionsAsynchronous);
 	BOOL usesNewContext	 = wantsBackground || (![NSThread isMainThread] && !wantsBackground && !wantsMainThread);
-	BOOL usesUbiquity	 = [MagicalRecord _isUbiquityEnabled] && ![MagicalRecord _isDocumentBacked];
 	
 	dispatch_queue_t callbackBlock = wantsMainThread ? dispatch_get_main_queue() : dispatch_get_current_queue();
 	
 	dispatch_block_t queueBlock = ^{
 		NSManagedObjectContext *defaultContext  = [NSManagedObjectContext defaultContext];
 		NSManagedObjectContext *localContext = defaultContext;
-		NSPersistentStoreCoordinator *defaultStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 		
 		id backupMergePolicy = defaultContext.mergePolicy;
 		
 		if (usesNewContext)
 		{
 			localContext = [defaultContext newChildContext];
-			if (usesUbiquity)
-				[localContext startObservingUbiquitousChangesInCoordinator:defaultStoreCoordinator];
-			
 			defaultContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
 			localContext.mergePolicy = NSOverwriteMergePolicy;
 		}
@@ -436,9 +454,6 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 		
 		if (localContext.hasChanges)
 			[localContext saveWithErrorHandler:errorCallback];
-		
-		if (usesNewContext && usesUbiquity)
-			[localContext stopObservingUbiquitousChangesInCoordinator:defaultStoreCoordinator];
 		
 		defaultContext.mergePolicy = backupMergePolicy;
 		

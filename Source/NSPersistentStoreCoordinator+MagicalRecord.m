@@ -9,7 +9,6 @@
 #import "MagicalRecord+Private.h"
 
 static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
-NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCompletedCloudSetupNotification";
 
 @implementation NSPersistentStoreCoordinator (MagicalRecord)
 
@@ -20,17 +19,17 @@ NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCo
 	if (!_defaultCoordinator)
 	{
 		NSURL *storeURL = [MagicalRecord _stackStoreURL];
-		if (!storeURL || ![[storeURL pathExtension] isEqualToString:@"sqlite"])
-		{
-			NSString *storeName = [MagicalRecord _stackStoreName] ?: [self _defaultStoreName];
-			storeURL = [NSPersistentStore URLForStoreName:storeName];
-		}
+		
+		if (!storeURL)
+			storeURL = [NSPersistentStore URLForStoreName:[MagicalRecord _stackStoreName]];
+		
+		if (!storeURL)
+			storeURL = [NSPersistentStore defaultLocalStoreURL];
 		
 		NSString *storeType = [MagicalRecord _stackShouldUseInMemoryStore] ? NSInMemoryStoreType : NSSQLiteStoreType;
-		BOOL shouldAutoMigrate = [MagicalRecord _stackShouldAutoMigrateStore];
-		BOOL shouldUseCloud = ([MagicalRecord _stackUbiquityOptions] != nil);
-				
-		NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL:storeURL ofType:storeType automaticLightweightMigrationEnabled:shouldAutoMigrate ubiquityEnabled:shouldUseCloud];
+		NSDictionary *options = [self _storeOptions];
+		
+		NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
 		
 		[self _setDefaultStoreCoordinator:psc];
 	}
@@ -54,38 +53,11 @@ NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCo
 	}
 }
 
-+ (NSString *)_defaultStoreName {
-	NSString *defaultName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(id)kCFBundleNameKey];
-	if (!defaultName)
-	{
-		defaultName = kMagicalRecordDefaultStoreFileName;
-	}
-	
-	if (![defaultName hasSuffix:@"sqlite"]) 
-	{
-		defaultName = [defaultName stringByAppendingPathExtension:@"sqlite"];
-	}
-
-	return defaultName;
-}
-
 #pragma mark - Store Coordinator Factory Methods
 
 + (NSPersistentStoreCoordinator *) coordinator
 {
-	return [self coordinatorWithStoreNamed: kMagicalRecordDefaultStoreFileName ofType: NSSQLiteStoreType];
-}
-+ (NSPersistentStoreCoordinator *) coordinatorWithPersistentStore: (NSPersistentStore *) persistentStore
-{
-	NSManagedObjectModel *model = [NSManagedObjectModel defaultModel];
-	
-	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
-	
-	NSError *error = nil;
-	[psc addPersistentStoreWithType: persistentStore.type configuration: persistentStore.configurationName URL: persistentStore.URL options: persistentStore.options error: &error];
-	[MagicalRecord handleError: error];
-	
-	return psc;
+	return [self coordinatorWithStoreAtURL: [NSPersistentStore defaultLocalStoreURL] ofType: NSSQLiteStoreType];
 }
 
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType
@@ -117,9 +89,20 @@ NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCo
     [MagicalRecord handleError: fmError];
 	
 	// Add the persistent store
-	NSError *pscError = nil;
-	[psc addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &pscError];
-	[MagicalRecord handleError: pscError];
+	dispatch_block_t addBlock = ^{
+		NSError *pscError = nil;
+		[psc addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &pscError];
+		[MagicalRecord handleError: pscError];
+	};
+	
+	addBlock();
+	
+	// HACK: Lame solution to fix automigration error "Migration failed after first pass"
+	if (!psc.persistentStores.count)
+	{
+		dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC);
+		dispatch_after(when, dispatch_get_main_queue(), addBlock);
+	}
 	
 	return psc;
 }
@@ -140,56 +123,13 @@ NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCo
 	return options;
 }
 
-+ (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled
-{
-	return [self coordinatorWithStoreAtURL:storeURL ofType:storeType automaticLightweightMigrationEnabled:enabled ubiquityEnabled:NO];
-}
-+ (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled
-{
-	return [self coordinatorWithStoreNamed:storeName ofType:storeType automaticLightweightMigrationEnabled:enabled ubiquityEnabled:NO];
-}
-
-+ (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled ubiquityEnabled:(BOOL)ubiquity
-{	
-	NSMutableDictionary *options = enabled || ubiquity ? [NSMutableDictionary dictionary] : nil;
-	
-	if (enabled)
-		[options addEntriesFromDictionary:[self automaticLightweightMigrationOptions]];
-	
-	if (ubiquity)
-		[options addEntriesFromDictionary:[MagicalRecord _stackUbiquityOptions]];
-	
-	NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
-	
-	// HACK: Lame solution to fix automigration error "Migration failed after first pass"
-	if (!psc.persistentStores.count)
-	{
-		dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC);
-		dispatch_after(when, dispatch_get_main_queue(), ^ {
-			NSError *error = nil;
-			[psc addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &error];
-			[MagicalRecord handleError: error];
-		});
-	}
-	
-	return psc;
-}
-+ (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType automaticLightweightMigrationEnabled: (BOOL) enabled ubiquityEnabled:(BOOL)ubiquity
-{
-	NSURL *storeURL = [NSPersistentStore URLForStoreName: storeName];
-	return [self coordinatorWithStoreAtURL: storeURL ofType: storeType automaticLightweightMigrationEnabled: enabled ubiquityEnabled:ubiquity];
-}
-
-
 #pragma mark - In-Memory Store
 
 + (NSPersistentStoreCoordinator *) coordinatorWithInMemoryStore
 {
 	NSManagedObjectModel *model = [NSManagedObjectModel defaultModel];
-
 	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
 	[psc addInMemoryStore];
-	
 	return psc;
 }
 
@@ -201,72 +141,34 @@ NSString *const MagicalRecordCompletedCloudSetupNotification = @"MagicalRecordCo
 	return store;
 }
 
-#pragma mark - Ubiquity Support
+#pragma mark - Ubiquity
 
-- (void)addUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key storeNamed:(NSString *)localStoreName cloudStorePathComponent:(NSString *)pathComponent
-{
-	NSURL *URL = [NSPersistentStore URLForStoreName:localStoreName];
-	[self addUbiquitousContainer:containerID contentNameKey:key storeAtURL:URL cloudStorePathComponent:pathComponent];
-}
-
-- (void)addUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key storeAtURL:(NSURL *)localStoreURL cloudStorePathComponent:(NSString *)pathComponent
-{
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		NSURL *cloudURL = [NSPersistentStore URLForUbiquitousContainer:containerID];
-		if (pathComponent) 
-		{
-			cloudURL = [cloudURL URLByAppendingPathComponent:pathComponent];
-		}
-		
-		NSDictionary *options = [[self class] automaticLightweightMigrationOptions];
-		if (cloudURL)   //iCloud is available
-		{
-			NSMutableDictionary *cloudOptions = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-										   key, NSPersistentStoreUbiquitousContentNameKey,
-										   cloudURL, NSPersistentStoreUbiquitousContentURLKey, nil];
-			[cloudOptions addEntriesFromDictionary:options];
-			options = cloudOptions;
-		}
-		else 
-		{
-			MRLog(@"iCloud is not enabled");
-		}
-				
-		[self lock];
-		NSError *error = nil;
-		[self addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:localStoreURL options:options error:&error];
-		[MagicalRecord handleError:error];
-		[self unlock];
-		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			MRLog(@"iCloud Store Enabled: %@", [MagicalRecordHelpers currentStack]);
-			[[NSNotificationCenter defaultCenter] postNotificationName:MagicalRecordCompletedCloudSetupNotification object:nil]; 
-		});
-	});   
++ (NSDictionary *)_storeOptions {
+	BOOL shouldAutoMigrate = [MagicalRecord _stackShouldAutoMigrateStore];
+	BOOL shouldUseCloud = ([MagicalRecord _stackUbiquityOptions] != nil);
+	
+	NSMutableDictionary *options = shouldAutoMigrate || shouldUseCloud ? [NSMutableDictionary dictionary] : nil;
+	
+	if (shouldAutoMigrate)
+		[options addEntriesFromDictionary:[self automaticLightweightMigrationOptions]];
+	
+	if (shouldUseCloud)
+		[options addEntriesFromDictionary:[MagicalRecord _stackUbiquityOptions]];
+	
+	return options;
 }
 
-#pragma mark Deprecated
-
-+ (NSPersistentStoreCoordinator *) coordinatorWithAutoMigratingSqliteStoreNamed:(NSString *) storeName
-{
-	return [self coordinatorWithStoreNamed: storeName ofType: NSSQLiteStoreType automaticLightweightMigrationEnabled: YES];
-}
-+ (NSPersistentStoreCoordinator *) coordinatorWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL
-{
-	return [self coordinatorWithStoreAtURL: storeURL ofType: NSSQLiteStoreType automaticLightweightMigrationEnabled: YES];
-}
-+ (NSPersistentStoreCoordinator *) coordinatorWithSqliteStoreAtURL: (NSURL *) storeURL
-{
-	return [self coordinatorWithStoreAtURL: storeURL ofType: NSSQLiteStoreType options: nil];
-}
-+ (NSPersistentStoreCoordinator *) coordinatorWithSqliteStoreNamed: (NSString *) storeName
-{
-	return [self coordinatorWithStoreNamed: storeName ofType: NSSQLiteStoreType options: nil];
-}
-
-+ (NSPersistentStoreCoordinator *) newPersistentStoreCoordinator
-{
-	return [self coordinator];
+- (void)_setUbiquityEnabled:(BOOL)enabled {
+	NSPersistentStore *mainStore = [NSPersistentStore defaultPersistentStore];
+	
+	if ((([mainStore.options objectForKey:NSPersistentStoreUbiquitousContentURLKey]) != nil) == enabled)
+		return;
+	
+	NSDictionary *newOptions = [NSPersistentStoreCoordinator _storeOptions];
+	
+	NSError *err = nil;
+	[self migratePersistentStore:mainStore toURL:mainStore.URL options:newOptions withType:mainStore.type error:&err];
+	[MagicalRecord handleError:err];
 }
 
 @end

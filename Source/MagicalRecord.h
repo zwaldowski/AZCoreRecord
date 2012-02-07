@@ -68,7 +68,11 @@ typedef enum {
 
 #pragma mark - Ubiquity Support
 
-+ (void)setUbiquitousContainer:(NSString *)containerID;
++ (BOOL)supportsUbiquity;
+
++ (void)setUbiquityEnabled:(BOOL)enabled;
++ (BOOL)isUbiquityEnabled;
+
 + (void)setUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key cloudStorePathComponent:(NSString *)pathComponent;
 
 #pragma mark - Error Handling
