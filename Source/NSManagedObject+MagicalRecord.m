@@ -46,9 +46,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 {
 	NSParameterAssert(context);
 	
-	if ([context isEqual:self.managedObjectContext])
-		return self;
-	
 	NSManagedObjectContext *myContext = self.managedObjectContext;
 	if (!myContext)
 		myContext = [NSManagedObjectContext defaultContext];
@@ -60,6 +57,9 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 		[MagicalRecord handleError: error];
 	}
 	
+	if ([context isEqual:self.managedObjectContext])
+		return self;
+
 	NSError *error = nil;
 	NSManagedObject *inContext = [context existingObjectWithID: self.objectID error: &error];
 	[MagicalRecord handleError: error];
