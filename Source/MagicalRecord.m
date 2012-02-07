@@ -155,7 +155,7 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 
 + (NSString *)_stackStoreName
 {
-	if (![stackStoreName hasSuffix:@"sqlite"])
+	if (!stackStoreName.pathExtension)
 		return [stackStoreName stringByAppendingPathExtension:@"sqlite"];
 	return stackStoreName;
 }
