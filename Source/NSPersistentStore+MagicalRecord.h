@@ -31,7 +31,7 @@
 /** Creates and returns a URL for the default store
  name in the user's directory.
  
- @return A URL for CoreDataStore.sqlite in the user's directory.
+ @return A URL for <<App Name>>.sqlite in the user's directory.
  */
 + (NSURL *) defaultLocalStoreURL;
 

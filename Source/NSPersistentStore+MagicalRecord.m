@@ -9,8 +9,6 @@
 #import "NSPersistentStore+MagicalRecord.h"
 #import "MagicalRecord+Private.h"
 
-NSString *const kMagicalRecordDefaultStoreFileName = @"CoreDataStore.sqlite";
-
 static NSPersistentStore *_defaultPersistentStore = nil;
 
 @implementation NSPersistentStore (MagicalRecord)
@@ -46,6 +44,12 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 
 + (NSURL *) URLForStoreName: (NSString *) storeFileName
 {
+	if (!storeFileName)
+		return nil;
+	
+	if (!storeFileName.pathExtension) 
+		storeFileName = [storeFileName stringByAppendingPathExtension:@"sqlite"];
+	
 	NSFileManager *fm = [NSFileManager new];
 	NSString *documentsDir = [self _applicationDocumentsDirectory];
 	NSString *appSupportDir = [self _applicationStorageDirectory];
@@ -81,7 +85,8 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 
 + (NSURL *) defaultLocalStoreURL
 {
-	return [self URLForStoreName: kMagicalRecordDefaultStoreFileName];
+	NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(id)kCFBundleNameKey];
+	return [self URLForStoreName: applicationName];
 }
 
 @end
