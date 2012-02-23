@@ -30,7 +30,17 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 
 + (NSString *) _directory: (NSSearchPathDirectory) type
 {	
-	return [NSSearchPathForDirectoriesInDomains(type, NSUserDomainMask, YES) lastObject];
+	static NSMutableDictionary *searchPaths = nil;
+	if (!searchPaths)
+		searchPaths = [[NSMutableDictionary alloc] initWithCapacity:25];
+	
+	id key = [NSNumber numberWithUnsignedInteger:type];
+	NSString *ret = [searchPaths objectForKey:key];
+	if (!ret) {
+		ret = [NSSearchPathForDirectoriesInDomains(type, NSUserDomainMask, YES) lastObject];
+		[searchPaths setObject:ret forKey:key];
+	}
+	return ret;
 }
 + (NSString *) _applicationDocumentsDirectory 
 {
