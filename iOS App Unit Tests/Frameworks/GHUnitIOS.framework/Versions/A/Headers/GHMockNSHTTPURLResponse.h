@@ -1,9 +1,9 @@
 //
-//  GHImageDiffView.h
-//  GHUnitIOS
+//  GHMockNSHTTPURLResponse.h
+//  GHUnit
 //
-//  Created by John Boiles on 10/27/11.
-//  Copyright (c) 2011. All rights reserved.
+//  Created by Gabriel Handford on 4/9/09.
+//  Copyright 2009. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -27,23 +27,20 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@interface GHImageDiffView : UIView {
-  UIScrollView *scrollView_;
-  UISegmentedControl *segmentedControl_;
-
-  UIImageView *savedImageView_;
-  UIImageView *renderedImageView_;
-  UIImageView *diffImageView_;
+/*
+ NSHTTPURLResponse subclass for use with mocking.
+ Allows us to manually set the status code and headers in the response.
+ */
+@interface GHMockNSHTTPURLResponse : NSHTTPURLResponse {
+	NSInteger statusCode_;
+	NSDictionary *headers_;
 }
 
-- (void)setSavedImage:(UIImage *)savedImage renderedImage:(UIImage *)renderedImage diffImage:(UIImage *)diffImage;
+- (id)initWithStatusCode:(NSInteger)statusCode headers:(NSDictionary *)headers;
 
-- (void)showSavedImage;
-
-- (void)showRenderedImage;
-
-- (void)showDiffImage;
+- (void)setStatusCode:(NSInteger)code;
+- (void)setHeaders:(NSDictionary *)headers;
 
 @end

@@ -1,9 +1,9 @@
 //
-//  GHImageDiffView.h
-//  GHUnitIOS
+//  GHNSObject+Swizzle.h
+//  GHUnit
 //
-//  Created by John Boiles on 10/27/11.
-//  Copyright (c) 2011. All rights reserved.
+//  Created by Gabriel Handford on 4/13/09.
+//  Copyright 2009. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -27,23 +27,25 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@interface GHImageDiffView : UIView {
-  UIScrollView *scrollView_;
-  UISegmentedControl *segmentedControl_;
+/*!
+ Method swizzling.
+ */
+@interface NSObject(GHUSwizzle)
 
-  UIImageView *savedImageView_;
-  UIImageView *renderedImageView_;
-  UIImageView *diffImageView_;
-}
+/*!
+ Swizzle instance method.
+ @param original Original method
+ @param withMethod New method
+ */
++ (void)ghu_swizzleMethod:(SEL)original withMethod:(SEL)withMethod;
 
-- (void)setSavedImage:(UIImage *)savedImage renderedImage:(UIImage *)renderedImage diffImage:(UIImage *)diffImage;
-
-- (void)showSavedImage;
-
-- (void)showRenderedImage;
-
-- (void)showDiffImage;
+/*!
+ Swizzle class method.
+ @param original Original method
+ @param withClassMethod New method
+ */
++ (void)ghu_swizzleClassMethod:(SEL)original withClassMethod:(SEL)withClassMethod;
 
 @end

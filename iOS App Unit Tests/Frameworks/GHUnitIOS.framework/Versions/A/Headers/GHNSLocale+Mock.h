@@ -1,9 +1,9 @@
 //
-//  GHImageDiffView.h
-//  GHUnitIOS
+//  GHNSLocale+Mock.h
+//  GHUnit
 //
-//  Created by John Boiles on 10/27/11.
-//  Copyright (c) 2011. All rights reserved.
+//  Created by Gabriel Handford on 4/13/09.
+//  Copyright 2009. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -27,23 +27,42 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@interface GHImageDiffView : UIView {
-  UIScrollView *scrollView_;
-  UISegmentedControl *segmentedControl_;
+/*!
+ Category for overriding the current locale at runtime.
 
-  UIImageView *savedImageView_;
-  UIImageView *renderedImageView_;
-  UIImageView *diffImageView_;
-}
+     #import "GHNSLocale+Mock.h"
+     // This aliases the currentLocale method and with the specified locale identifier
+     [NSLocale gh_setLocaleIdentifier:@"en_GB"];
+      
+     [[NSLocale currentLocale] localeIdentifier] == "en_GB"
 
-- (void)setSavedImage:(UIImage *)savedImage renderedImage:(UIImage *)renderedImage diffImage:(UIImage *)diffImage;
+ */
+@interface NSLocale(GHMock)
 
-- (void)showSavedImage;
+/*!
+ Set locale.
+ @param localeIdentifier Locale identifier, e.g. "en_US"
+ */
++ (void)gh_setLocaleIdentifier:(NSString *)localeIdentifier;
 
-- (void)showRenderedImage;
+/*!
+ Aliases to currentLocale with locale set from gh_setLocaleIdentifier.
+ If not set, defaults to NSLocale with identifier en_US.
+ */
++ (NSLocale *)gh_currentLocale;
 
-- (void)showDiffImage;
+/*!
+ Set preferred languages. To reset, set to nil.
+ @param preferredLanguages Preferred languages to set
+ */
++ (void)gh_setPreferredLanguages:(NSArray *)preferredLanguages;
+
+/*!
+ Aliases to preferredLanguages set from gh_setPreferredLanguages.
+ If not set, defaults to [@"en"].
+ */
++ (NSArray *)gh_preferredLanguages;
 
 @end
