@@ -32,7 +32,7 @@ typedef enum {
 	MRCoreDataSaveOptionsNone			= 0,
 	MRCoreDataSaveOptionsBackground		= 1 << 0,
 	MRCoreDataSaveOptionsMainThread		= 1 << 1,
-	MRCoreDataSaveOptionsAsynchronous	= 1 << 2
+	MRCoreDataSaveOptionsAsynchronous		= 1 << 2
 } MRCoreDataSaveOptions;
 
 @protocol MRErrorHandler <NSObject>

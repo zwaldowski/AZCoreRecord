@@ -10,6 +10,18 @@
 
 static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 
+static NSDictionary *mr_automaticLightweightMigrationOptions(void) {
+	static NSDictionary *options = nil;
+	static dispatch_once_t once;
+	dispatch_once(&once, ^{
+		id yes = (__bridge id)kCFBooleanTrue;
+		options = [NSDictionary dictionaryWithObjectsAndKeys:
+				   YES, NSMigratePersistentStoresAutomaticallyOption,
+				   yes, NSInferMappingModelAutomaticallyOption, nil];
+	});
+	return options;
+}
+
 @implementation NSPersistentStoreCoordinator (MagicalRecord)
 
 #pragma mark - Default Store Coordinator
@@ -107,22 +119,6 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	return psc;
 }
 
-#pragma mark - Automatic Lightweight Migration
-
-+ (NSDictionary *) automaticLightweightMigrationOptions
-{
-	static NSDictionary *options = nil;
-	static dispatch_once_t once;
-	dispatch_once(&once, ^{
-		id yes = (__bridge id) kCFBooleanTrue;
-		options = [NSDictionary dictionaryWithObjectsAndKeys:
-				   yes, NSMigratePersistentStoresAutomaticallyOption,
-				   yes, NSInferMappingModelAutomaticallyOption, nil];
-	});
-	
-	return options;
-}
-
 #pragma mark - In-Memory Store
 
 + (NSPersistentStoreCoordinator *) coordinatorWithInMemoryStore
@@ -150,7 +146,7 @@ static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 	NSMutableDictionary *options = shouldAutoMigrate || shouldUseCloud ? [NSMutableDictionary dictionary] : nil;
 	
 	if (shouldAutoMigrate)
-		[options addEntriesFromDictionary:[self automaticLightweightMigrationOptions]];
+		[options addEntriesFromDictionary:mr_automaticLightweightMigrationOptions()];
 	
 	if (shouldUseCloud)
 		[options addEntriesFromDictionary:[MagicalRecord _stackUbiquityOptions]];

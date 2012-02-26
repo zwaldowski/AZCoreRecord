@@ -9,15 +9,10 @@
 #import <CoreData/CoreData.h>
 #import "MagicalRecord.h"
 
-DISPATCH_EXPORT DISPATCH_PURE DISPATCH_WARN_RESULT DISPATCH_NOTHROW
-dispatch_queue_t mr_get_background_queue(void);
+DISPATCH_EXPORT DISPATCH_PURE DISPATCH_WARN_RESULT DISPATCH_NOTHROW dispatch_queue_t mr_get_background_queue(void);
 
-extern IMP _mr_getSupersequent(id obj, SEL selector); // Defined in MagicalRecord.m
-#define mr_getSupersequent() (_mr_getSupersequent(self, _cmd))
-#define mr_invokeSupersequent(...)  mr_getSupersequent()(self, _cmd, ## __VA_ARGS__)
-
-extern void _mr_swizzle(Class cls, SEL oldSel, SEL newSel);
-#define mr_swizzle(oldSelector, newSelector) _mr_swizzle([self class], oldSelector, newSelector)
+extern void mr_swizzle_support(Class cls, SEL oldSel, SEL newSel);
+#define mr_swizzle(oldSelector, newSelector) mr_swizzle_support([self class], oldSelector, newSelector)
 
 @class MagicalRecord;
 

@@ -39,80 +39,7 @@ dispatch_queue_t mr_get_background_queue(void)
 	return backgroundQueue;
 }
 
-IMP _mr_getSupersequent(id obj, SEL selector)
-{
-	BOOL found = NO;
-	
-	NSUInteger returnAddress = (NSUInteger) __builtin_return_address(0);
-	NSUInteger closest = 0;
-	
-	// Iterate over the class and all superclasses
-	Class currentClass = object_getClass(obj);
-	while (currentClass)
-	{
-		// Iterate over all instance methods for this class
-		unsigned int methodCount;
-		Method *methodList = class_copyMethodList(currentClass, &methodCount);
-		
-		for (unsigned int i = 0; i < methodCount; i++)
-		{
-			// Ignore methods with different selectors
-			if (method_getName(methodList[i]) != selector)
-				continue;
-			
-			// If this address is closer, use it instead
-			NSUInteger address = (NSUInteger) method_getImplementation(methodList[i]);
-			if (address < returnAddress && address > closest)
-			{
-				closest = address;
-			}
-		}
-		
-		free(methodList);
-		currentClass = class_getSuperclass(currentClass);
-	}
-	
-	IMP skip = (IMP) closest;
-	
-    currentClass = object_getClass(obj);
-    while (currentClass)
-    {
-        // Get the list of methods for this class
-        unsigned int methodCount;
-        Method *methodList = class_copyMethodList(currentClass, &methodCount);
-		
-        // Iterate over all methods
-        for (unsigned int i = 0; i < methodCount; ++i)
-        {
-            // Look for the selector
-            if (method_getName(methodList[i]) != selector)
-                continue;
-			
-            IMP implementation = method_getImplementation(methodList[i]);
-			
-            // Check if this is the "skip" implementation
-            if (implementation == skip)
-            {
-                found = YES;
-            }
-            else if (found)
-            {
-                // Return the match.
-                free(methodList);
-                return implementation;
-            }
-        }
-		
-        // No match found. Traverse up through superclass's methods.
-        free(methodList);
-		
-        currentClass = class_getSuperclass(currentClass);
-    }
-	
-    return nil;
-}
-
-extern void _mr_swizzle(Class cls, SEL oldSel, SEL newSel) {
+extern void mr_swizzle_support(Class cls, SEL oldSel, SEL newSel) {
 	Method origMethod = class_getInstanceMethod(cls, oldSel);
 	Method newMethod = class_getInstanceMethod(cls, newSel);
 	
@@ -126,13 +53,12 @@ extern void _mr_swizzle(Class cls, SEL oldSel, SEL newSel) {
 
 #pragma mark - Stack settings
 
-#define reset_storeCoordinator() \
-do { \
-if ([NSPersistentStoreCoordinator _hasDefaultStoreCoordinator]) \
-[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:nil]; \
-if ([NSManagedObjectContext _hasDefaultContext]) \
-[NSManagedObjectContext _setDefaultContext:nil]; \
-} while (0)
+static void mr_resetStoreCoordinator(void) {
+	if ([NSPersistentStoreCoordinator _hasDefaultStoreCoordinator])
+		[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:nil];
+	if ([NSManagedObjectContext _hasDefaultContext])
+		[NSManagedObjectContext _setDefaultContext:nil];
+}
 
 + (BOOL)_stackShouldAutoMigrateStore
 {
@@ -141,7 +67,7 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 + (void)setStackShouldAutoMigrateStore:(BOOL)shouldMigrate
 {
 	stackShouldAutoMigrate = shouldMigrate;	
-	reset_storeCoordinator();
+	mr_resetStoreCoordinator();
 }
 
 + (BOOL)_stackShouldUseInMemoryStore
@@ -151,7 +77,7 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 + (void)setStackShouldUseInMemoryStore:(BOOL)inMemory
 {
 	stackShouldUseInMemoryStore = inMemory;
-	reset_storeCoordinator();
+	mr_resetStoreCoordinator();
 }
 
 + (NSString *)_stackStoreName
@@ -163,7 +89,7 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 + (void)setStackStoreName:(NSString *)name
 {
 	stackStoreName = [name copy];
-	reset_storeCoordinator();
+	mr_resetStoreCoordinator();
 }
 
 + (NSURL *)_stackStoreURL
@@ -173,7 +99,7 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 + (void)setStackStoreURL:(NSURL *)URL
 {
 	stackStoreURL = URL;
-	reset_storeCoordinator();
+	mr_resetStoreCoordinator();
 }
 
 + (NSString *)_stackModelName

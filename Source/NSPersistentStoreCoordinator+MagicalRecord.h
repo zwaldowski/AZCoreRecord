@@ -23,10 +23,6 @@
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType;
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType options: (NSDictionary *) options;
 
-#pragma mark - Migration and Ubiquity
-
-+ (NSDictionary *) automaticLightweightMigrationOptions;
-
 #pragma mark - In-Memory Store
 
 + (NSPersistentStoreCoordinator *) coordinatorWithInMemoryStore;
