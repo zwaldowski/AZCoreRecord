@@ -16,7 +16,7 @@ static NSDictionary *mr_automaticLightweightMigrationOptions(void) {
 	dispatch_once(&once, ^{
 		id yes = (__bridge id)kCFBooleanTrue;
 		options = [NSDictionary dictionaryWithObjectsAndKeys:
-				   YES, NSMigratePersistentStoresAutomaticallyOption,
+				   yes, NSMigratePersistentStoresAutomaticallyOption,
 				   yes, NSInferMappingModelAutomaticallyOption, nil];
 	});
 	return options;
