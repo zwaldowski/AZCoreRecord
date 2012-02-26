@@ -27,10 +27,4 @@
 + (NSURL *)URLForModelNamed: (NSString *) modelName inBundle: (NSBundle *) bundle;
 + (NSURL *)URLForModelNamed: (NSString *) modelName inBundleNamed: (NSString *) bundleName;
 
-#pragma mark Deprecated
-
-+ (NSManagedObjectModel *) newManagedObjectModel DEPRECATED_ATTRIBUTE;
-+ (NSManagedObjectModel *) mergedObjectModelFromMainBundle DEPRECATED_ATTRIBUTE;
-+ (NSManagedObjectModel *) managedObjectModelNamed: (NSString *) modelFileName DEPRECATED_ATTRIBUTE;
-
 @end

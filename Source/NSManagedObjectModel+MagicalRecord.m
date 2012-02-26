@@ -95,19 +95,4 @@ static NSManagedObjectModel *_defaultManagedObjectModel = nil;
 	return modelURL;
 }
 
-#pragma mark Deprecated
-
-+ (NSManagedObjectModel *) mergedObjectModelFromMainBundle
-{
-	return [self model];
-}
-+ (NSManagedObjectModel *) newManagedObjectModel
-{
-	return [self model];
-}
-+ (NSManagedObjectModel *) managedObjectModelNamed: (NSString *) modelFileName
-{
-	return [self modelNamed: modelFileName];
-}
-
 @end

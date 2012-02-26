@@ -76,11 +76,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 {
 	[self deleteInContext: self.managedObjectContext];
 }
-- (BOOL) deleteEntity
-{
-	[self delete];
-	return YES;
-}
 - (void) deleteInContext: (NSManagedObjectContext *) context
 {
 	[context deleteObject: [self inContext: context]];
@@ -106,10 +101,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	return [[self class] findFirstWithPredicate: searchFor inContext: context];
 }
 
-- (NSURL *) uri
-{
-	return self.URI;
-}
 - (NSURL *) URI
 {
 	NSManagedObjectID *objectID = self.objectID;
@@ -228,10 +219,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 + (id) create
 {	
 	return [self createInContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-+ (id) createEntity
-{	
-	return [self create];
 }
 + (id) createInContext: (NSManagedObjectContext *) context
 {
@@ -421,17 +408,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	return request;
 }
 
-#pragma mark Deprecated
-
-+ (NSFetchRequest *) requestFirstByAttribute:(NSString *)attribute withValue:(id)searchValue {
-	return [self requestFirstWhere:attribute isEqualTo:searchValue];
-}
-
-+ (NSFetchRequest *) requestFirstByAttribute:(NSString *)attribute withValue:(id)searchValue inContext:(NSManagedObjectContext *)context {
-	return [self requestFirstWhere:attribute isEqualTo:searchValue inContext:context];
-}
-
-
 #pragma mark - Array-returning Fetch Request Factory Methods
 
 + (NSFetchRequest *) requestAll
@@ -606,59 +582,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	return [self executeFetchRequestAndReturnFirstObject: request inContext: context];
 }
 
-#pragma mark Deprecated
-
-+ (id) findFirstWithPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortBy ascending: (BOOL) ascending andRetrieveAttributes: (id) firstAttribute, ...
-{
-	NSMutableArray *attribs = [NSMutableArray array];
-	
-	va_list args;
-	id obj;
-	if (firstAttribute) 
-	{
-		[attribs addObject: firstAttribute];
-		va_start(args, firstAttribute);
-		while ((obj = va_arg(args, id)))
-			[attribs addObject: obj];
-		va_end(args);
-	}
-	
-	return [self findFirstSortedBy: sortBy ascending: ascending withPredicate: searchTerm attributesToRetrieve: attribs];
-}
-+ (id) findFirstWithPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortBy ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context andRetrieveAttributes: (id) firstAttribute, ...
-{
-	NSMutableArray *attribs = [NSMutableArray array];
-	
-	va_list args;
-	id obj;
-	if (firstAttribute) 
-	{
-		[attribs addObject: firstAttribute];
-		va_start(args, firstAttribute);
-		while ((obj = va_arg(args, id))) 
-			[attribs addObject: obj];
-		va_end(args);
-	}
-	
-	return [self findFirstSortedBy: sortBy ascending: ascending withPredicate: searchTerm attributesToRetrieve: attribs inContext: context];
-}
-+ (id) findFirstByAttribute: (NSString *) attribute withValue: (id) searchValue
-{
-	return [self findFirstWhere: attribute isEqualTo: searchValue];
-}
-+ (id) findFirstByAttribute: (NSString *) attribute withValue: (id) searchValue inContext: (NSManagedObjectContext *) context
-{
-	return [self findFirstWhere: attribute isEqualTo: searchValue inContext: context];
-}
-+ (id) findFirstWithPredicate: (NSPredicate *) searchterm sortedBy: (NSString *) property ascending: (BOOL) ascending
-{
-	return [self findFirstSortedBy: property ascending: ascending withPredicate: searchterm];
-}
-+ (id) findFirstWithPredicate: (NSPredicate *) searchterm sortedBy: (NSString *) property ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
-{
-	return [self findFirstSortedBy: property ascending: ascending withPredicate: searchterm inContext: context];
-}
-
 #pragma mark - Array-fetching Fetch Request Convenience Methods
 
 + (NSArray *) findAll
@@ -711,25 +634,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
 {
 	return [self executeFetchRequest: [self requestAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: context] inContext: context];
-}
-
-#pragma mark Deprecated
-
-+ (NSArray *) findByAttribute: (NSString *) attribute withValue: (id) searchValue
-{
-	return [self findAllWhere: attribute isEqualTo: searchValue];
-}
-+ (NSArray *) findByAttribute: (NSString *) attribute withValue: (id) searchValue inContext: (NSManagedObjectContext *) context
-{
-	return [self findAllWhere: attribute isEqualTo: searchValue inContext: context];
-}
-+ (NSArray *) findByAttribute: (NSString *) attribute withValue: (id) searchValue andOrderBy: (NSString *) sortTerm ascending: (BOOL) ascending
-{
-	return [self findAllWhere: attribute isEqualTo: searchValue sortedBy: sortTerm ascending: ascending];
-}
-+ (NSArray *) findByAttribute: (NSString *) attribute withValue: (id) searchValue andOrderBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
-{
-	return [self findAllWhere: attribute isEqualTo: searchValue sortedBy: sortTerm ascending: ascending inContext: context];
 }
 
 #pragma mark - Fetched results controllers

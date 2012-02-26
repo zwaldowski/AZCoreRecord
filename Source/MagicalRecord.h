@@ -22,12 +22,6 @@ typedef void (^MRErrorBlock)(NSError *);
 #import "NSPersistentStore+MagicalRecord.h"
 #import "NSManagedObject+MagicalDataImport.h"
 
-#if __has_attribute(deprecated)
-	#define DEPRECATED_ATTRIBUTE_M(...) __attribute__((deprecated(__VA_ARGS__)))
-#else
-	#define DEPRECATED_ATTRIBUTE_M(...) DEPRECATED_ATTRIBUTE
-#endif
-
 #ifdef MR_LOGGING
 	#define MRLog(...) NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat: __VA_ARGS__])
 #else
@@ -96,20 +90,4 @@ typedef enum {
 + (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block success: (MRBlock) callback;
 + (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback;
 
-#pragma mark Deprecated
-
-+ (void) cleanUp DEPRECATED_ATTRIBUTE_M("Your app will do this automatically on exit.");
-
-+ (void) handleErrors: (NSError *) error DEPRECATED_ATTRIBUTE;
-
-+ (void) setupAutoMigratingCoreDataStack DEPRECATED_ATTRIBUTE_M("Use +[MagicalRecord setStackShouldAutoMigrateStore:] instead");
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE_M("Use +[MagicalRecord setStackShouldAutoMigrateStore:] and +[MagicalRecord setStackStoreURL:] instead");
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE_M("Use  +[MagicalRecord setStackShouldAutoMigrateStore:] and +[MagicalRecord setStackStoreName:] instead");
-+ (void) setupCoreDataStackWithInMemoryStore DEPRECATED_ATTRIBUTE_M("Use +[MagicalRecord setStackShouldUseInMemoryStore:] instead");
-+ (void) setupCoreDataStackWithStoreAtURL: (NSURL *) storeURL DEPRECATED_ATTRIBUTE_M("Use +[MagicalRecord setStackStoreURL:]");
-+ (void) setupCoreDataStackWithStoreNamed: (NSString *) storeName DEPRECATED_ATTRIBUTE_M("Use +[MagicalRecord setStackStoreName:]");
-
 @end
-
-@compatibility_alias MagicalRecordHelpers MagicalRecord;
-@compatibility_alias MRCoreDataAction MagicalRecord;

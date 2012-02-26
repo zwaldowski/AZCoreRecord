@@ -217,37 +217,6 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	reset_storeCoordinator();
 }
 
-+ (void) setupAutoMigratingCoreDataStack
-{
-	[MagicalRecord setStackShouldAutoMigrateStore:YES];
-}
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreAtURL: (NSURL *) storeURL
-{
-	[MagicalRecord setStackShouldAutoMigrateStore:YES];
-	[MagicalRecord setStackStoreURL:storeURL];
-}
-+ (void) setupCoreDataStackWithAutoMigratingSqliteStoreNamed: (NSString *) storeName
-{
-	[MagicalRecord setStackShouldAutoMigrateStore:YES];
-	[MagicalRecord setStackStoreName:storeName];
-}
-+ (void) setupCoreDataStackWithInMemoryStore
-{
-	[MagicalRecord setStackShouldUseInMemoryStore:YES];
-}
-+ (void) setupCoreDataStackWithStoreAtURL: (NSURL *) storeURL
-{	
-	[MagicalRecord setStackStoreURL:storeURL];
-}
-+ (void) setupCoreDataStackWithStoreNamed: (NSString *) storeName
-{
-	[MagicalRecord setStackStoreName:storeName];
-}
-
-+ (void) cleanUp
-{
-	[self _cleanUp];
-}
 + (void) _cleanUp
 {
 	errorHandlerTarget = nil;
@@ -366,10 +335,6 @@ if ([NSManagedObjectContext _hasDefaultContext]) \
 	
 	// Default Error Handler
 	MRLog(@"Error: %@", error);
-}
-+ (void) handleErrors: (NSError *) error
-{
-    [self handleError: error];
 }
 
 + (MRErrorBlock) errorHandler

@@ -16,7 +16,6 @@
 - (id) inThreadContext;
 
 - (void) delete;
-- (BOOL) deleteEntity DEPRECATED_ATTRIBUTE;
 - (void) deleteInContext: (NSManagedObjectContext *) context;
 
 - (id) objectWithMinValueFor: (NSString *) property;
@@ -24,8 +23,6 @@
 
 - (id) objectWithMaxValueFor: (NSString *) property;
 - (id) objectWithMaxValueFor: (NSString *) property inContext: (NSManagedObjectContext *) context;
-
-- (NSURL *) uri DEPRECATED_ATTRIBUTE;
 
 @property (nonatomic, readonly) NSURL *URI;
 
@@ -59,7 +56,6 @@
 #pragma mark - Entity Creation
 
 + (id) create;
-+ (id) createEntity DEPRECATED_ATTRIBUTE;
 + (id) createInContext: (NSManagedObjectContext *) context;
 
 #pragma mark - Entity Deletion
@@ -106,9 +102,6 @@
 + (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm;
 + (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-+ (NSFetchRequest *) requestFirstByAttribute: (NSString *) attribute withValue: (id) searchValue DEPRECATED_ATTRIBUTE;
-+ (NSFetchRequest *) requestFirstByAttribute: (NSString *) attribute withValue: (id) searchValue inContext: (NSManagedObjectContext *) context DEPRECATED_ATTRIBUTE;
-
 #pragma mark - Array-returning Fetch Request Factory Methods
 
 + (NSFetchRequest *) requestAll;
@@ -152,13 +145,6 @@
 + (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm attributesToRetrieve: (NSArray *) attributes;
 + (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm attributesToRetrieve: (NSArray *) attributes inContext: (NSManagedObjectContext *) context;
 
-+ (id) findFirstWithPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortBy ascending: (BOOL) ascending andRetrieveAttributes: (id) attributes, ... NS_REQUIRES_NIL_TERMINATION DEPRECATED_ATTRIBUTE;
-+ (id) findFirstWithPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortBy ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context andRetrieveAttributes: (id) attributes, ... NS_REQUIRES_NIL_TERMINATION DEPRECATED_ATTRIBUTE;
-+ (id) findFirstByAttribute: (NSString *) attribute withValue: (id) searchValue DEPRECATED_ATTRIBUTE;
-+ (id) findFirstByAttribute: (NSString *) attribute withValue: (id) searchValue inContext: (NSManagedObjectContext *) context DEPRECATED_ATTRIBUTE;
-+ (id) findFirstWithPredicate: (NSPredicate *) searchterm sortedBy: (NSString *) property ascending: (BOOL) ascending DEPRECATED_ATTRIBUTE;
-+ (id) findFirstWithPredicate: (NSPredicate *) searchterm sortedBy: (NSString *) property ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context DEPRECATED_ATTRIBUTE;
-
 #pragma mark - Array-fetching Fetch Request Convenience Methods
 
 + (NSArray *) findAll;
@@ -176,11 +162,6 @@
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm;
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
-
-+ (NSArray *) findByAttribute: (NSString *) attribute withValue: (id) searchValue DEPRECATED_ATTRIBUTE;
-+ (NSArray *) findByAttribute: (NSString *) attribute withValue: (id) searchValue inContext: (NSManagedObjectContext *) context DEPRECATED_ATTRIBUTE;
-+ (NSArray *) findByAttribute: (NSString *) attribute withValue: (id) searchValue andOrderBy: (NSString *) sortTerm ascending: (BOOL) ascending DEPRECATED_ATTRIBUTE;
-+ (NSArray *) findByAttribute: (NSString *) attribute withValue: (id) searchValue andOrderBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context DEPRECATED_ATTRIBUTE;
 
 #pragma mark - Fetched Results Controller Convenience Methods
 
