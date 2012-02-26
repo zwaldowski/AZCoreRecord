@@ -27,31 +27,6 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 	_defaultPersistentStore = store;
 }
 
-
-+ (NSString *) _directory: (NSSearchPathDirectory) type
-{	
-	static NSMutableDictionary *searchPaths = nil;
-	if (!searchPaths)
-		searchPaths = [[NSMutableDictionary alloc] initWithCapacity:25];
-	
-	id key = [NSNumber numberWithUnsignedInteger:type];
-	NSString *ret = [searchPaths objectForKey:key];
-	if (!ret) {
-		ret = [NSSearchPathForDirectoriesInDomains(type, NSUserDomainMask, YES) lastObject];
-		[searchPaths setObject:ret forKey:key];
-	}
-	return ret;
-}
-+ (NSString *) _applicationDocumentsDirectory 
-{
-	return [self _directory: NSDocumentDirectory];
-}
-+ (NSString *) _applicationStorageDirectory
-{
-    NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *) kCFBundleNameKey];
-    return [[self _directory: NSApplicationSupportDirectory] stringByAppendingPathComponent: applicationName];
-}
-
 + (NSURL *) URLForStoreName: (NSString *) storeFileName
 {
 	if (!storeFileName)
@@ -61,8 +36,15 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 		storeFileName = [storeFileName stringByAppendingPathExtension:@"sqlite"];
 	
 	NSFileManager *fm = [NSFileManager new];
-	NSString *documentsDir = [self _applicationDocumentsDirectory];
-	NSString *appSupportDir = [self _applicationStorageDirectory];
+	
+	static dispatch_once_t onceToken;
+	static NSString *documentsDir = nil;
+	static NSString *appSupportDir = nil;
+	dispatch_once(&onceToken, ^{
+		NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *) kCFBundleNameKey];
+		documentsDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+		appSupportDir = [[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent: applicationName];
+	});
 	
 	NSArray *paths = [NSArray arrayWithObjects: documentsDir, appSupportDir, nil];
 	

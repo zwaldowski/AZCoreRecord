@@ -37,7 +37,6 @@ extern void mr_swizzle_support(Class cls, SEL oldSel, SEL newSel);
 
 + (BOOL) _hasDefaultPersistentStore;
 + (void) _setDefaultPersistentStore: (NSPersistentStore *) store;
-+ (NSString *) _directory: (NSSearchPathDirectory) type;
 
 @end
 
