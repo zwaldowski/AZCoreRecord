@@ -18,6 +18,8 @@
 - (void) delete;
 - (void) deleteInContext: (NSManagedObjectContext *) context;
 
+- (void) reload;
+
 - (id) objectWithMinValueFor: (NSString *) property;
 - (id) objectWithMinValueFor: (NSString *) property inContext: (NSManagedObjectContext *) context;
 

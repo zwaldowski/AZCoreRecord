@@ -81,6 +81,11 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	[context deleteObject: [self inContext: context]];
 }
 
+- (void) reload
+{
+	[self.managedObjectContext refreshObject:self mergeChanges:NO];
+}
+
 - (id) objectWithMinValueFor: (NSString *) property 
 {
 	return [self objectWithMinValueFor: property inContext: self. managedObjectContext];
