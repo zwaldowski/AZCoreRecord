@@ -140,7 +140,7 @@ static void mr_resetStoreCoordinator(void) {
 + (void)setStackUbiquityOptions:(NSDictionary *)dict
 {
 	stackUbiquityOptions = dict;
-	reset_storeCoordinator();
+	mr_resetStoreCoordinator();
 }
 
 + (void) _cleanUp
