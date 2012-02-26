@@ -82,7 +82,7 @@
 	
 	assertThatBool([testEntity isDeleted], is(equalToBool(NO)));
 	
-	[testEntity deleteEntity];
+	[testEntity delete];
 	
 	assertThat(testEntity, is(notNilValue()));
 	assertThatBool([testEntity isDeleted], is(equalToBool(YES)));

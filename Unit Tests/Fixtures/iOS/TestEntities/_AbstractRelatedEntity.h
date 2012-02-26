@@ -38,6 +38,7 @@ extern const struct AbstractRelatedEntityFetchedProperties {
 
 
 
+
 @end
 
 @interface _AbstractRelatedEntity (CoreDataGeneratedAccessors)
@@ -47,8 +48,8 @@ extern const struct AbstractRelatedEntityFetchedProperties {
 @interface _AbstractRelatedEntity (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString*)primitiveSampleBaseAttribute;
-- (void)setPrimitiveSampleBaseAttribute:(NSString*)value;
+- (NSString *)primitiveSampleBaseAttribute;
+- (void)setPrimitiveSampleBaseAttribute:(NSString *)value;
 
 
 

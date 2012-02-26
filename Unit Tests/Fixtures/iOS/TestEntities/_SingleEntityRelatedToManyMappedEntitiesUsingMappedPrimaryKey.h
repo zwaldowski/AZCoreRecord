@@ -34,9 +34,9 @@ extern const struct SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey
 @property (nonatomic, strong) NSNumber *testPrimaryKey;
 
 
-@property short testPrimaryKeyValue;
-- (short)testPrimaryKeyValue;
-- (void)setTestPrimaryKeyValue:(short)value_;
+@property int16_t testPrimaryKeyValue;
+- (int16_t)testPrimaryKeyValue;
+- (void)setTestPrimaryKeyValue:(int16_t)value_;
 
 //- (BOOL)validateTestPrimaryKey:(id*)value_ error:(NSError**)error_;
 
@@ -47,6 +47,7 @@ extern const struct SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey
 @property (nonatomic, strong) NSSet* mappedEntities;
 
 - (NSMutableSet*)mappedEntitiesSet;
+
 
 
 
@@ -65,11 +66,11 @@ extern const struct SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey
 @interface _SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSNumber*)primitiveTestPrimaryKey;
-- (void)setPrimitiveTestPrimaryKey:(NSNumber*)value;
+- (NSNumber *)primitiveTestPrimaryKey;
+- (void)setPrimitiveTestPrimaryKey:(NSNumber *)value;
 
-- (short)primitiveTestPrimaryKeyValue;
-- (void)setPrimitiveTestPrimaryKeyValue:(short)value_;
+- (int16_t)primitiveTestPrimaryKeyValue;
+- (void)setPrimitiveTestPrimaryKeyValue:(int16_t)value_;
 
 
 

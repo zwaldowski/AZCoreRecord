@@ -55,21 +55,21 @@ const struct SingleEntityRelatedToMappedEntityUsingDefaultsFetchedProperties Sin
 
 
 
-- (short)singleEntityRelatedToMappedEntityUsingDefaultsIDValue {
+- (int16_t)singleEntityRelatedToMappedEntityUsingDefaultsIDValue {
 	NSNumber *result = [self singleEntityRelatedToMappedEntityUsingDefaultsID];
 	return [result shortValue];
 }
 
-- (void)setSingleEntityRelatedToMappedEntityUsingDefaultsIDValue:(short)value_ {
+- (void)setSingleEntityRelatedToMappedEntityUsingDefaultsIDValue:(int16_t)value_ {
 	[self setSingleEntityRelatedToMappedEntityUsingDefaultsID:[NSNumber numberWithShort:value_]];
 }
 
-- (short)primitiveSingleEntityRelatedToMappedEntityUsingDefaultsIDValue {
+- (int16_t)primitiveSingleEntityRelatedToMappedEntityUsingDefaultsIDValue {
 	NSNumber *result = [self primitiveSingleEntityRelatedToMappedEntityUsingDefaultsID];
 	return [result shortValue];
 }
 
-- (void)setPrimitiveSingleEntityRelatedToMappedEntityUsingDefaultsIDValue:(short)value_ {
+- (void)setPrimitiveSingleEntityRelatedToMappedEntityUsingDefaultsIDValue:(int16_t)value_ {
 	[self setPrimitiveSingleEntityRelatedToMappedEntityUsingDefaultsID:[NSNumber numberWithShort:value_]];
 }
 
@@ -80,6 +80,7 @@ const struct SingleEntityRelatedToMappedEntityUsingDefaultsFetchedProperties Sin
 @dynamic mappedEntity;
 
 	
+
 
 
 

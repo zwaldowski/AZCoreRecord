@@ -61,21 +61,21 @@ const struct MappedEntityFetchedProperties MappedEntityFetchedProperties = {
 
 
 
-- (short)mappedEntityIDValue {
+- (int16_t)mappedEntityIDValue {
 	NSNumber *result = [self mappedEntityID];
 	return [result shortValue];
 }
 
-- (void)setMappedEntityIDValue:(short)value_ {
+- (void)setMappedEntityIDValue:(int16_t)value_ {
 	[self setMappedEntityID:[NSNumber numberWithShort:value_]];
 }
 
-- (short)primitiveMappedEntityIDValue {
+- (int16_t)primitiveMappedEntityIDValue {
 	NSNumber *result = [self primitiveMappedEntityID];
 	return [result shortValue];
 }
 
-- (void)setPrimitiveMappedEntityIDValue:(short)value_ {
+- (void)setPrimitiveMappedEntityIDValue:(int16_t)value_ {
 	[self setPrimitiveMappedEntityID:[NSNumber numberWithShort:value_]];
 }
 
@@ -101,23 +101,24 @@ const struct MappedEntityFetchedProperties MappedEntityFetchedProperties = {
 
 
 
-- (long long)testMappedEntityIDValue {
+- (int64_t)testMappedEntityIDValue {
 	NSNumber *result = [self testMappedEntityID];
 	return [result longLongValue];
 }
 
-- (void)setTestMappedEntityIDValue:(long long)value_ {
+- (void)setTestMappedEntityIDValue:(int64_t)value_ {
 	[self setTestMappedEntityID:[NSNumber numberWithLongLong:value_]];
 }
 
-- (long long)primitiveTestMappedEntityIDValue {
+- (int64_t)primitiveTestMappedEntityIDValue {
 	NSNumber *result = [self primitiveTestMappedEntityID];
 	return [result longLongValue];
 }
 
-- (void)setPrimitiveTestMappedEntityIDValue:(long long)value_ {
+- (void)setPrimitiveTestMappedEntityIDValue:(int64_t)value_ {
 	[self setPrimitiveTestMappedEntityID:[NSNumber numberWithLongLong:value_]];
 }
+
 
 
 

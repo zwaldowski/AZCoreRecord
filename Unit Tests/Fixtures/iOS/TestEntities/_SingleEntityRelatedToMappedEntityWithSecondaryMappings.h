@@ -47,6 +47,7 @@ extern const struct SingleEntityRelatedToMappedEntityWithSecondaryMappingsFetche
 
 
 
+
 @end
 
 @interface _SingleEntityRelatedToMappedEntityWithSecondaryMappings (CoreDataGeneratedAccessors)
@@ -56,8 +57,8 @@ extern const struct SingleEntityRelatedToMappedEntityWithSecondaryMappingsFetche
 @interface _SingleEntityRelatedToMappedEntityWithSecondaryMappings (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString*)primitiveSecondaryMappedAttribute;
-- (void)setPrimitiveSecondaryMappedAttribute:(NSString*)value;
+- (NSString *)primitiveSecondaryMappedAttribute;
+- (void)setPrimitiveSecondaryMappedAttribute:(NSString *)value;
 
 
 

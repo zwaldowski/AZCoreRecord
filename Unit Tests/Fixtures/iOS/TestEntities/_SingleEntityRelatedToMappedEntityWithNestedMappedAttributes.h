@@ -37,6 +37,7 @@ extern const struct SingleEntityRelatedToMappedEntityWithNestedMappedAttributesF
 
 
 
+
 @end
 
 @interface _SingleEntityRelatedToMappedEntityWithNestedMappedAttributes (CoreDataGeneratedAccessors)

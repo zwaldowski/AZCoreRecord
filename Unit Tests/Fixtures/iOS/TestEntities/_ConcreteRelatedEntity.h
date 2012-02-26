@@ -38,6 +38,7 @@ extern const struct ConcreteRelatedEntityFetchedProperties {
 
 
 
+
 @end
 
 @interface _ConcreteRelatedEntity (CoreDataGeneratedAccessors)
@@ -47,8 +48,8 @@ extern const struct ConcreteRelatedEntityFetchedProperties {
 @interface _ConcreteRelatedEntity (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString*)primitiveSampleConcreteAttribute;
-- (void)setPrimitiveSampleConcreteAttribute:(NSString*)value;
+- (NSString *)primitiveSampleConcreteAttribute;
+- (void)setPrimitiveSampleConcreteAttribute:(NSString *)value;
 
 
 

@@ -74,6 +74,7 @@ extern const struct SingleRelatedEntityFetchedProperties {
 
 
 
+
 @end
 
 @interface _SingleRelatedEntity (CoreDataGeneratedAccessors)
@@ -93,8 +94,8 @@ extern const struct SingleRelatedEntityFetchedProperties {
 @interface _SingleRelatedEntity (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString*)primitiveMappedStringAttribute;
-- (void)setPrimitiveMappedStringAttribute:(NSString*)value;
+- (NSString *)primitiveMappedStringAttribute;
+- (void)setPrimitiveMappedStringAttribute:(NSString *)value;
 
 
 

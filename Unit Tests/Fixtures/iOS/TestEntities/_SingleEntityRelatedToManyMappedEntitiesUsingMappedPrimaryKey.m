@@ -55,21 +55,21 @@ const struct SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKeyFetched
 
 
 
-- (short)testPrimaryKeyValue {
+- (int16_t)testPrimaryKeyValue {
 	NSNumber *result = [self testPrimaryKey];
 	return [result shortValue];
 }
 
-- (void)setTestPrimaryKeyValue:(short)value_ {
+- (void)setTestPrimaryKeyValue:(int16_t)value_ {
 	[self setTestPrimaryKey:[NSNumber numberWithShort:value_]];
 }
 
-- (short)primitiveTestPrimaryKeyValue {
+- (int16_t)primitiveTestPrimaryKeyValue {
 	NSNumber *result = [self primitiveTestPrimaryKey];
 	return [result shortValue];
 }
 
-- (void)setPrimitiveTestPrimaryKeyValue:(short)value_ {
+- (void)setPrimitiveTestPrimaryKeyValue:(int16_t)value_ {
 	[self setPrimitiveTestPrimaryKey:[NSNumber numberWithShort:value_]];
 }
 
@@ -89,6 +89,7 @@ const struct SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKeyFetched
 	return result;
 }
 	
+
 
 
 

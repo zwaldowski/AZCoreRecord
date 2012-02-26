@@ -67,7 +67,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSObject *colorTestAttribute;
+@property (nonatomic, strong) id colorTestAttribute;
 
 
 //- (BOOL)validateColorTestAttribute:(id*)value_ error:(NSError**)error_;
@@ -126,9 +126,9 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 @property (nonatomic, strong) NSNumber *int16TestAttribute;
 
 
-@property short int16TestAttributeValue;
-- (short)int16TestAttributeValue;
-- (void)setInt16TestAttributeValue:(short)value_;
+@property int16_t int16TestAttributeValue;
+- (int16_t)int16TestAttributeValue;
+- (void)setInt16TestAttributeValue:(int16_t)value_;
 
 //- (BOOL)validateInt16TestAttribute:(id*)value_ error:(NSError**)error_;
 
@@ -138,9 +138,9 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 @property (nonatomic, strong) NSNumber *int32TestAttribute;
 
 
-@property int int32TestAttributeValue;
-- (int)int32TestAttributeValue;
-- (void)setInt32TestAttributeValue:(int)value_;
+@property int32_t int32TestAttributeValue;
+- (int32_t)int32TestAttributeValue;
+- (void)setInt32TestAttributeValue:(int32_t)value_;
 
 //- (BOOL)validateInt32TestAttribute:(id*)value_ error:(NSError**)error_;
 
@@ -150,9 +150,9 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 @property (nonatomic, strong) NSNumber *int64TestAttribute;
 
 
-@property long long int64TestAttributeValue;
-- (long long)int64TestAttributeValue;
-- (void)setInt64TestAttributeValue:(long long)value_;
+@property int64_t int64TestAttributeValue;
+- (int64_t)int64TestAttributeValue;
+- (void)setInt64TestAttributeValue:(int64_t)value_;
 
 //- (BOOL)validateInt64TestAttribute:(id*)value_ error:(NSError**)error_;
 
@@ -178,9 +178,9 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 @property (nonatomic, strong) NSNumber *nullTestAttribute;
 
 
-@property long long nullTestAttributeValue;
-- (long long)nullTestAttributeValue;
-- (void)setNullTestAttributeValue:(long long)value_;
+@property int64_t nullTestAttributeValue;
+- (int64_t)nullTestAttributeValue;
+- (void)setNullTestAttributeValue:(int64_t)value_;
 
 //- (BOOL)validateNullTestAttribute:(id*)value_ error:(NSError**)error_;
 
@@ -196,6 +196,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
+
 @end
 
 @interface _SingleEntityWithNoRelationships (CoreDataGeneratedAccessors)
@@ -205,8 +206,8 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 @interface _SingleEntityWithNoRelationships (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSNumber*)primitiveBooleanTestAttribute;
-- (void)setPrimitiveBooleanTestAttribute:(NSNumber*)value;
+- (NSNumber *)primitiveBooleanTestAttribute;
+- (void)setPrimitiveBooleanTestAttribute:(NSNumber *)value;
 
 - (BOOL)primitiveBooleanTestAttributeValue;
 - (void)setPrimitiveBooleanTestAttributeValue:(BOOL)value_;
@@ -214,32 +215,32 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-- (NSObject*)primitiveColorTestAttribute;
-- (void)setPrimitiveColorTestAttribute:(NSObject*)value;
+- (id)primitiveColorTestAttribute;
+- (void)setPrimitiveColorTestAttribute:(id)value;
 
 
 
 
-- (NSDate*)primitiveDateTestAttribute;
-- (void)setPrimitiveDateTestAttribute:(NSDate*)value;
+- (NSDate *)primitiveDateTestAttribute;
+- (void)setPrimitiveDateTestAttribute:(NSDate *)value;
 
 
 
 
-- (NSDate*)primitiveDateWithCustomFormat;
-- (void)setPrimitiveDateWithCustomFormat:(NSDate*)value;
+- (NSDate *)primitiveDateWithCustomFormat;
+- (void)setPrimitiveDateWithCustomFormat:(NSDate *)value;
 
 
 
 
-- (NSDecimalNumber*)primitiveDecimalTestAttribute;
-- (void)setPrimitiveDecimalTestAttribute:(NSDecimalNumber*)value;
+- (NSDecimalNumber *)primitiveDecimalTestAttribute;
+- (void)setPrimitiveDecimalTestAttribute:(NSDecimalNumber *)value;
 
 
 
 
-- (NSNumber*)primitiveDoubleTestAttribute;
-- (void)setPrimitiveDoubleTestAttribute:(NSNumber*)value;
+- (NSNumber *)primitiveDoubleTestAttribute;
+- (void)setPrimitiveDoubleTestAttribute:(NSNumber *)value;
 
 - (double)primitiveDoubleTestAttributeValue;
 - (void)setPrimitiveDoubleTestAttributeValue:(double)value_;
@@ -247,8 +248,8 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-- (NSNumber*)primitiveFloatTestAttribute;
-- (void)setPrimitiveFloatTestAttribute:(NSNumber*)value;
+- (NSNumber *)primitiveFloatTestAttribute;
+- (void)setPrimitiveFloatTestAttribute:(NSNumber *)value;
 
 - (float)primitiveFloatTestAttributeValue;
 - (void)setPrimitiveFloatTestAttributeValue:(float)value_;
@@ -256,56 +257,56 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-- (NSNumber*)primitiveInt16TestAttribute;
-- (void)setPrimitiveInt16TestAttribute:(NSNumber*)value;
+- (NSNumber *)primitiveInt16TestAttribute;
+- (void)setPrimitiveInt16TestAttribute:(NSNumber *)value;
 
-- (short)primitiveInt16TestAttributeValue;
-- (void)setPrimitiveInt16TestAttributeValue:(short)value_;
-
-
-
-
-- (NSNumber*)primitiveInt32TestAttribute;
-- (void)setPrimitiveInt32TestAttribute:(NSNumber*)value;
-
-- (int)primitiveInt32TestAttributeValue;
-- (void)setPrimitiveInt32TestAttributeValue:(int)value_;
+- (int16_t)primitiveInt16TestAttributeValue;
+- (void)setPrimitiveInt16TestAttributeValue:(int16_t)value_;
 
 
 
 
-- (NSNumber*)primitiveInt64TestAttribute;
-- (void)setPrimitiveInt64TestAttribute:(NSNumber*)value;
+- (NSNumber *)primitiveInt32TestAttribute;
+- (void)setPrimitiveInt32TestAttribute:(NSNumber *)value;
 
-- (long long)primitiveInt64TestAttributeValue;
-- (void)setPrimitiveInt64TestAttributeValue:(long long)value_;
-
-
-
-
-- (NSString*)primitiveMappedStringAttribute;
-- (void)setPrimitiveMappedStringAttribute:(NSString*)value;
+- (int32_t)primitiveInt32TestAttributeValue;
+- (void)setPrimitiveInt32TestAttributeValue:(int32_t)value_;
 
 
 
 
-- (NSString*)primitiveNotInJsonAttribute;
-- (void)setPrimitiveNotInJsonAttribute:(NSString*)value;
+- (NSNumber *)primitiveInt64TestAttribute;
+- (void)setPrimitiveInt64TestAttribute:(NSNumber *)value;
+
+- (int64_t)primitiveInt64TestAttributeValue;
+- (void)setPrimitiveInt64TestAttributeValue:(int64_t)value_;
 
 
 
 
-- (NSNumber*)primitiveNullTestAttribute;
-- (void)setPrimitiveNullTestAttribute:(NSNumber*)value;
-
-- (long long)primitiveNullTestAttributeValue;
-- (void)setPrimitiveNullTestAttributeValue:(long long)value_;
+- (NSString *)primitiveMappedStringAttribute;
+- (void)setPrimitiveMappedStringAttribute:(NSString *)value;
 
 
 
 
-- (NSString*)primitiveStringTestAttribute;
-- (void)setPrimitiveStringTestAttribute:(NSString*)value;
+- (NSString *)primitiveNotInJsonAttribute;
+- (void)setPrimitiveNotInJsonAttribute:(NSString *)value;
+
+
+
+
+- (NSNumber *)primitiveNullTestAttribute;
+- (void)setPrimitiveNullTestAttribute:(NSNumber *)value;
+
+- (int64_t)primitiveNullTestAttributeValue;
+- (void)setPrimitiveNullTestAttributeValue:(int64_t)value_;
+
+
+
+
+- (NSString *)primitiveStringTestAttribute;
+- (void)setPrimitiveStringTestAttribute:(NSString *)value;
 
 
 

@@ -34,9 +34,9 @@ extern const struct SingleEntityRelatedToMappedEntityUsingDefaultsFetchedPropert
 @property (nonatomic, strong) NSNumber *singleEntityRelatedToMappedEntityUsingDefaultsID;
 
 
-@property short singleEntityRelatedToMappedEntityUsingDefaultsIDValue;
-- (short)singleEntityRelatedToMappedEntityUsingDefaultsIDValue;
-- (void)setSingleEntityRelatedToMappedEntityUsingDefaultsIDValue:(short)value_;
+@property int16_t singleEntityRelatedToMappedEntityUsingDefaultsIDValue;
+- (int16_t)singleEntityRelatedToMappedEntityUsingDefaultsIDValue;
+- (void)setSingleEntityRelatedToMappedEntityUsingDefaultsIDValue:(int16_t)value_;
 
 //- (BOOL)validateSingleEntityRelatedToMappedEntityUsingDefaultsID:(id*)value_ error:(NSError**)error_;
 
@@ -51,6 +51,7 @@ extern const struct SingleEntityRelatedToMappedEntityUsingDefaultsFetchedPropert
 
 
 
+
 @end
 
 @interface _SingleEntityRelatedToMappedEntityUsingDefaults (CoreDataGeneratedAccessors)
@@ -60,11 +61,11 @@ extern const struct SingleEntityRelatedToMappedEntityUsingDefaultsFetchedPropert
 @interface _SingleEntityRelatedToMappedEntityUsingDefaults (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSNumber*)primitiveSingleEntityRelatedToMappedEntityUsingDefaultsID;
-- (void)setPrimitiveSingleEntityRelatedToMappedEntityUsingDefaultsID:(NSNumber*)value;
+- (NSNumber *)primitiveSingleEntityRelatedToMappedEntityUsingDefaultsID;
+- (void)setPrimitiveSingleEntityRelatedToMappedEntityUsingDefaultsID:(NSNumber *)value;
 
-- (short)primitiveSingleEntityRelatedToMappedEntityUsingDefaultsIDValue;
-- (void)setPrimitiveSingleEntityRelatedToMappedEntityUsingDefaultsIDValue:(short)value_;
+- (int16_t)primitiveSingleEntityRelatedToMappedEntityUsingDefaultsIDValue;
+- (void)setPrimitiveSingleEntityRelatedToMappedEntityUsingDefaultsIDValue:(int16_t)value_;
 
 
 

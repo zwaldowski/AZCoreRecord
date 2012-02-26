@@ -23,7 +23,7 @@
 - (void)testDefaultStoreFolderForiOSDevicesIsTheApplicationSupportFolder
 {
 	NSString *applicationLibraryDirectory = [self applicationStorageDirectory];
-	NSString *defaultStoreName = kMagicalRecordDefaultStoreFileName;
+	NSString *defaultStoreName = @"iOS App Unit Tests";
 	
 	NSURL *expectedStoreUrl = [NSURL fileURLWithPath:[applicationLibraryDirectory stringByAppendingPathComponent:defaultStoreName]];
 	

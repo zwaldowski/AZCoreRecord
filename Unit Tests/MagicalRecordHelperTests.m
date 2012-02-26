@@ -35,7 +35,7 @@
 
 - (void) testCreateDefaultCoreDataStack
 {
-	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:[NSPersistentStoreCoordinator _defaultStoreName]];
+	NSURL *testStoreURL = [NSPersistentStore defaultLocalStoreURL];
 	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 	
 	[self assertDefaultStack];

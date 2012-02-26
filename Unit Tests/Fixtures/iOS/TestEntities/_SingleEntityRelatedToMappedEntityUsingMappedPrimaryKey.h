@@ -37,6 +37,7 @@ extern const struct SingleEntityRelatedToMappedEntityUsingMappedPrimaryKeyFetche
 
 
 
+
 @end
 
 @interface _SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey (CoreDataGeneratedAccessors)
