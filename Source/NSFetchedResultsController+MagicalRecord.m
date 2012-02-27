@@ -42,13 +42,13 @@
 	return controller;
 }
 
-+ (id) fetchedResultsControllerForEntity: (Class) entityClass sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm groupedBy:(NSString *) keyPath {
-	return [self fetchedResultsControllerForEntity: entityClass sortedBy: sortTerm ascending: ascending withPredicate: searchTerm groupedBy: keyPath inContext: [NSManagedObjectContext contextForCurrentThread]];
++ (id) fetchedResultsControllerForEntity: (Class) entityClass sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm groupedBy:(NSString *) keyPath {
+	return [self fetchedResultsControllerForEntity: entityClass sortedBy: sortTerm ascending: ascending predicate: searchTerm groupedBy: keyPath inContext: [NSManagedObjectContext contextForCurrentThread]];
 }
 
-+ (id) fetchedResultsControllerForEntity: (Class)entityClass sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm groupedBy:(NSString *) keyPath inContext: (NSManagedObjectContext *) context{
++ (id) fetchedResultsControllerForEntity: (Class)entityClass sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm groupedBy:(NSString *) keyPath inContext: (NSManagedObjectContext *) context{
 	NSParameterAssert([entityClass isSubclassOfClass:[NSManagedObject class]]);
-	NSFetchRequest *request = [entityClass requestAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: context];
+	NSFetchRequest *request = [entityClass requestAllSortedBy: sortTerm ascending: ascending predicate: searchTerm inContext: context];
 	return [self fetchedResultsControllerForRequest: request groupedBy: keyPath inContext: context];
 }
 
