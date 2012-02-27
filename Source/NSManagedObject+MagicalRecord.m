@@ -500,40 +500,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 {
 	return [self executeFetchRequestAndReturnFirstObject: [self requestAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: context] inContext: context];
 }
-+ (id) findFirstSortedBy: (NSString *) sortBy ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm andRetrieveAttributes: (id) firstAttribute, ...
-{
-	NSMutableArray *attribs = [NSMutableArray array];
-	
-	va_list args;
-	id obj;
-	if (firstAttribute) 
-	{
-		[attribs addObject: firstAttribute];
-		va_start(args, firstAttribute);
-		while ((obj = va_arg(args, id)))
-			[attribs addObject: obj];
-		va_end(args);
-	}
-	
-	return [self findFirstSortedBy: sortBy ascending: ascending withPredicate: searchTerm attributesToRetrieve: attribs];
-}
-+ (id) findFirstSortedBy: (NSString *) sortBy ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context andRetrieveAttributes: (id) firstAttribute, ...
-{
-	NSMutableArray *attribs = [NSMutableArray array];
-	
-	va_list args;
-	id obj;
-	if (firstAttribute)
-	{
-		[attribs addObject: firstAttribute];
-		va_start(args, firstAttribute);
-		while ((obj = va_arg(args, id)))
-			[attribs addObject: obj];
-		va_end(args);
-	}
-	
-	return [self findFirstSortedBy: sortBy ascending: ascending withPredicate: searchTerm attributesToRetrieve: attribs inContext: context];
-}
 + (id) findFirstSortedBy: (NSString *) sortBy ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm attributesToRetrieve: (NSArray *) attributes
 {
 	return [self findFirstSortedBy: sortBy ascending: ascending withPredicate: searchTerm attributesToRetrieve: attributes inContext: [NSManagedObjectContext contextForCurrentThread]];
