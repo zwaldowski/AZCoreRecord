@@ -269,27 +269,18 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 #pragma mark - Entity Count
 
-+ (BOOL) hasAtLeastOneEntity
-{
-	return [self hasAtLeastOneEntityInContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-+ (BOOL) hasAtLeastOneEntityInContext: (NSManagedObjectContext *) context
-{
-	return ([self countOfEntitiesWithContext: context] > 0);
-}
-
 + (NSUInteger) countOfEntities
 {
-	return [self countOfEntitiesWithContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self countOfEntitiesInContext: [NSManagedObjectContext contextForCurrentThread]];
 }
-
-+ (NSUInteger) countOfEntitiesWithContext: (NSManagedObjectContext *) context
++ (NSUInteger) countOfEntitiesInContext: (NSManagedObjectContext *) context
 {
 	NSError *error = nil;
 	NSUInteger count = [context countForFetchRequest: [self createFetchRequestInContext: context] error: &error];
 	[MagicalRecord handleError:error];
 	return count;
 }
+
 + (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter
 {
 	return [self countOfEntitiesWithPredicate: searchFilter inContext: [NSManagedObjectContext defaultContext]];
