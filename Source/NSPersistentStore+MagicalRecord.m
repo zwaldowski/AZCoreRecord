@@ -32,7 +32,7 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 	if (!storeFileName)
 		return nil;
 	
-	if (!storeFileName.pathExtension) 
+	if (!storeFileName.pathExtension.length) 
 		storeFileName = [storeFileName stringByAppendingPathExtension:@"sqlite"];
 	
 	NSFileManager *fm = [NSFileManager new];

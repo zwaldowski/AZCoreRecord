@@ -23,7 +23,7 @@
 - (void)testDefaultStoreFolderForiOSDevicesIsTheApplicationSupportFolder
 {
 	NSString *applicationLibraryDirectory = [self applicationStorageDirectory];
-	NSString *defaultStoreName = @"iOS App Unit Tests";
+	NSString *defaultStoreName = @"iOS App Unit Tests.sqlite";
 	
 	NSURL *expectedStoreUrl = [NSURL fileURLWithPath:[applicationLibraryDirectory stringByAppendingPathComponent:defaultStoreName]];
 	
