@@ -59,15 +59,15 @@ Most methods in Magical Record return an `NSArray` of results. So, if you have a
 
 Or, to have the results sorted by a property:
 
-	NSArray *peopleSorted = [Person findAllSortedByProperty:@"LastName" ascending:YES];
+	NSArray *peopleSorted = [Person findAllSortedBy:@"LastName" ascending:YES];
 
 Or, to have the results sorted by multiple properties:
 
-	NSArray *peopleSorted = [Person findAllSortedByProperty:@"LastName,FirstName" ascending:YES];
+	NSArray *peopleSorted = [Person findAllSortedBy:@"LastName,FirstName" ascending:YES];
 
 If you have a unique way of retrieving a single object from your data store, you can get that object directly:
 
-	Person *person = [Person findFirstByAttribute:@"FirstName" withValue:@"Forrest"];
+	Person *person = [Person findFirstWhere:@"FirstName" equals:@"Forrest"];
 
 #### Advanced Finding
 
@@ -75,13 +75,11 @@ If you want to be more specific with your search, you can send in a predicate:
 
 	NSArray *departments = [NSArray arrayWithObjects:dept1, dept2, ..., nil];
 	NSPredicate *peopleFilter = [NSPredicate predicateWithFormat:@"Department IN %@", departments];
-
 	NSArray *people = [Person findAllWithPredicate:peopleFilter];
 
 #### Returning an `NSFetchRequest`
 
 	NSPredicate *peopleFilter = [NSPredicate predicateWithFormat:@"Department IN %@", departments];
-
 	NSArray *people = [Person fetchAllWithPredicate:peopleFilter];
 
 For each of these single line calls, a full stack of `NSFetchRequest`, `NSSortDescriptor`s, and a simple default error handling scheme (i.e., logging to the console) is created.
@@ -99,26 +97,13 @@ For each of these single line calls, a full stack of `NSFetchRequest`, `NSSortDe
 
 #### Find the Number of Entities
 
-You can also perform a count of entities in your store, that will be performed on the Store
+You can also perform a count of entities in your store, that will be performed on the store:
 
-	NSNumber *count = [Person numberOfEntities];
+	NSNumber *count = [Person countOfEntities];
 
 Or, if you’re looking for a count of entities based on a predicate or some filter:
 
-	NSNumber *count = [Person numberOfEntitiesWithPredicate:...];
-	
-There are also counterpart methods which return `NSUInteger` rather than `NSNumber`s:
-
-    - (NSUInteger) countOfEntities
-    - (NSUInteger) countOfEntitiesWithContext:(NSManagedObjectContext *)
-    - (NSUInteger) countOfEntitiesWithPredicate:(NSPredicate *)
-    - (NSUInteger) countOfEntitiesWithPredicate:(NSPredicate *) inContext:(NSManagedObjectContext *)
-
-#### Aggregate Operations
-
-    NSPredicate *prediate = [NSPredicate predicateWithFormat:@"diaryEntry.date == %@", today];
-    int totalFat = [[CTFoodDiaryEntry aggregateOperation:@"sum:" onAttribute:@"fatColories" withPredicate:predicate] intValue];
-    int fattest  = [[CTFoodDiaryEntry aggregateOperation:@"max:" onAttribute:@"fatColories" withPredicate:predicate] intValue];
+	NSNumber *count = [Person countOfEntitiesWithPredicate:...];
 
 #### Finding from a different context
 
@@ -130,7 +115,7 @@ All find, fetch and request methods have an inContext: method parameter
 
 	...
 
-	Person *personFromContext = [Person findFirstByAttribute:@"lastName" withValue:@"Gump" inContext:someOtherContext];
+	Person *personFromContext = [Person findFirstWhere:@"lastName" equals:@"Gump" inContext:someOtherContext];
 
 	...
 
@@ -141,7 +126,7 @@ All find, fetch and request methods have an inContext: method parameter
 
 When you need to create a new instance of an Entity, use:
 
-	Person *myNewPersonInstance = [Person createEntity];
+	Person *myNewPersonInstance = [Person create];
 
 or, to specify a context:
 
@@ -153,7 +138,7 @@ or, to specify a context:
 To delete a single entity:
 
 	Person *p = ...;
-	[p deleteEntity];
+	[p delete];
 
 or, to specify a context:
 
