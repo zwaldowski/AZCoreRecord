@@ -52,7 +52,7 @@
 - (void) testUpdateMappedEntity
 {
 	SingleEntityRelatedToMappedEntityUsingDefaults *testEntity = 
-	[SingleEntityRelatedToMappedEntityUsingDefaults findFirstWhere:@"singleEntityRelatedToMappedEntityUsingDefaultsID" isEqualTo:[NSNumber numberWithInt:24]];
+	[SingleEntityRelatedToMappedEntityUsingDefaults findFirstWhere:@"singleEntityRelatedToMappedEntityUsingDefaultsID" equals:[NSNumber numberWithInt:24]];
 	
 	[testEntity updateValuesFromDictionary:self.testEntityData];
 	

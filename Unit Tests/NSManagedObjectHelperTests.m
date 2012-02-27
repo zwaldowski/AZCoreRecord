@@ -50,7 +50,7 @@
 
 - (void) testCreateRequestForFirstEntity
 {
-	NSFetchRequest *testRequest = [SingleRelatedEntity requestFirstWhere:@"mappedStringAttribute" isEqualTo:nil];
+	NSFetchRequest *testRequest = [SingleRelatedEntity requestFirstWhere:@"mappedStringAttribute" equals:nil];
 	
 	assertThat([[testRequest entity] name], is(equalTo(NSStringFromClass([SingleRelatedEntity class]))));
 	assertThatInteger([testRequest fetchLimit], is(equalToInteger(1)));

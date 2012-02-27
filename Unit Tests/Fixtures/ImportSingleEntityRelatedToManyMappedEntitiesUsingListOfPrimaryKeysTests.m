@@ -72,7 +72,7 @@
 - (void) testDataUpdateWithoutLookupData
 {
 	SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity =
-	[SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey findFirstWhere:@"testPrimaryKey" isEqualTo:[NSNumber numberWithInt:84]];
+	[SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey findFirstWhere:@"testPrimaryKey" equals:[NSNumber numberWithInt:84]];
 	
 	assertThat(testEntity, is(notNilValue()));
 	

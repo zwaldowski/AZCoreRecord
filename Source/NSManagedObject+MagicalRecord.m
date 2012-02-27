@@ -113,63 +113,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	defaultBatchSize = newBatchSize;
 }
 
-#pragma mark - Fetch Request Helpers
-
-+ (NSFetchRequest *) createFetchRequest
-{
-	return [self createFetchRequestInContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-+ (NSFetchRequest *) createFetchRequestInContext: (NSManagedObjectContext *) context
-{
-	NSFetchRequest *request = [NSFetchRequest new];
-	request.entity = [self entityDescriptionInContext: context];
-	return request;	
-}
-
-+ (NSArray *) executeFetchRequest: (NSFetchRequest *) request 
-{
-	return [self executeFetchRequest: request inContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-+ (NSArray *) executeFetchRequest: (NSFetchRequest *) request inContext: (NSManagedObjectContext *) context
-{
-	NSError *error = nil;
-	NSArray *results = [context executeFetchRequest: request error: &error];
-	[MagicalRecord handleError: error];
-	
-	return results;
-}
-
-+ (id) executeFetchRequestAndReturnFirstObject: (NSFetchRequest *) request
-{
-	return [self executeFetchRequestAndReturnFirstObject: request inContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-+ (id) executeFetchRequestAndReturnFirstObject: (NSFetchRequest *) request inContext: (NSManagedObjectContext *) context
-{
-	request.fetchLimit = 1;
-	
-	NSArray *results = [self executeFetchRequest: request inContext: context];
-	return [results lastObject];
-}
-
-+ (NSArray *) ascendingSortDescriptors: (NSArray *) attributesToSortBy
-{
-	return [self sortAscending: YES attributes: attributesToSortBy];
-}
-+ (NSArray *) descendingSortDescriptors: (NSArray *) attributesToSortBy
-{
-	return [self sortAscending: NO attributes: attributesToSortBy];
-}
-+ (NSArray *) sortAscending: (BOOL) ascending attributes: (NSArray *) attributesToSortBy
-{
-	NSMutableArray * attributes = [NSMutableArray array];
-	[attributesToSortBy enumerateObjectsUsingBlock: ^(NSString *attributeName, NSUInteger idx, BOOL *stop) {
-		NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey: attributeName ascending: ascending];
-		[attributes addObject: sortDescriptor];
-	}];
-	
-	return [attributes copy];
-}
-
 #pragma mark - Entity Description
 
 + (NSArray *) propertiesNamed: (NSArray *) properties
@@ -183,32 +126,33 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 + (NSEntityDescription *) entityDescription
 {
-	return [self entityDescriptionInContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self entityDescriptionInContext: nil];
 }
 + (NSEntityDescription *) entityDescriptionInContext: (NSManagedObjectContext *) context
 {
+	if (!context)
+		context = [NSManagedObjectContext contextForCurrentThread];
+	
 	if ([self respondsToSelector: @selector(entityInManagedObjectContext:)]) 
-	{
-		NSEntityDescription *entity = [self performSelector: @selector(entityInManagedObjectContext:) withObject: context];
-		return entity;
-	}
-	else
-	{
-		NSString *entityName = NSStringFromClass([self class]);
-		return [NSEntityDescription entityForName: entityName inManagedObjectContext: context];
-	}
+		return [self performSelector: @selector(entityInManagedObjectContext:) withObject: context];
+
+	NSString *entityName = NSStringFromClass([self class]);
+	return [NSEntityDescription entityForName: entityName inManagedObjectContext: context];
 }
 
 #pragma mark - Entity Creation
 
 + (id) create
 {	
-	return [self createInContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self createInContext: nil];
 }
 + (id) createInContext: (NSManagedObjectContext *) context
 {
+	if (!context)
+		context = [NSManagedObjectContext contextForCurrentThread];
+	
 	if ([self respondsToSelector: @selector(insertInManagedObjectContext:)]) 
-		return [self performSelector: @selector(insertInManagedObjectContext:) withObject: context];
+		return [self insertInManagedObjectContext: context];
 
 	NSString *entityName = NSStringFromClass([self class]);
 	return [NSEntityDescription insertNewObjectForEntityForName: entityName inManagedObjectContext: context];
@@ -225,24 +169,23 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	NSFetchRequest *request = [self requestAllWithPredicate: predicate inContext: context];
 	request.includesPropertyValues = NO;
 	
-	NSArray *objects = [self executeFetchRequest: request inContext: context];
-	[objects enumerateObjectsUsingBlock: ^(NSManagedObject *obj, NSUInteger idx, BOOL *stop) {
-		[obj deleteInContext: context];
-	}];
+	NSArray *objects = [context executeFetchRequest: request error: NULL];
+	[objects makeObjectsPerformSelector:@selector(deleteInContext:) withObject:context];
 	
 	return YES;
 }
 
 + (BOOL) truncateAll
 {
-	return [self truncateAllInContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self truncateAllInContext: nil];
 }
 + (BOOL) truncateAllInContext: (NSManagedObjectContext *) context
 {
-	NSArray *entities = [self findAllInContext: context];
-	[entities enumerateObjectsUsingBlock: ^(NSManagedObject *obj, NSUInteger idx, BOOL *stop) {
-		[obj deleteInContext: context];
-	}];
+	if (!context)
+		context = [NSManagedObjectContext defaultContext];
+	
+	NSArray *objects = [self findAllInContext: context];
+	[objects makeObjectsPerformSelector:@selector(deleteInContext:) withObject:context];
 
 	return YES;
 }
@@ -251,26 +194,24 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 + (NSUInteger) countOfEntities
 {
-	return [self countOfEntitiesInContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self countOfEntitiesWithPredicate: nil inContext: nil];
 }
 + (NSUInteger) countOfEntitiesInContext: (NSManagedObjectContext *) context
 {
-	NSError *error = nil;
-	NSUInteger count = [context countForFetchRequest: [self createFetchRequestInContext: context] error: &error];
-	[MagicalRecord handleError:error];
-	return count;
+	return [self countOfEntitiesWithPredicate: nil inContext: context];
 }
 
 + (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter
 {
-	return [self countOfEntitiesWithPredicate: searchFilter inContext: [NSManagedObjectContext defaultContext]];
+	return [self countOfEntitiesWithPredicate: searchFilter inContext: nil];
 }
-+ (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter inContext: (NSManagedObjectContext *) context;
++ (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter inContext: (NSManagedObjectContext *) context
 {
-	NSError *error = nil;
-	NSFetchRequest *request = [self createFetchRequestInContext: context];
-	request.predicate = searchFilter;
+	if (!context)
+		context = [NSManagedObjectContext defaultContext];
 	
+	NSError *error = nil;
+	NSFetchRequest *request = [self requestAllWithPredicate: searchFilter inContext: context];
 	NSUInteger count = [context countForFetchRequest: request error: &error];
 	[MagicalRecord handleError: error];
 	return count;
@@ -280,65 +221,57 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 + (NSFetchRequest *) requestFirst
 {
-	return [self requestFirstInContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self requestFirstSortedBy: nil ascending: NO predicate: nil];
 }
 + (NSFetchRequest *) requestFirstInContext: (NSManagedObjectContext *) context
 {
-	NSFetchRequest *request = [self requestAllInContext: context];
-	request.fetchLimit = 1;
-	return request;
+	return [self requestFirstSortedBy: nil ascending: NO predicate: nil inContext: context];
 }
 
 + (NSFetchRequest *) requestFirstWithPredicate: (NSPredicate *) searchTerm
 {
-	return [self requestFirstWithPredicate: searchTerm inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self requestFirstSortedBy: nil ascending: NO predicate: searchTerm];
 }
 + (NSFetchRequest *) requestFirstWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
 {
-	NSFetchRequest *request = [self requestAllWithPredicate: searchTerm inContext: context];
-	request.fetchLimit = 1;
-	return request;
+	return [self requestFirstSortedBy: nil ascending: NO predicate: searchTerm inContext: context];
 }
 
-+ (NSFetchRequest *) requestFirstWhere: (NSString *) property isEqualTo: (id) searchValue
++ (NSFetchRequest *) requestFirstWhere: (NSString *) property equals: (id) searchValue
 {
-	return [self requestFirstWhere: property isEqualTo: searchValue inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self requestFirstWhere: property equals: searchValue sortedBy: nil ascending: NO];
+}
++ (NSFetchRequest *) requestFirstWhere: (NSString *) property equals: (id) searchValue inContext: (NSManagedObjectContext *) context
+{
+	return [self requestFirstWhere: property equals: searchValue sortedBy: nil ascending: NO inContext: context];
 }
 
-+ (NSFetchRequest *) requestFirstWhere: (NSString *) property isEqualTo: (id) searchValue inContext: (NSManagedObjectContext *) context
++ (NSFetchRequest *) requestFirstWhere: (NSString *) property equals: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
 {
-	NSFetchRequest *request = [self requestAllWhere: property isEqualTo: searchValue inContext: context];
-	request.fetchLimit = 1;
-	return request;
+	return [self requestFirstWhere: property equals: searchValue sortedBy: sortTerm ascending: ascending inContext: nil];
 }
-+ (NSFetchRequest *) requestFirstWhere: (NSString *) property isEqualTo: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
++ (NSFetchRequest *) requestFirstWhere: (NSString *) property equals: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
 {
-	return [self requestFirstWhere: property isEqualTo: searchValue sortedBy: sortTerm ascending: ascending inContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-+ (NSFetchRequest *) requestFirstWhere: (NSString *) property isEqualTo: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
-{
-	NSFetchRequest *request = [self requestAllWhere: property isEqualTo: searchValue sortedBy: sortTerm ascending: ascending inContext: context];
+	NSFetchRequest *request = [self requestAllWhere: property equals: searchValue sortedBy: sortTerm ascending: ascending inContext: context];
 	request.fetchLimit = 1;
 	return request;
 }
 
 + (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
 {
-	return [self requestFirstSortedBy: sortTerm ascending: ascending inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self requestFirstSortedBy: sortTerm ascending: ascending predicate: nil];
 }
 + (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
 {
-	NSFetchRequest *request = [self requestAllSortedBy: sortTerm ascending: ascending inContext: context];
-	request.fetchLimit = 1;
-	return request;
+	return [self requestFirstSortedBy: sortTerm ascending: ascending predicate: nil inContext: context];
 }
-+ (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm
++ (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm
 {
-	return [self requestFirstSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self requestFirstSortedBy: sortTerm ascending: ascending predicate: searchTerm inContext: nil];
 }
-+ (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
++ (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
 {
-	NSFetchRequest *request = [self requestAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: context];
+	NSFetchRequest *request = [self requestAllSortedBy: sortTerm ascending: ascending predicate: searchTerm inContext: context];
 	request.fetchLimit = 1;
 	return request;
 }
@@ -347,62 +280,66 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 + (NSFetchRequest *) requestAll
 {
-	return [self createFetchRequestInContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self requestAllSortedBy: nil ascending: NO predicate: nil];
 }
 + (NSFetchRequest *) requestAllInContext: (NSManagedObjectContext *) context
 {
-	return [self createFetchRequestInContext: context];
+	return [self requestAllSortedBy: nil ascending: NO predicate: nil inContext: context];
 }
 
-+ (NSFetchRequest *) requestAllWithPredicate: (NSPredicate *) searchTerm
++ (NSFetchRequest *) requestAllWithPredicate: (NSPredicate *) predicate
 {
-	return [self requestAllWithPredicate:searchTerm inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self requestAllSortedBy: nil ascending: NO predicate: predicate];
 }
-+ (NSFetchRequest *) requestAllWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
++ (NSFetchRequest *) requestAllWithPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context
 {
-	NSFetchRequest *request = [self createFetchRequestInContext: context];
-	request.predicate = searchTerm;
-
-	return request;
+	return [self requestAllSortedBy: nil ascending: NO predicate: predicate inContext: context];
 }
 
-+ (NSFetchRequest *) requestAllWhere: (NSString *) property isEqualTo: (id) value
++ (NSFetchRequest *) requestAllWhere: (NSString *) property equals: (id) value
 {
-	return [self requestAllWhere: property isEqualTo: value inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self requestAllWhere: property equals: value sortedBy: nil ascending: NO];
 }
-+ (NSFetchRequest *) requestAllWhere: (NSString *) property isEqualTo: (id) value inContext: (NSManagedObjectContext *) context
++ (NSFetchRequest *) requestAllWhere: (NSString *) property equals: (id) value inContext: (NSManagedObjectContext *) context
 {
-	return [self requestAllWithPredicate: [NSPredicate predicateWithFormat: @"%K = %@", property, value] inContext: context];
+	return [self requestAllWhere: property equals: value sortedBy: nil ascending: NO inContext: context];
 }
-+ (NSFetchRequest *) requestAllWhere: (NSString *) property isEqualTo: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
++ (NSFetchRequest *) requestAllWhere: (NSString *) property equals: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
 {
-	return [self requestAllWhere: property isEqualTo: value sortedBy: sortTerm ascending: ascending inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self requestAllWhere: property equals: value sortedBy: sortTerm ascending: ascending inContext: nil];
 }
-+ (NSFetchRequest *) requestAllWhere: (NSString *) property isEqualTo: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
++ (NSFetchRequest *) requestAllWhere: (NSString *) property equals: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
 {
-	return [self requestAllSortedBy: sortTerm ascending: ascending withPredicate: [NSPredicate predicateWithFormat: @"%K = %@", property, value] inContext: context];
+	NSPredicate *predicate = [NSPredicate predicateWithFormat: @"%K = %@", property, value];
+	return [self requestAllSortedBy: sortTerm ascending: ascending predicate: predicate inContext: context];
 }
 
 + (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
 {
-	return [self requestAllSortedBy: sortTerm ascending: ascending withPredicate: nil];
+	return [self requestAllSortedBy: sortTerm ascending: ascending predicate: nil];
 }
 + (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
 {
-	return [self requestAllSortedBy: sortTerm ascending: ascending withPredicate: nil inContext: context];
+	return [self requestAllSortedBy: sortTerm ascending: ascending predicate: nil inContext: context];
 }
-+ (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm
++ (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm
 {
-	return [self requestAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self requestAllSortedBy: sortTerm ascending: ascending predicate: searchTerm inContext: nil];
 }
-+ (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
++ (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
 {
-	NSFetchRequest *request = [self createFetchRequestInContext: context];
+	if (!context)
+		context = [NSManagedObjectContext contextForCurrentThread];
+	
+	NSFetchRequest *request = [NSFetchRequest new];
+	request.entity = [self entityDescriptionInContext: context];
 	request.predicate = searchTerm;
 	request.fetchBatchSize = self.defaultBatchSize;
 
-	NSSortDescriptor *sortBy = [NSSortDescriptor sortDescriptorWithKey: sortTerm ascending: ascending];
-	request.sortDescriptors = [NSArray arrayWithObject: sortBy];
+	if (searchTerm) {
+		NSSortDescriptor *sortBy = [NSSortDescriptor sortDescriptorWithKey: sortTerm ascending: ascending];
+		request.sortDescriptors = [NSArray arrayWithObject: sortBy];
+	}
 	
 	return request;
 }
@@ -411,130 +348,137 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 + (id) findFirst
 {
-	return [self findFirstInContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findFirstSortedBy: nil ascending: NO predicate: nil];
 }
 + (id) findFirstInContext: (NSManagedObjectContext *) context
 {
-	return [self executeFetchRequestAndReturnFirstObject: [self requestAll] inContext: context];
+	return [self findFirstSortedBy: nil ascending: NO predicate: nil inContext: context];
 }
 
 + (id) findFirstWithPredicate: (NSPredicate *) searchTerm
 {
-	return [self findFirstWithPredicate: searchTerm inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findFirstSortedBy: nil ascending: NO predicate: searchTerm];
 }
 + (id) findFirstWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
 {
-	return [self executeFetchRequestAndReturnFirstObject: [self requestAllWithPredicate: searchTerm inContext: context]];
-}
-+ (id) findFirstWithPredicate: (NSPredicate *) searchTerm andRetrieveAttributes: (NSArray *) attributes
-{
-	return [self findFirstWithPredicate: searchTerm andRetrieveAttributes: attributes inContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-+ (id) findFirstWithPredicate: (NSPredicate *) searchTerm andRetrieveAttributes: (NSArray *) attributes inContext: (NSManagedObjectContext *) context
-{
-	NSFetchRequest *request = [self requestFirstWithPredicate: searchTerm inContext: context];
-	request.propertiesToFetch = attributes;
-	
-	return [self executeFetchRequestAndReturnFirstObject: request inContext: context];
+	return [self findFirstSortedBy: nil ascending: NO predicate: searchTerm inContext: context];
 }
 
-+ (id) findFirstWhere: (NSString *) property isEqualTo: (id) searchValue
++ (id) findFirstWithPredicate: (NSPredicate *) searchTerm attributes: (NSArray *) attributes
 {
-	return [self findFirstWhere: property isEqualTo: searchValue inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findFirstSortedBy: nil ascending: NO predicate: searchTerm attributes: attributes];
 }
-+ (id) findFirstWhere: (NSString *) property isEqualTo: (id) searchValue inContext: (NSManagedObjectContext *) context
++ (id) findFirstWithPredicate: (NSPredicate *) searchTerm attributes: (NSArray *) attributes inContext: (NSManagedObjectContext *) context
 {
-	return [self executeFetchRequestAndReturnFirstObject: [self requestAllWhere: property isEqualTo: searchValue inContext: context] inContext: context];
+	return [self findFirstSortedBy: nil ascending: NO predicate: searchTerm attributes: attributes inContext: context];
 }
-+ (id) findFirstWhere: (NSString *) property isEqualTo: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
+
++ (id) findFirstWhere: (NSString *) property equals: (id) searchValue
 {
-	return [self findFirstWhere: property isEqualTo: searchValue sortedBy: sortTerm ascending: ascending inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findFirstWhere: property equals: searchValue sortedBy: nil ascending: NO];
 }
-+ (id) findFirstWhere: (NSString *) property isEqualTo: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
++ (id) findFirstWhere: (NSString *) property equals: (id) searchValue inContext: (NSManagedObjectContext *) context
 {
-	return [self executeFetchRequestAndReturnFirstObject: [self requestAllWhere: property isEqualTo: searchValue sortedBy: sortTerm ascending: ascending inContext: context] inContext: context];
+	return [self findFirstWhere: property equals: searchValue sortedBy: nil ascending: NO inContext: context];
+}
++ (id) findFirstWhere: (NSString *) property equals: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
+{
+	return [self findFirstWhere: property equals: searchValue sortedBy: sortTerm ascending: ascending inContext: nil];
+}
++ (id) findFirstWhere: (NSString *) property equals: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
+{
+	NSPredicate *predicate = [NSPredicate predicateWithFormat: @"%K = %@", property, searchValue];
+	return [self findFirstSortedBy: property ascending: NO predicate: predicate inContext: context];
 }
 
 + (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
 {
-	return [self findFirstSortedBy: sortTerm ascending: ascending inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findFirstSortedBy: sortTerm ascending: ascending predicate: nil attributes: nil];
 }
 + (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
 {
-	return [self executeFetchRequestAndReturnFirstObject: [self requestAllSortedBy: sortTerm ascending: ascending inContext: context] inContext: context];
+	return [self findFirstSortedBy: sortTerm ascending: ascending predicate: nil attributes: nil inContext: context];
 }
-+ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm
++ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm
 {
-	return [self findFirstSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findFirstSortedBy: sortTerm ascending: ascending predicate: searchTerm attributes: nil];
 }
-+ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
++ (id) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
 {
-	return [self executeFetchRequestAndReturnFirstObject: [self requestAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: context] inContext: context];
+	return [self findFirstSortedBy: sortTerm ascending: ascending predicate: searchTerm attributes: nil inContext: context];
 }
-+ (id) findFirstSortedBy: (NSString *) sortBy ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm attributesToRetrieve: (NSArray *) attributes
+
++ (id) findFirstSortedBy: (NSString *) sortBy ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm attributes: (NSArray *) attributes
 {
-	return [self findFirstSortedBy: sortBy ascending: ascending withPredicate: searchTerm attributesToRetrieve: attributes inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findFirstSortedBy: sortBy ascending: ascending predicate: searchTerm attributes: attributes inContext: nil];
 }
-+ (id) findFirstSortedBy: (NSString *) sortBy ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm attributesToRetrieve: (NSArray *) attributes inContext: (NSManagedObjectContext *) context
++ (id) findFirstSortedBy: (NSString *) sortBy ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm attributes: (NSArray *) attributes inContext: (NSManagedObjectContext *) context
 {
-	NSFetchRequest *request = [self requestFirstSortedBy: sortBy ascending: ascending withPredicate: searchTerm inContext: context];
+	NSFetchRequest *request = [self requestFirstSortedBy: sortBy ascending: ascending predicate: searchTerm inContext: context];
 	request.propertiesToFetch = attributes;
-	
-	return [self executeFetchRequestAndReturnFirstObject: request inContext: context];
+	NSArray *results = [context executeFetchRequest: request error: NULL];
+	if (!results.count)
+		return nil;
+	return [results lastObject];
 }
 
 #pragma mark - Array-fetching Fetch Request Convenience Methods
 
 + (NSArray *) findAll
 {
-	return [self findAllInContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findAllSortedBy: nil ascending: NO predicate: nil];
 }
 + (NSArray *) findAllInContext: (NSManagedObjectContext *) context
 {
-	return [self executeFetchRequest: [self requestAllInContext: context] inContext: context];
+	return [self findAllSortedBy: nil ascending: NO predicate: nil inContext: context];
 }
 
 + (NSArray *) findAllWithPredicate: (NSPredicate *) searchTerm
 {
-	return [self findAllWithPredicate: searchTerm inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findAllSortedBy: nil ascending: NO predicate: searchTerm];
 }
 + (NSArray *) findAllWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
 {
-	return [self executeFetchRequest: [self requestAllWithPredicate: searchTerm inContext: context] inContext: context];
+	return [self findAllSortedBy: nil ascending: NO predicate: searchTerm inContext: context];
 }
 
-+ (NSArray *) findAllWhere: (NSString *) property isEqualTo: (id) value
++ (NSArray *) findAllWhere: (NSString *) property equals: (id) value
 {
-	return [self findAllWhere: property isEqualTo: value inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findAllWhere: property equals: value sortedBy: nil ascending: NO];
 }
-+ (NSArray *) findAllWhere: (NSString *) property isEqualTo: (id) value inContext: (NSManagedObjectContext *) context
++ (NSArray *) findAllWhere: (NSString *) property equals: (id) value inContext: (NSManagedObjectContext *) context
 {
-	return [self executeFetchRequest: [self requestAllWhere: property isEqualTo: value inContext: context] inContext: context];
+	return [self findAllWhere: property equals: value sortedBy: nil ascending: NO inContext: context];
 }
-+ (NSArray *) findAllWhere: (NSString *) property isEqualTo: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
++ (NSArray *) findAllWhere: (NSString *) property equals: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
 {
-	return [self findAllWhere: property isEqualTo: value sortedBy: sortTerm ascending: ascending inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findAllWhere: property equals: value sortedBy: sortTerm ascending: ascending inContext: nil];
 }
-+ (NSArray *) findAllWhere: (NSString *) property isEqualTo: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
++ (NSArray *) findAllWhere: (NSString *) property equals: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
 {
-	return [self executeFetchRequest: [self requestAllWhere: property isEqualTo: value sortedBy: sortTerm ascending: ascending inContext: context] inContext: context];
+	NSPredicate *predicate = [NSPredicate predicateWithFormat: @"%K = %@", property, value];
+	return [self findAllSortedBy: nil ascending: NO predicate: predicate inContext: context];
 }
 
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
 {
-	return [self findAllSortedBy: sortTerm ascending: ascending inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findAllSortedBy: sortTerm ascending: ascending predicate: nil];
 }
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
 {
-	return [self executeFetchRequest: [self requestAllSortedBy: sortTerm ascending: ascending inContext: context] inContext: context];
+	return [self findAllSortedBy: sortTerm ascending: ascending predicate: nil inContext: context];
 }
-+ (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm
++ (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm
 {
-	return [self findAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self findAllSortedBy: sortTerm ascending: ascending predicate: searchTerm inContext: nil];
 }
-+ (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
++ (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
 {
-	return MRFetchExecute(context, [self requestAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: context]);
+	NSFetchRequest *request = [self requestAllSortedBy: sortTerm ascending: ascending predicate: searchTerm inContext: context];
+	NSError *error = nil;
+	NSArray *results = [context executeFetchRequest: request error: &error];
+	[MagicalRecord handleError: error];
+	return results;
 }
 
 @end

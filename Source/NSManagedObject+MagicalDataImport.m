@@ -180,7 +180,7 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 	NSString *primaryKeyName = [relationshipInfo.userInfo valueForKey: kMagicalRecordImportRelationshipPrimaryKey];
 	if (!primaryKeyName) primaryKeyName = primaryKeyNameFromString(relationshipInfo.destinationEntity.name);
 	
-	id object = [managedObjectClass findFirstWhere: primaryKeyName isEqualTo: relatedValue inContext: self.managedObjectContext];
+	id object = [managedObjectClass findFirstWhere: primaryKeyName equals: relatedValue inContext: self.managedObjectContext];
 	if ([singleRelatedObjectData isKindOfClass: [NSDictionary class]])
 		[object updateValuesFromDictionary: singleRelatedObjectData];
 	
@@ -363,7 +363,7 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 	NSString *lookupKey = [primaryAttribute.userInfo valueForKey: kMagicalRecordImportMapKey] ?: primaryAttribute.name;
 	id value = [objectData valueForKeyPath: lookupKey];
 	
-	NSManagedObject *managedObject = [self findFirstWhere: lookupKey isEqualTo: value inContext: context];
+	NSManagedObject *managedObject = [self findFirstWhere: lookupKey equals: value inContext: context];
 	if (!managedObject) managedObject = [self createInContext: context];
 	
 	[managedObject updateValuesFromDictionary: objectData];
