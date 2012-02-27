@@ -17,7 +17,7 @@
 }
 
 - (void) tearDown {
-	[MagicalRecord _cleanUp];
+	[MagicalRecord mr_cleanUp];
 }
 
 - (void) assertDefaultStack

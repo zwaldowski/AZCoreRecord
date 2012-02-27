@@ -30,38 +30,38 @@ static NSDictionary *mr_automaticLightweightMigrationOptions(void) {
 {
 	if (!_defaultCoordinator)
 	{
-		NSURL *storeURL = [MagicalRecord _stackStoreURL];
+		NSURL *storeURL = [MagicalRecord mr_stackStoreURL];
 		
 		if (!storeURL)
-			storeURL = [NSPersistentStore URLForStoreName:[MagicalRecord _stackStoreName]];
+			storeURL = [NSPersistentStore URLForStoreName:[MagicalRecord mr_stackStoreName]];
 		
 		if (!storeURL)
 			storeURL = [NSPersistentStore defaultLocalStoreURL];
 		
-		NSString *storeType = [MagicalRecord _stackShouldUseInMemoryStore] ? NSInMemoryStoreType : NSSQLiteStoreType;
+		NSString *storeType = [MagicalRecord mr_stackShouldUseInMemoryStore] ? NSInMemoryStoreType : NSSQLiteStoreType;
 		NSDictionary *options = [self _storeOptions];
 		
 		NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
 		
-		[self _setDefaultStoreCoordinator:psc];
+		[self mr_setDefaultStoreCoordinator:psc];
 	}
 	
 	return _defaultCoordinator;
 }
 
-+ (BOOL) _hasDefaultStoreCoordinator
++ (BOOL) mr_hasDefaultStoreCoordinator
 {
 	return !!_defaultCoordinator;
 }
-+ (void) _setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator
++ (void) mr_setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator
 {
 	_defaultCoordinator = coordinator;
 	
 	// NB: If `_defaultCoordinator` is nil, then `persistentStores` is also nil, so `count` returns 0
-	if (![NSPersistentStore _hasDefaultPersistentStore] && _defaultCoordinator.persistentStores.count)
+	if (![NSPersistentStore mr_hasDefaultPersistentStore] && _defaultCoordinator.persistentStores.count)
 	{
 		NSPersistentStore *defaultStore = [_defaultCoordinator.persistentStores objectAtIndex: 0];
-		[NSPersistentStore _setDefaultPersistentStore: defaultStore];
+		[NSPersistentStore mr_setDefaultPersistentStore: defaultStore];
 	}
 }
 
@@ -140,8 +140,8 @@ static NSDictionary *mr_automaticLightweightMigrationOptions(void) {
 #pragma mark - Ubiquity
 
 + (NSDictionary *)_storeOptions {
-	BOOL shouldAutoMigrate = [MagicalRecord _stackShouldAutoMigrateStore];
-	BOOL shouldUseCloud = ([MagicalRecord _stackUbiquityOptions] != nil);
+	BOOL shouldAutoMigrate = [MagicalRecord mr_stackShouldAutoMigrateStore];
+	BOOL shouldUseCloud = ([MagicalRecord mr_stackUbiquityOptions] != nil);
 	
 	NSMutableDictionary *options = shouldAutoMigrate || shouldUseCloud ? [NSMutableDictionary dictionary] : nil;
 	
@@ -149,7 +149,7 @@ static NSDictionary *mr_automaticLightweightMigrationOptions(void) {
 		[options addEntriesFromDictionary:mr_automaticLightweightMigrationOptions()];
 	
 	if (shouldUseCloud)
-		[options addEntriesFromDictionary:[MagicalRecord _stackUbiquityOptions]];
+		[options addEntriesFromDictionary:[MagicalRecord mr_stackUbiquityOptions]];
 	
 	return options;
 }

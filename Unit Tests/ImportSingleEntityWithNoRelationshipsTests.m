@@ -31,7 +31,7 @@
 
 - (void) tearDownClass
 {
-	[MagicalRecord _cleanUp];
+	[MagicalRecord mr_cleanUp];
 }
 
 - (void) testImportASingleEntity

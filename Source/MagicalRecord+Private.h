@@ -18,48 +18,48 @@ extern void mr_swizzle_support(Class cls, SEL oldSel, SEL newSel);
 
 @interface NSManagedObjectContext (MagicalRecordPrivate)
 
-+ (BOOL) _hasDefaultContext;
-+ (void) _setDefaultContext: (NSManagedObjectContext *) newDefault;
++ (BOOL) mr_hasDefaultContext;
++ (void) mr_setDefaultContext: (NSManagedObjectContext *) newDefault;
 
-- (void) _mr_setParentContext: (NSManagedObjectContext *) context;
-- (NSManagedObjectContext *) _mr_parentContext;
+- (void) mr_setParentContext: (NSManagedObjectContext *) context;
+- (NSManagedObjectContext *) mr_parentContext;
 
 @end
 
 @interface NSManagedObjectModel (MagicalRecordPrivate)
 
-+ (BOOL) _hasDefaultModel;
-+ (void) _setDefaultModel: (NSManagedObjectModel *) newModel;
++ (BOOL) mr_hasDefaultModel;
++ (void) mr_setDefaultModel: (NSManagedObjectModel *) newModel;
 
 @end
 
 @interface NSPersistentStore (MagicalRecordPrivate)
 
-+ (BOOL) _hasDefaultPersistentStore;
-+ (void) _setDefaultPersistentStore: (NSPersistentStore *) store;
++ (BOOL) mr_hasDefaultPersistentStore;
++ (void) mr_setDefaultPersistentStore: (NSPersistentStore *) store;
 
 @end
 
 @interface NSPersistentStoreCoordinator (MagicalRecordPrivate)
 
-+ (BOOL) _hasDefaultStoreCoordinator;
-+ (void) _setDefaultStoreCoordinator: (NSPersistentStoreCoordinator *)coordinator;
++ (BOOL) mr_hasDefaultStoreCoordinator;
++ (void) mr_setDefaultStoreCoordinator: (NSPersistentStoreCoordinator *)coordinator;
 
-+ (NSDictionary *)_storeOptions;
-- (void) _setUbiquityEnabled:(BOOL)enabled;
++ (NSDictionary *) mr_storeOptions;
+- (void) mr_setUbiquityEnabled:(BOOL)enabled;
 
 @end
 
 @interface MagicalRecord (MagicalRecordPrivate)
 
-+ (void) _cleanUp;
++ (void) mr_cleanUp;
 
-+ (BOOL) _stackShouldAutoMigrateStore;
-+ (BOOL) _stackShouldUseInMemoryStore;
-+ (NSString *) _stackStoreName;
-+ (NSURL *) _stackStoreURL;
-+ (NSString *) _stackModelName;
-+ (NSURL *) _stackModelURL;
-+ (NSDictionary *) _stackUbiquityOptions;
++ (BOOL) mr_stackShouldAutoMigrateStore;
++ (BOOL) mr_stackShouldUseInMemoryStore;
++ (NSString *) mr_stackStoreName;
++ (NSURL *) mr_stackStoreURL;
++ (NSString *) mr_stackModelName;
++ (NSURL *) mr_stackModelURL;
++ (NSDictionary *) mr_stackUbiquityOptions;
 
 @end

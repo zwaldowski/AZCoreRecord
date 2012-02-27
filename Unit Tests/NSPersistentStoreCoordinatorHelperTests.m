@@ -12,7 +12,7 @@
 @implementation NSPersistentStoreCoordinatorHelperTests
 
 - (void)tearDown {
-	[MagicalRecord _cleanUp];
+	[MagicalRecord mr_cleanUp];
 	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:@"TestStore.sqlite"];
 	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 }

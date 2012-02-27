@@ -54,13 +54,13 @@ extern void mr_swizzle_support(Class cls, SEL oldSel, SEL newSel) {
 #pragma mark - Stack settings
 
 static void mr_resetStoreCoordinator(void) {
-	if ([NSPersistentStoreCoordinator _hasDefaultStoreCoordinator])
-		[NSPersistentStoreCoordinator _setDefaultStoreCoordinator:nil];
-	if ([NSManagedObjectContext _hasDefaultContext])
-		[NSManagedObjectContext _setDefaultContext:nil];
+	if ([NSPersistentStoreCoordinator mr_hasDefaultStoreCoordinator])
+		[NSPersistentStoreCoordinator mr_setDefaultStoreCoordinator:nil];
+	if ([NSManagedObjectContext mr_hasDefaultContext])
+		[NSManagedObjectContext mr_setDefaultContext:nil];
 }
 
-+ (BOOL)_stackShouldAutoMigrateStore
++ (BOOL)mr_stackShouldAutoMigrateStore
 {
 	return stackShouldAutoMigrate;
 }
@@ -70,7 +70,7 @@ static void mr_resetStoreCoordinator(void) {
 	mr_resetStoreCoordinator();
 }
 
-+ (BOOL)_stackShouldUseInMemoryStore
++ (BOOL)mr_stackShouldUseInMemoryStore
 {
 	return stackShouldUseInMemoryStore;
 }
@@ -80,7 +80,7 @@ static void mr_resetStoreCoordinator(void) {
 	mr_resetStoreCoordinator();
 }
 
-+ (NSString *)_stackStoreName
++ (NSString *)mr_stackStoreName
 {
 	if (!stackStoreName.pathExtension)
 		return [stackStoreName stringByAppendingPathExtension:@"sqlite"];
@@ -92,7 +92,7 @@ static void mr_resetStoreCoordinator(void) {
 	mr_resetStoreCoordinator();
 }
 
-+ (NSURL *)_stackStoreURL
++ (NSURL *)mr_stackStoreURL
 {
 	return stackStoreURL;
 }
@@ -102,38 +102,41 @@ static void mr_resetStoreCoordinator(void) {
 	mr_resetStoreCoordinator();
 }
 
-+ (NSString *)_stackModelName
++ (NSString *)mr_stackModelName
 {
 	return stackModelName;
 }
 + (void)setStackModelName:(NSString *)name
 {
 	stackModelName = [name copy];
-	[self _cleanUp];
+	[self mr_cleanUp];
 }
 
-+ (NSURL *)_stackModelURL
++ (NSURL *)mr_stackModelURL
 {
 	return stackModelURL;
 }
 + (void)setStackModelURL:(NSURL *)URL
 {
 	stackModelURL = URL;
-	[self _cleanUp];
+	[self mr_cleanUp];
 }
 
-#if defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && defined(__MAC_10_4)
-+ (void)setUpStackWithManagedDocument: (NSPersistentDocument *) managedDocument
-#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && defined(__IPHONE_5_0)
-+ (void)setUpStackWithManagedDocument: (UIManagedDocument *) managedDocument
-{
-	[NSManagedObjectModel _setDefaultModel: managedDocument.managedObjectModel];
-	[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: managedDocument.managedObjectContext.persistentStoreCoordinator];
-	[NSManagedObjectContext _setDefaultContext: managedDocument.managedObjectContext];
-}
++ (void)setUpStackWithManagedDocument: (id) managedDocument {
+	Class documentClass = NULL;
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+	documentClass = NSClassFromString(@"UIManagedDocument");
+#else
+	documentClass = NSClassFromString(@"NSPersistentDocument");
 #endif
+	NSAssert(documentClass, @"Not available on this OS.");
+	NSParameterAssert([managedDocument isKindOfClass:documentClass]);
+	[NSManagedObjectModel mr_setDefaultModel: [managedDocument managedObjectModel]];
+	[NSPersistentStoreCoordinator mr_setDefaultStoreCoordinator: [[managedDocument managedObjectContext] persistentStoreCoordinator]];
+	[NSManagedObjectContext mr_setDefaultContext: [managedDocument managedObjectContext]];
+}
 
-+ (NSDictionary *) _stackUbiquityOptions
++ (NSDictionary *) mr_stackUbiquityOptions
 {
 	return stackUbiquityOptions;
 }
@@ -143,7 +146,7 @@ static void mr_resetStoreCoordinator(void) {
 	mr_resetStoreCoordinator();
 }
 
-+ (void) _cleanUp
++ (void) mr_cleanUp
 {
 	errorHandlerTarget = nil;
 	errorHandlerBlock = NULL;
@@ -159,15 +162,15 @@ static void mr_resetStoreCoordinator(void) {
 	
 	if (backgroundQueue) dispatch_release(backgroundQueue), backgroundQueue = nil;
 	
-	if ([NSManagedObjectContext _hasDefaultContext])
-		[NSManagedObjectContext _setDefaultContext: nil];
+	if ([NSManagedObjectContext mr_hasDefaultContext])
+		[NSManagedObjectContext mr_setDefaultContext: nil];
 	
-	if ([NSManagedObjectModel _hasDefaultModel])
-		[NSManagedObjectModel _setDefaultModel: nil];
+	if ([NSManagedObjectModel mr_hasDefaultModel])
+		[NSManagedObjectModel mr_setDefaultModel: nil];
 	
-	if ([NSPersistentStoreCoordinator _hasDefaultStoreCoordinator]) {
-		[NSPersistentStore _setDefaultPersistentStore: nil];
-		[NSPersistentStoreCoordinator _setDefaultStoreCoordinator: nil];		
+	if ([NSPersistentStoreCoordinator mr_hasDefaultStoreCoordinator]) {
+		[NSPersistentStore mr_setDefaultPersistentStore: nil];
+		[NSPersistentStoreCoordinator mr_setDefaultStoreCoordinator: nil];		
 	}
 }
 
@@ -183,7 +186,7 @@ static void mr_resetStoreCoordinator(void) {
 	if (![self supportsUbiquity])
 		return NO;
 		
-	if (![self _stackUbiquityOptions].count)
+	if (![self mr_stackUbiquityOptions].count)
 		return NO;
 	
 	return stackShouldUseUbiquity;
@@ -195,15 +198,15 @@ static void mr_resetStoreCoordinator(void) {
 	
 	stackShouldUseUbiquity = enabled;
 	
-	if (![self _stackUbiquityOptions])
+	if (![self mr_stackUbiquityOptions])
 		[self setUbiquitousContainer:nil contentNameKey:nil cloudStorePathComponent:nil];
 	
-	if (![NSPersistentStoreCoordinator _hasDefaultStoreCoordinator])
+	if (![NSPersistentStoreCoordinator mr_hasDefaultStoreCoordinator])
 		return;
 	
 	NSPersistentStoreCoordinator *psc = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 	
-	if ([NSManagedObjectContext _hasDefaultContext]) {
+	if ([NSManagedObjectContext mr_hasDefaultContext]) {
 		NSManagedObjectContext *moc = [NSManagedObjectContext defaultContext];
 		if (enabled)
 			[moc startObservingUbiquitousChangesInCoordinator:psc];
@@ -211,7 +214,7 @@ static void mr_resetStoreCoordinator(void) {
 			[moc stopObservingUbiquitousChangesInCoordinator:psc];
 	}
 	
-	[psc _setUbiquityEnabled:enabled];
+	[psc mr_setUbiquityEnabled:enabled];
 }
 
 + (void)setUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key cloudStorePathComponent:(NSString *)pathComponent
@@ -310,10 +313,6 @@ static void mr_resetStoreCoordinator(void) {
 + (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block
 {
     [self saveDataWithOptions: options block: block success: NULL failure: NULL];
-}
-+ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block success: (MRBlock) callback
-{
-    [self saveDataWithOptions: options block: block success: callback failure:  NULL];
 }
 + (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback
 {

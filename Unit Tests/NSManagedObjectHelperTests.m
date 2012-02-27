@@ -14,14 +14,14 @@
 
 - (void) setUp
 {
-	[MagicalRecord _cleanUp];
+	[MagicalRecord mr_cleanUp];
 	[MagicalRecord setStackModelName:@"TestModel.momd"];
 	[MagicalRecord setStackShouldUseInMemoryStore:YES];
 }
 
 - (void) tearDown
 {
-	[MagicalRecord _cleanUp];
+	[MagicalRecord mr_cleanUp];
 }
 
 -(BOOL)shouldRunOnMainThread

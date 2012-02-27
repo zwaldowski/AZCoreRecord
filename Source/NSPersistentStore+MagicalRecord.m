@@ -18,11 +18,11 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 	return _defaultPersistentStore;
 }
 
-+ (BOOL) _hasDefaultPersistentStore
++ (BOOL) mr_hasDefaultPersistentStore
 {
 	return !!_defaultPersistentStore;
 }
-+ (void) _setDefaultPersistentStore: (NSPersistentStore *) store
++ (void) mr_setDefaultPersistentStore: (NSPersistentStore *) store
 {
 	_defaultPersistentStore = store;
 }

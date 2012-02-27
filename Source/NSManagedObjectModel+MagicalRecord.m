@@ -19,8 +19,8 @@ static NSManagedObjectModel *_defaultManagedObjectModel = nil;
 {
 	if (!_defaultManagedObjectModel)
 	{
-		NSURL *storeURL = [MagicalRecord _stackModelURL];
-		NSString *storeName = [MagicalRecord _stackModelName];
+		NSURL *storeURL = [MagicalRecord mr_stackModelURL];
+		NSString *storeName = [MagicalRecord mr_stackModelName];
 		
 		if (!storeURL && storeName)
 			_defaultManagedObjectModel = [self modelNamed:storeName];
@@ -33,11 +33,11 @@ static NSManagedObjectModel *_defaultManagedObjectModel = nil;
 	return _defaultManagedObjectModel;
 }
 
-+ (BOOL) _hasDefaultModel
++ (BOOL) mr_hasDefaultModel
 {
 	return !!_defaultManagedObjectModel;
 }
-+ (void) _setDefaultModel: (NSManagedObjectModel *) newModel
++ (void) mr_setDefaultModel: (NSManagedObjectModel *) newModel
 {
 	_defaultManagedObjectModel = newModel;
 }

@@ -28,7 +28,7 @@
 }
 
 - (void)tearDown {
-	[MagicalRecord _cleanUp];
+	[MagicalRecord mr_cleanUp];
 }
 
 - (Class) testEntityClass

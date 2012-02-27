@@ -113,14 +113,14 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 
 #pragma mark - Private Helper Methods
 
-- (NSManagedObject *) _createInstanceForEntity: (NSEntityDescription *) entityDescription withDictionary: (id) objectData
+- (NSManagedObject *) mr_createInstanceForEntity: (NSEntityDescription *) entityDescription withDictionary: (id) objectData
 {
 	NSManagedObject *relatedObject = [NSEntityDescription insertNewObjectForEntityForName: [entityDescription name] inManagedObjectContext: [self managedObjectContext]];
 	[relatedObject importValuesFromDictionary: objectData];
 	
 	return relatedObject;
 }
-- (NSManagedObject *) _findObjectForRelationship: (NSRelationshipDescription *) relationshipInfo withData: (id) singleRelatedObjectData
+- (NSManagedObject *) mr_findObjectForRelationship: (NSRelationshipDescription *) relationshipInfo withData: (id) singleRelatedObjectData
 {
 	if ([singleRelatedObjectData isKindOfClass: [NSManagedObject class]])
 	{
@@ -187,7 +187,7 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 	return object;
 }
 
-- (void) _addObject: (NSManagedObject *) relatedObject forRelationship: (NSRelationshipDescription *) relationshipInfo
+- (void) mr_addObject: (NSManagedObject *) relatedObject forRelationship: (NSRelationshipDescription *) relationshipInfo
 {
 	NSAssert2(relatedObject, @"Cannot add nil to %@ for attribute %@", NSStringFromClass([self class]), relationshipInfo.name);
 	NSAssert2([relatedObject.entity isKindOfEntity: relationshipInfo.destinationEntity], @"Related object entity %@ must be same as destination entity %@", relatedObject.entity.name, relationshipInfo.destinationEntity.name);
@@ -229,7 +229,7 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 		MRLog(@"Perform Selector Exception: %@", exception);
 	}
 }
-- (void) _setAttributes: (NSDictionary *) attributes forDictionary: (NSDictionary *) objectData
+- (void) mr_setAttributes: (NSDictionary *) attributes forDictionary: (NSDictionary *) objectData
 {
 	[attributes enumerateKeysAndObjectsUsingBlock: ^(NSString *attributeName, NSAttributeDescription *attributeInfo, BOOL *stop) {
 		NSString *key = [attributeInfo.userInfo valueForKey: kMagicalRecordImportMapKey] ?: attributeInfo.name;
@@ -272,7 +272,7 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 		[self setValue: value forKey: attributeName];
 	}];
 }
-- (void) _setRelationships: (NSDictionary *) relationships forDictionary: (NSDictionary *) relationshipData withBlock: (NSManagedObject *(^)(NSRelationshipDescription *, id)) setRelationship
+- (void) mr_setRelationships: (NSDictionary *) relationships forDictionary: (NSDictionary *) relationshipData withBlock: (NSManagedObject *(^)(NSRelationshipDescription *, id)) setRelationship
 {
 	[relationships enumerateKeysAndObjectsUsingBlock: ^(NSString *relationshipName, NSRelationshipDescription *relationshipInfo, BOOL *stop) {
 		NSString *lookupKey = [relationshipInfo.userInfo valueForKey: kMagicalRecordImportMapKey] ?: relationshipName;
@@ -286,11 +286,11 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 			for (id singleRelatedObjectData in relatedObjectData)
 			{
 				NSManagedObject *obj = setRelationship(relationshipInfo, singleRelatedObjectData);
-				[self _addObject: obj forRelationship: relationshipInfo];
+				[self mr_addObject: obj forRelationship: relationshipInfo];
 			}
 		} else {
 			NSManagedObject *obj = setRelationship(relationshipInfo, relatedObjectData);
-			[self _addObject: obj forRelationship: relationshipInfo];
+			[self mr_addObject: obj forRelationship: relationshipInfo];
 		}
 	}];
 }
@@ -315,14 +315,14 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 		NSDictionary *attributes = self.entity.attributesByName;
 		if (attributes.count)
 		{
-			[self _setAttributes: attributes forDictionary: objectData];
+			[self mr_setAttributes: attributes forDictionary: objectData];
 		}
 		
 		NSDictionary *relationships = self.entity.relationshipsByName;
 		if (relationships.count)
 		{
 			__unsafe_unretained NSManagedObject *weakSelf = self;
-			[self _setRelationships: relationships forDictionary: objectData withBlock: ^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData) {
+			[self mr_setRelationships: relationships forDictionary: objectData withBlock: ^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData) {
 				if ([objectData isKindOfClass: [NSDictionary class]])
 				{
 					NSEntityDescription *destination = relationshipInfo.destinationEntity;
@@ -337,10 +337,10 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 						if ([customDestination isKindOfEntity: destination]) destination = customDestination;
 					}
 					
-					return [weakSelf _createInstanceForEntity: destination withDictionary: objectData];
+					return [weakSelf mr_createInstanceForEntity: destination withDictionary: objectData];
 				}
 				
-				return [weakSelf _findObjectForRelationship: relationshipInfo withData: objectData];
+				return [weakSelf mr_findObjectForRelationship: relationshipInfo withData: objectData];
 			}];
 		}
 	}
@@ -378,15 +378,15 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 		NSDictionary *attributes = self.entity.attributesByName;
 		if (attributes.count)
 		{
-			[self _setAttributes: attributes forDictionary: objectData];
+			[self mr_setAttributes: attributes forDictionary: objectData];
 		}
 		
 		NSDictionary *relationships = self.entity.relationshipsByName;
 		if (relationships.count)
 		{
 			__unsafe_unretained NSManagedObject *weakSelf = self;
-			[self _setRelationships: relationships forDictionary: objectData withBlock: ^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData) {
-				NSManagedObject *relatedObject = [weakSelf _findObjectForRelationship: relationshipInfo withData: objectData];
+			[self mr_setRelationships: relationships forDictionary: objectData withBlock: ^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData) {
+				NSManagedObject *relatedObject = [weakSelf mr_findObjectForRelationship: relationshipInfo withData: objectData];
 				
 				if (relatedObject)
 				{
@@ -411,7 +411,7 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 					}
 				}
 				
-				return [weakSelf _createInstanceForEntity: destination withDictionary: objectData];
+				return [weakSelf mr_createInstanceForEntity: destination withDictionary: objectData];
 			}];
 		}
 	}

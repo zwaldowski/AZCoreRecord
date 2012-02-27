@@ -54,11 +54,7 @@ typedef enum {
 + (void)setStackModelName: (NSString *) name;
 + (void)setStackModelURL: (NSURL *) name;
 
-#if defined(__MAC_OS_X_VERSION_MIN_REQUIRED) && defined(__MAC_10_4)
-+ (void)setUpStackWithManagedDocument: (NSPersistentDocument *) managedDocument NS_AVAILABLE_MAC(10_4)
-#elif defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && defined(__IPHONE_5_0)
-+ (void)setUpStackWithManagedDocument: (UIManagedDocument *) managedDocument NS_AVAILABLE_IOS(5_0);
-#endif
++ (void)setUpStackWithManagedDocument: (id)managedObject NS_AVAILABLE(10_4, 5_0);
 
 #pragma mark - Ubiquity Support
 
@@ -87,7 +83,6 @@ typedef enum {
 + (void) saveDataInBackgroundWithBlock: (MRContextBlock) block completion: (MRBlock) callback;
 
 + (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block;
-+ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block success: (MRBlock) callback;
 + (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback;
 
 @end

@@ -18,7 +18,7 @@
 
 - (void)tearDown
 {
-	[MagicalRecord _cleanUp];
+	[MagicalRecord mr_cleanUp];
 }
 
 - (void) testCanCreateContextForCurrentThead

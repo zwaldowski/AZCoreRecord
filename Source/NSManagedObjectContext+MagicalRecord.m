@@ -72,20 +72,20 @@ static void *kParentContextKey;
 
 @dynamic parentContext;
 
-- (NSManagedObjectContext *) _mr_parentContext
+- (NSManagedObjectContext *) mr_parentContext
 {
 	NSManagedObjectContext *parentContext = objc_getAssociatedObject(self, &kParentContextKey);	
 	if (!parentContext && [self respondsToSelector: @selector(_mr_parentContext)])
 	{
-		return [self _mr_parentContext];
+		return [self mr_parentContext];
 	}
 	return parentContext;
 }
-- (void) _mr_setParentContext:(NSManagedObjectContext *)parentContext
+- (void) mr_setParentContext:(NSManagedObjectContext *)parentContext
 {
 	if ([parentContext respondsToSelector:@selector(concurrencyType)] && parentContext.concurrencyType != NSConfinementConcurrencyType)
 	{
-		[self _mr_setParentContext:parentContext];
+		[self mr_setParentContext:parentContext];
 		return;
 	}
 	
@@ -97,7 +97,7 @@ static void *kParentContextKey;
 
 #pragma mark - Default Contexts
 
-+ (BOOL) _hasDefaultContext
++ (BOOL) mr_hasDefaultContext
 {
 	return !!_defaultManagedObjectContext;
 }
@@ -117,7 +117,7 @@ static void *kParentContextKey;
         }
 		
 		newDefault.persistentStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
-		[self _setDefaultContext:newDefault];
+		[self mr_setDefaultContext:newDefault];
 	}
 	
 	return _defaultManagedObjectContext;
@@ -140,7 +140,7 @@ static void *kParentContextKey;
 	return threadContext;
 }
 
-+ (void) _setDefaultContext: (NSManagedObjectContext *) newDefault
++ (void) mr_setDefaultContext: (NSManagedObjectContext *) newDefault
 {
 	BOOL isUbiquitous = [MagicalRecord isUbiquityEnabled];
 	NSPersistentStoreCoordinator *coordinator = coordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
