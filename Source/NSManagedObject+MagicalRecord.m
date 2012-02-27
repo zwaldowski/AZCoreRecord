@@ -305,47 +305,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	return count;
 }
 
-+ (NSNumber *) numberOfEntities
-{
-	return [self numberOfEntitiesWithContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-+ (NSNumber *) numberOfEntitiesWithContext: (NSManagedObjectContext *) context
-{
-	return [NSNumber numberWithUnsignedInteger: [self countOfEntitiesWithContext: context]];
-}
-+ (NSNumber *) numberOfEntitiesWithPredicate: (NSPredicate *) searchTerm;
-{
-	return [self numberOfEntitiesWithPredicate: searchTerm inContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-+ (NSNumber *) numberOfEntitiesWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *)context
-{	
-	return [NSNumber numberWithUnsignedInteger: [self countOfEntitiesWithPredicate: searchTerm inContext: context]];
-}
-
-+ (NSNumber *) aggregateOperation: (NSString *) function onAttribute: (NSString *) attributeName withPredicate: (NSPredicate *) predicate
-{
-	return [self aggregateOperation: function onAttribute: attributeName withPredicate: predicate inContext: [NSManagedObjectContext defaultContext]];
-}
-+ (NSNumber *) aggregateOperation: (NSString *) function onAttribute: (NSString *) attributeName withPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context
-{
-	NSExpressionDescription *expression = [[NSExpressionDescription alloc] init];
-	expression.name = @"result";
-	
-	NSArray *arguments = [NSArray arrayWithObject: [NSExpression expressionForKeyPath: attributeName]];
-	expression.expression = [NSExpression expressionForFunction: function arguments: arguments];
-	
-	// determine the type of attribute, required to set the expression return type    
-	NSAttributeDescription *attributeDescription = [self.entityDescription.attributesByName objectForKey:attributeName];
-	expression.expressionResultType = attributeDescription.attributeType;
-	
-	NSFetchRequest *request = [self requestAllWithPredicate: predicate inContext: context];
-	request.propertiesToFetch = [NSArray arrayWithObject: expression];
-	request.resultType = NSDictionaryResultType;
-	
-	NSDictionary *resultsDictionary = [self executeFetchRequestAndReturnFirstObject: request];
-	return [resultsDictionary objectForKey: @"result"];
-}
-
 #pragma mark - Singleton-returning Fetch Request Factory Methods
 
 + (NSFetchRequest *) requestFirst

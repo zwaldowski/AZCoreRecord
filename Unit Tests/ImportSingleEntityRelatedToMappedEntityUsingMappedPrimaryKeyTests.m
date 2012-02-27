@@ -44,8 +44,8 @@
 	NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
 	assertThat([[testRelationship userInfo] valueForKey:kMagicalRecordImportMapKey], is(equalTo(@"someRandomAttributeName")));
 	
-	assertThat([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey numberOfEntities], is(equalToInteger(1)));
-	assertThat([MappedEntity numberOfEntities], is(equalToInteger(2)));
+	assertThatInteger([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey countOfEntities], is(equalToInteger(1)));
+	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(2)));
 	assertThat(testRelatedEntity, is(notNilValue()));
 	assertThat([testRelatedEntity sampleAttribute], is(containsString(@"sample json file")));	
 }
@@ -63,8 +63,8 @@
 	NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
 	assertThat([[testRelationship userInfo] valueForKey:kMagicalRecordImportMapKey], is(equalTo(@"someRandomAttributeName")));
 	
-	assertThat([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey numberOfEntities], is(equalToInteger(1)));
-	assertThat([MappedEntity numberOfEntities], is(equalToInteger(1)));
+	assertThatInteger([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey countOfEntities], is(equalToInteger(1)));
+	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(1)));
 	assertThat(testRelatedEntity, is(notNilValue()));
 	assertThat([testRelatedEntity sampleAttribute], is(containsString(@"sample json file")));
 }
@@ -81,8 +81,8 @@
 	NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
 	assertThat([[testRelationship userInfo] valueForKey:kMagicalRecordImportRelationshipPrimaryKey], is(equalTo(@"testMappedEntityID")));
 	
-	assertThat([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey numberOfEntities], is(equalToInteger(1)));
-	assertThat([MappedEntity numberOfEntities], is(equalToInteger(2)));
+	assertThatInteger([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey countOfEntities], is(equalToInteger(1)));
+	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(2)));
 	assertThat([testRelatedEntity testMappedEntityID], is(equalToInteger(42)));
 	assertThat([testRelatedEntity sampleAttribute], containsString(@"sample json file"));	
 }
@@ -100,7 +100,7 @@
 	NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
 	assertThat([[testRelationship userInfo] valueForKey:kMagicalRecordImportRelationshipPrimaryKey], is(equalTo(@"testMappedEntityID")));
 	
-	assertThat([MappedEntity numberOfEntities], is(equalToInteger(1)));
+	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(1)));
 	assertThat([testRelatedEntity testMappedEntityID], is(equalToInteger(42)));
 	assertThat([testRelatedEntity sampleAttribute], containsString(@"sample json file"));
 }

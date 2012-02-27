@@ -70,21 +70,10 @@
 
 #pragma mark - Entity Count
 
-+ (BOOL) hasAtLeastOneEntity;
-+ (BOOL) hasAtLeastOneEntityInContext: (NSManagedObjectContext *) context;
-
 + (NSUInteger) countOfEntities;
-+ (NSUInteger) countOfEntitiesWithContext: (NSManagedObjectContext *) context;
++ (NSUInteger) countOfEntitiesInContext: (NSManagedObjectContext *) context;
 + (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter;
 + (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter inContext: (NSManagedObjectContext *) context;
-
-+ (NSNumber *) numberOfEntities;
-+ (NSNumber *) numberOfEntitiesWithContext: (NSManagedObjectContext *) context;
-+ (NSNumber *) numberOfEntitiesWithPredicate: (NSPredicate *) searchTerm;
-+ (NSNumber *) numberOfEntitiesWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
-
-+ (NSNumber *) aggregateOperation: (NSString *) function onAttribute: (NSString *) attributeName withPredicate: (NSPredicate *) predicate;
-+ (NSNumber *) aggregateOperation: (NSString *) function onAttribute: (NSString *) attributeName withPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context;
 
 #pragma mark - Singleton-returning Fetch Request Factory Methods
 

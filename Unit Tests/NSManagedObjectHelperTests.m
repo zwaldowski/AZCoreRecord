@@ -106,7 +106,7 @@
 	NSInteger numberOfTestEntitiesToCreate = 20;
 	[self createSampleData:numberOfTestEntitiesToCreate];
 	
-	assertThat([SingleRelatedEntity numberOfEntities], is(equalToInteger(numberOfTestEntitiesToCreate)));
+	assertThatInteger([SingleRelatedEntity countOfEntities], is(equalToInteger(numberOfTestEntitiesToCreate)));
 }
 
 - (void) testCanSearchForNumberOfEntitiesWithPredicate
@@ -115,7 +115,7 @@
 	[self createSampleData:numberOfTestEntitiesToCreate];
 
 	NSPredicate *searchFilter = [NSPredicate predicateWithFormat:@"mappedStringAttribute = '1'"];
-	assertThat([SingleRelatedEntity numberOfEntitiesWithPredicate:searchFilter], is(equalToInteger(5)));
+	assertThatInteger([SingleRelatedEntity countOfEntitiesWithPredicate:searchFilter], is(equalToInteger(5)));
 
 }
 
