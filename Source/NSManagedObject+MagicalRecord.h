@@ -165,21 +165,4 @@
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm;
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-#pragma mark - Fetched Results Controller Convenience Methods
-
-#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-
-+ (void) performFetch: (NSFetchedResultsController *) controller;
-
-+ (NSFetchedResultsController *) fetchAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm groupBy: (NSString *) groupingKeyPath;
-+ (NSFetchedResultsController *) fetchAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm groupBy: (NSString *) groupingKeyPath inContext: (NSManagedObjectContext *) context;
-
-+ (NSFetchedResultsController *) fetchRequest: (NSFetchRequest *) request groupedBy: (NSString *) group;
-+ (NSFetchedResultsController *) fetchRequest: (NSFetchRequest *) request groupedBy: (NSString *) group inContext: (NSManagedObjectContext *) context;
-
-+ (NSFetchedResultsController *) fetchRequestAllGroupedBy: (NSString *) group withPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
-+ (NSFetchedResultsController *) fetchRequestAllGroupedBy: (NSString *) group withPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
-
-#endif
-
 @end

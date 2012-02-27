@@ -21,6 +21,7 @@ typedef void (^MRErrorBlock)(NSError *);
 #import "NSManagedObjectModel+MagicalRecord.h"
 #import "NSPersistentStore+MagicalRecord.h"
 #import "NSManagedObject+MagicalDataImport.h"
+#import "NSFetchedResultsController+MagicalRecord.h"
 
 #ifdef MR_LOGGING
 	#define MRLog(...) NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat: __VA_ARGS__])

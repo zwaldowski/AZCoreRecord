@@ -638,66 +638,7 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 }
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
 {
-	return [self executeFetchRequest: [self requestAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: context] inContext: context];
+	return MRFetchExecute(context, [self requestAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: context]);
 }
-
-#pragma mark - Fetched results controllers
-
-#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-
-+ (void) performFetch: (NSFetchedResultsController *) controller
-{
-	NSError *error = nil;
-    [controller performFetch: &error];
-    [MagicalRecord handleError: error];
-}
-
-+ (NSFetchedResultsController *) fetchAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm groupBy: (NSString *) groupingKeyPath
-{
-	return [self fetchAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm groupBy: groupingKeyPath inContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-+ (NSFetchedResultsController *) fetchAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending withPredicate: (NSPredicate *) searchTerm groupBy: (NSString *) groupingKeyPath inContext: (NSManagedObjectContext *) context
-{
-	NSFetchedResultsController *controller = [self fetchAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm groupBy: groupingKeyPath inContext: context];
-	[self performFetch: controller];
-	return controller;
-}
-
-+ (NSFetchedResultsController *) fetchRequest: (NSFetchRequest *) request groupedBy: (NSString *) group
-{
-	return [self fetchRequest: request groupedBy: group inContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-+ (NSFetchedResultsController *) fetchRequest: (NSFetchRequest *) request groupedBy: (NSString *) group inContext: (NSManagedObjectContext *) context
-{
-#if TARGET_IPHONE_SIMULATOR
-	NSString *cacheName = nil;
-#else
-	NSString *entityName = [self entityDescriptionInContext: context].name;
-	NSString *cacheName = [NSString stringWithFormat: @"MRCache-%@", entityName];
-#endif
-	
-	NSFetchedResultsController *controller = [[NSFetchedResultsController alloc] initWithFetchRequest: request managedObjectContext: context sectionNameKeyPath: group cacheName: cacheName];
-	[self performFetch: controller];
-	return controller;
-}
-+ (NSFetchedResultsController *) fetchRequestAllGroupedBy: (NSString *) group withPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
-{
-	return [self fetchRequestAllGroupedBy: group withPredicate: searchTerm sortedBy: sortTerm ascending: ascending inContext: [NSManagedObjectContext contextForCurrentThread]];
-	
-}
-+ (NSFetchedResultsController *) fetchRequestAllGroupedBy: (NSString *) group withPredicate: (NSPredicate *) searchTerm sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
-{
-#if TARGET_IPHONE_SIMULATOR
-	NSString *cacheName = nil;
-#else
-	NSString *entityName = [self entityDescriptionInContext: context].name;
-	NSString *cacheName = [NSString stringWithFormat: @"MRCache-%@", entityName];
-#endif
-	
-	NSFetchRequest *request = [self requestAllSortedBy: sortTerm ascending: ascending withPredicate: searchTerm inContext: context];
-	return [[NSFetchedResultsController alloc] initWithFetchRequest: request  managedObjectContext: context sectionNameKeyPath: group cacheName: cacheName];
-}
-
-#endif
 
 @end

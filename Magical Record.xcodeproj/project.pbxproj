@@ -25,6 +25,7 @@
 		6C93DA58149522350074327E /* NSPersistentStoreCoordinator+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA4C149522350074327E /* NSPersistentStoreCoordinator+MagicalRecord.m */; };
 		6C968EA51498265A00AC03B0 /* OCMock.framework in Copy Unit Test Frameworks into App Bundle */ = {isa = PBXBuildFile; fileRef = C721C84313D0C6460097AB6F /* OCMock.framework */; };
 		6C968EA61498266700AC03B0 /* GHUnit.framework in Copy Unit Test Frameworks into App Bundle */ = {isa = PBXBuildFile; fileRef = C721C84113D0C6460097AB6F /* GHUnit.framework */; };
+		6CD8677414FBF4730080D92B /* NSFetchedResultsController+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CD8677314FBF4730080D92B /* NSFetchedResultsController+MagicalRecord.m */; };
 		6CDA7E26148247B1009B99A9 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CDA7E25148247B1009B99A9 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		6CDA7E27148247B1009B99A9 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CDA7E25148247B1009B99A9 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		C70B6E7113D0F62500709450 /* NSPersisentStoreHelperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C70B6E7013D0F62500709450 /* NSPersisentStoreHelperTests.m */; };
@@ -167,6 +168,8 @@
 		6C93DA4A149522350074327E /* NSPersistentStore+MagicalRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSPersistentStore+MagicalRecord.m"; sourceTree = "<group>"; };
 		6C93DA4B149522350074327E /* NSPersistentStoreCoordinator+MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSPersistentStoreCoordinator+MagicalRecord.h"; sourceTree = "<group>"; };
 		6C93DA4C149522350074327E /* NSPersistentStoreCoordinator+MagicalRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSPersistentStoreCoordinator+MagicalRecord.m"; sourceTree = "<group>"; };
+		6CD8677214FBF4730080D92B /* NSFetchedResultsController+MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFetchedResultsController+MagicalRecord.h"; sourceTree = "<group>"; };
+		6CD8677314FBF4730080D92B /* NSFetchedResultsController+MagicalRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFetchedResultsController+MagicalRecord.m"; sourceTree = "<group>"; };
 		6CDA7E24148247B1009B99A9 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
 		6CDA7E25148247B1009B99A9 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
 		C70B6E6F13D0F62500709450 /* NSPersisentStoreHelperTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSPersisentStoreHelperTests.h; path = "Unit Tests/NSPersisentStoreHelperTests.h"; sourceTree = "<group>"; };
@@ -532,6 +535,8 @@
 				6C93DA4A149522350074327E /* NSPersistentStore+MagicalRecord.m */,
 				6C93DA4B149522350074327E /* NSPersistentStoreCoordinator+MagicalRecord.h */,
 				6C93DA4C149522350074327E /* NSPersistentStoreCoordinator+MagicalRecord.m */,
+				6CD8677214FBF4730080D92B /* NSFetchedResultsController+MagicalRecord.h */,
+				6CD8677314FBF4730080D92B /* NSFetchedResultsController+MagicalRecord.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -938,6 +943,7 @@
 				6C93DA54149522350074327E /* NSManagedObjectModel+MagicalRecord.m in Sources */,
 				6C93DA56149522350074327E /* NSPersistentStore+MagicalRecord.m in Sources */,
 				6C93DA58149522350074327E /* NSPersistentStoreCoordinator+MagicalRecord.m in Sources */,
+				6CD8677414FBF4730080D92B /* NSFetchedResultsController+MagicalRecord.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
