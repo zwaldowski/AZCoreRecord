@@ -86,8 +86,9 @@
 
 - (void) testCanSetAUserSpecifiedErrorHandlerBlock
 {
-	MRErrorBlock handler = ^(NSError *error){ };
-	[MagicalRecord setErrorHandler: handler];
+	[MagicalRecord setErrorHandler: ^(NSError *error){
+		// this block intentionally left empty
+	}];
 	
 	assertThat([MagicalRecord errorHandler], is(notNilValue()));
 }

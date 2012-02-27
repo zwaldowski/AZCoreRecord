@@ -28,7 +28,7 @@ static void *kParentContextKey;
 {
 	return [self saveWithErrorHandler: NULL];
 }
-- (BOOL) saveWithErrorHandler: (MRErrorBlock) errorCallback
+- (BOOL) saveWithErrorHandler: (void (^)(NSError *)) errorCallback
 {
 	NSError *error = nil;
 	BOOL saved = [self save: &error];

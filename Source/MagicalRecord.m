@@ -17,7 +17,7 @@ static __weak id <MRErrorHandler> errorHandlerTarget = nil;
 static __unsafe_unretained id <MRErrorHandler> errorHandlerTarget = nil;
 #endif
 
-static MRErrorBlock errorHandlerBlock = NULL;
+static void (^errorHandlerBlock)(NSError *) = NULL;
 static BOOL errorHandlerIsClassMethod = NO;
 
 static BOOL stackShouldAutoMigrate = NO;
@@ -247,7 +247,7 @@ static void mr_resetStoreCoordinator(void) {
 {
 	if (!error) return;
 	
-	MRErrorBlock block = [self errorHandler];
+	void (^block)(NSError *) = [self errorHandler];
 	if (block)
 	{
 		block(error);
@@ -266,11 +266,11 @@ static void mr_resetStoreCoordinator(void) {
 	MRLog(@"Error: %@", error);
 }
 
-+ (MRErrorBlock) errorHandler
++ (void (^)(NSError *)) errorHandler
 {
 	return errorHandlerBlock;
 }
-+ (void) setErrorHandler: (MRErrorBlock) block
++ (void) setErrorHandler: (void (^)(NSError *)) block
 {
 	errorHandlerBlock = [block copy];
 }
@@ -296,25 +296,25 @@ static void mr_resetStoreCoordinator(void) {
 
 #pragma mark - Data Commit
 
-+ (void) saveDataWithBlock: (MRContextBlock) block
++ (void) saveDataWithBlock: (void (^)(NSManagedObjectContext *)) block
 {   
     [self saveDataWithOptions: MRCoreDataSaveOptionsNone block: block success: NULL failure: NULL];
 }
 
-+ (void) saveDataInBackgroundWithBlock: (MRContextBlock) block
++ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block
 {
     [self saveDataWithOptions: MRCoreDataSaveOptionsBackground block: block success: NULL failure: NULL];
 }
-+ (void) saveDataInBackgroundWithBlock: (MRContextBlock) block completion: (MRBlock) callback
++ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block completion: (void (^)(void)) callback
 {
     [self saveDataWithOptions: MRCoreDataSaveOptionsBackground block: block success: callback failure: NULL];
 }
 
-+ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block
++ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (void (^)(NSManagedObjectContext *)) block
 {
     [self saveDataWithOptions: options block: block success: NULL failure: NULL];
 }
-+ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback
++ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (void (^)(NSManagedObjectContext *)) block success: (void (^)(void)) callback failure: (void (^)(NSError *)) errorCallback
 {
 	BOOL wantsBackground = (options & MRCoreDataSaveOptionsBackground);
 	BOOL wantsMainThread = (options & MRCoreDataSaveOptionsMainThread);

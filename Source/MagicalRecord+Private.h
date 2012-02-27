@@ -6,7 +6,6 @@
 //  Copyright 2011 Magical Panda Software. All rights reserved.
 //
 
-#import <CoreData/CoreData.h>
 #import "MagicalRecord.h"
 
 DISPATCH_EXPORT DISPATCH_PURE DISPATCH_WARN_RESULT DISPATCH_NOTHROW dispatch_queue_t mr_get_background_queue(void);
@@ -46,7 +45,7 @@ extern void mr_swizzle_support(Class cls, SEL oldSel, SEL newSel);
 + (void) mr_setDefaultStoreCoordinator: (NSPersistentStoreCoordinator *)coordinator;
 
 + (NSDictionary *) mr_storeOptions;
-- (void) mr_setUbiquityEnabled:(BOOL)enabled;
+- (void) mr_setUbiquityEnabled: (BOOL) enabled;
 
 @end
 

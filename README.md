@@ -166,12 +166,12 @@ Paraphrasing the [Apple documentation on Core Data and Threading]("http://develo
 * Use an instance of your `NSManagedObject` that is local for the new `NSManagedObjectContext`.
 * Notify other contexts that the background is updated or saved.
 
-Magical Record library is trying to make these steps more reusable with the following methods:
+Magical Record tries to make these steps more reusable with the following methods:
 
-	+ (void) saveDataWithBlock: (MRContextBlock)block;
-	+ (void) saveDataInBackgroundWithBlock:(MRContextBlock)block;
+	+ (void) saveDataWithBlock: (void (^)(NSManagedObjectContext *))block;
+	+ (void) saveDataInBackgroundWithBlock:(void (^)(NSManagedObjectContext *))block;
 
-An `MRContextBlock` is a non-returning block that has an automatically-generated `NSManagedObjectContext` passed as an argument.
+Each context block has a one-time-use `NSManagedObjectContext` passed as an argument.
 	
 All the boilerplate operations that need to be done when saving are done in these methods. To use this method from the *main thread*:
 

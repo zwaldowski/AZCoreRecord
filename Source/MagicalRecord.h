@@ -7,14 +7,6 @@
 
 #import <CoreData/CoreData.h>
 
-#if defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && defined(__IPHONE_5_0)
-#import <UIKit/UIManagedDocument.h>
-#endif
-
-typedef void (^MRBlock)(void);
-typedef void (^MRContextBlock)(NSManagedObjectContext *);
-typedef void (^MRErrorBlock)(NSError *);
-
 #import "NSManagedObject+MagicalRecord.h"
 #import "NSManagedObjectContext+MagicalRecord.h"
 #import "NSPersistentStoreCoordinator+MagicalRecord.h"
@@ -55,35 +47,35 @@ typedef enum {
 + (void)setStackModelName: (NSString *) name;
 + (void)setStackModelURL: (NSURL *) name;
 
-+ (void)setUpStackWithManagedDocument: (id)managedObject NS_AVAILABLE(10_4, 5_0);
++ (void)setUpStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
 
 #pragma mark - Ubiquity Support
 
 + (BOOL)supportsUbiquity;
 
-+ (void)setUbiquityEnabled:(BOOL)enabled;
++ (void)setUbiquityEnabled: (BOOL) enabled;
 + (BOOL)isUbiquityEnabled;
 
-+ (void)setUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key cloudStorePathComponent:(NSString *)pathComponent;
++ (void)setUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent;
 
 #pragma mark - Error Handling
 
 + (void) handleError: (NSError *) error;
 
-+ (MRErrorBlock) errorHandler;
-+ (void) setErrorHandler: (MRErrorBlock) block;
++ (void (^)(NSError *)) errorHandler;
++ (void) setErrorHandler: (void (^)(NSError *)) block;
 
 + (id<MRErrorHandler>) errorHandlerTarget;
 + (void) setErrorHandlerTarget: (id<MRErrorHandler>) target;
 
 #pragma mark - Data Commit
 
-+ (void) saveDataWithBlock: (MRContextBlock) block;
++ (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *)) block;
 
-+ (void) saveDataInBackgroundWithBlock: (MRContextBlock) block;
-+ (void) saveDataInBackgroundWithBlock: (MRContextBlock) block completion: (MRBlock) callback;
++ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block;
++ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block completion: (void (^)(void)) callback;
 
-+ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block;
-+ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (MRContextBlock) block success: (MRBlock) callback failure: (MRErrorBlock) errorCallback;
++ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (void (^)(NSManagedObjectContext *)) block;
++ (void) saveDataWithOptions: (MRCoreDataSaveOptions) options block: (void (^)(NSManagedObjectContext *)) block success: (void (^)(void)) callback failure: (void (^)(NSError *)) errorCallback;
 
 @end

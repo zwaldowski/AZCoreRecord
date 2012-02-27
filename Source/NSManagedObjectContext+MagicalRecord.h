@@ -15,7 +15,7 @@ extern NSString *const MagicalRecordDidMergeUbiquitousChangesNotification;
 #pragma mark - Instance Methods
 
 - (BOOL) save;
-- (BOOL) saveWithErrorHandler: (MRErrorBlock) errorCallback;
+- (BOOL) saveWithErrorHandler: (void (^)(NSError *)) errorCallback;
 
 #pragma mark - Child Contexts
 
