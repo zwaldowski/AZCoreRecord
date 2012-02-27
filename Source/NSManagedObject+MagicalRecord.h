@@ -20,12 +20,6 @@
 
 - (void) reload;
 
-- (id) objectWithMinValueFor: (NSString *) property;
-- (id) objectWithMinValueFor: (NSString *) property inContext: (NSManagedObjectContext *) context;
-
-- (id) objectWithMaxValueFor: (NSString *) property;
-- (id) objectWithMaxValueFor: (NSString *) property inContext: (NSManagedObjectContext *) context;
-
 @property (nonatomic, readonly) NSURL *URI;
 
 #pragma mark - Default Batch Size

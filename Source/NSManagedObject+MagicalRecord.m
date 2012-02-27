@@ -86,26 +86,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	[self.managedObjectContext refreshObject:self mergeChanges:NO];
 }
 
-- (id) objectWithMinValueFor: (NSString *) property 
-{
-	return [self objectWithMinValueFor: property inContext: self. managedObjectContext];
-}
-- (id) objectWithMinValueFor: (NSString *) property inContext: (NSManagedObjectContext *) context
-{
-	NSPredicate *searchFor = [NSPredicate predicateWithFormat:@"SELF = %@ AND %K = min(%@)", self, property, property];
-	return [[self class] findFirstWithPredicate: searchFor inContext: context];
-}
-
-- (id) objectWithMaxValueFor: (NSString *) property 
-{
-	return [self objectWithMaxValueFor: property inContext: self. managedObjectContext];
-}
-- (id) objectWithMaxValueFor: (NSString *) property inContext: (NSManagedObjectContext *) context
-{
-	NSPredicate *searchFor = [NSPredicate predicateWithFormat:@"SELF = %@ AND %K = max(%@)", self, property, property];
-	return [[self class] findFirstWithPredicate: searchFor inContext: context];
-}
-
 - (NSURL *) URI
 {
 	NSManagedObjectID *objectID = self.objectID;
