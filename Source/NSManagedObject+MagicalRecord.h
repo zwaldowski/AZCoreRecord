@@ -15,9 +15,6 @@
 - (id) inContext: (NSManagedObjectContext *) otherContext;
 - (id) inThreadContext;
 
-- (void) delete;
-- (void) deleteInContext: (NSManagedObjectContext *) context;
-
 - (void) reload;
 
 @property (nonatomic, readonly) NSURL *URI;
@@ -41,11 +38,14 @@
 
 #pragma mark - Entity Deletion
 
+- (void) delete;
+- (void) deleteInContext: (NSManagedObjectContext *) context;
+
++ (BOOL) deleteAll;
++ (BOOL) deleteAllInContext: (NSManagedObjectContext *) context;
+
 + (BOOL) deleteAllMatchingPredicate: (NSPredicate *) predicate;
 + (BOOL) deleteAllMatchingPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context;
-
-+ (BOOL) truncateAll;
-+ (BOOL) truncateAllInContext: (NSManagedObjectContext *) context;
 
 #pragma mark - Entity Count
 

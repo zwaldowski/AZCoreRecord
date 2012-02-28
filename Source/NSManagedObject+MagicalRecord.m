@@ -72,15 +72,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	return [weakSelf inContext: [NSManagedObjectContext contextForCurrentThread]];
 }
 
-- (void) delete
-{
-	[self deleteInContext: self.managedObjectContext];
-}
-- (void) deleteInContext: (NSManagedObjectContext *) context
-{
-	[context deleteObject: [self inContext: context]];
-}
-
 - (void) reload
 {
 	[self.managedObjectContext refreshObject:self mergeChanges:NO];
@@ -160,6 +151,30 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 #pragma mark - Entity deletion
 
+- (void) delete
+{
+	[self deleteInContext: self.managedObjectContext];
+}
+- (void) deleteInContext: (NSManagedObjectContext *) context
+{
+	[context deleteObject: [self inContext: context]];
+}
+
++ (BOOL) deleteAll
+{
+	return [self deleteAllInContext: nil];
+}
++ (BOOL) deleteAllInContext: (NSManagedObjectContext *) context
+{
+	if (!context)
+		context = [NSManagedObjectContext defaultContext];
+	
+	NSArray *objects = [self findAllInContext: context];
+	[objects makeObjectsPerformSelector:@selector(deleteInContext:) withObject:context];
+	
+	return YES;
+}
+
 + (BOOL) deleteAllMatchingPredicate: (NSPredicate *) predicate
 {
 	return [self deleteAllMatchingPredicate: predicate inContext: [NSManagedObjectContext defaultContext]];
@@ -172,21 +187,6 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	NSArray *objects = [context executeFetchRequest: request error: NULL];
 	[objects makeObjectsPerformSelector:@selector(deleteInContext:) withObject:context];
 	
-	return YES;
-}
-
-+ (BOOL) truncateAll
-{
-	return [self truncateAllInContext: nil];
-}
-+ (BOOL) truncateAllInContext: (NSManagedObjectContext *) context
-{
-	if (!context)
-		context = [NSManagedObjectContext defaultContext];
-	
-	NSArray *objects = [self findAllInContext: context];
-	[objects makeObjectsPerformSelector:@selector(deleteInContext:) withObject:context];
-
 	return YES;
 }
 
