@@ -336,7 +336,7 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	request.predicate = searchTerm;
 	request.fetchBatchSize = self.defaultBatchSize;
 
-	if (searchTerm) {
+	if (sortTerm.length) {
 		NSSortDescriptor *sortBy = [NSSortDescriptor sortDescriptorWithKey: sortTerm ascending: ascending];
 		request.sortDescriptors = [NSArray arrayWithObject: sortBy];
 	}
