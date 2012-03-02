@@ -63,13 +63,13 @@ static id colorFromString(NSString *serializedColor)
 	return color;
 }
 
-static inline NSDate *dateAdjustForDST(NSDate *date)
+static NSDate *dateAdjustForDST(NSDate *date)
 {
 	NSTimeInterval dstOffset = [[NSTimeZone localTimeZone] daylightSavingTimeOffsetForDate: date];
 	NSDate *actualDate = [date dateByAddingTimeInterval: dstOffset];
 	return actualDate;
 }
-static inline NSDate *dateFromString(NSString *value, NSString *format)
+static NSDate *dateFromString(NSString *value, NSString *format)
 {
 	static dispatch_once_t onceToken;
 	static NSDateFormatter *helperFormatter;
@@ -84,14 +84,14 @@ static inline NSDate *dateFromString(NSString *value, NSString *format)
 	return [helperFormatter dateFromString: value];
 }
 
-static inline NSString *attributeNameFromString(NSString *value)
+static NSString *attributeNameFromString(NSString *value)
 {
 	NSString *firstCharacter = [[value substringToIndex: 1] capitalizedString];
 	value = [value stringByReplacingCharactersInRange: NSMakeRange(0, 1) withString: firstCharacter];
 	
 	return value;
 }
-static inline NSString *primaryKeyNameFromString(NSString *value)
+static NSString *primaryKeyNameFromString(NSString *value)
 {
 	NSString *firstCharacter = [[value substringToIndex: 1] lowercaseString];
 	value = [value stringByReplacingCharactersInRange: NSMakeRange(0, 1) withString: firstCharacter];
@@ -297,11 +297,11 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 
 #pragma mark - Import from Dictionary
 
-+ (id) importFromDictionary: (id) objectData
++ (instancetype) importFromDictionary: (id) objectData
 {
 	return [self importFromDictionary: objectData inContext: [NSManagedObjectContext defaultContext]];
 }
-+ (id) importFromDictionary: (id) objectData inContext: (NSManagedObjectContext *) context
++ (instancetype) importFromDictionary: (id) objectData inContext: (NSManagedObjectContext *) context
 {
 	NSManagedObject *managedObject = [self createInContext: context];
 	[managedObject importValuesFromDictionary: objectData];
@@ -348,11 +348,11 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 
 #pragma mark - Update from Dictionary
 
-+ (id) updateFromDictionary: (id) objectData
++ (instancetype) updateFromDictionary: (id) objectData
 {
 	return [self updateFromDictionary: objectData inContext: [NSManagedObjectContext defaultContext]];
 }
-+ (id) updateFromDictionary: (id) objectData inContext: (NSManagedObjectContext *) context
++ (instancetype) updateFromDictionary: (id) objectData inContext: (NSManagedObjectContext *) context
 {
 	NSEntityDescription *entity = self.entityDescription;
 	NSString *attributeKey = [entity.userInfo valueForKey: kMagicalRecordImportPrimaryAttributeKey] ?: primaryKeyNameFromString(entity.name);

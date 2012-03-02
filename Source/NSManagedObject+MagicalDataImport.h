@@ -100,7 +100,7 @@ extern NSString *const kMagicalRecordImportRelationshipPrimaryKey;
  @param data A dictionary of values;
  @return A new managed object.
  */
-+ (id) importFromDictionary: (NSDictionary *) data;
++ (instancetype) importFromDictionary: (NSDictionary *) data;
 
 /** Creates a new model object for the specified entity
  and sets its values using the contents of a dictionary.
@@ -111,7 +111,7 @@ extern NSString *const kMagicalRecordImportRelationshipPrimaryKey;
  @param context A managed object context.
  @return A new managed object.
  */
-+ (id) importFromDictionary: (NSDictionary *) data inContext: (NSManagedObjectContext *) context;
++ (instancetype) importFromDictionary: (NSDictionary *) data inContext: (NSManagedObjectContext *) context;
 
 /** Finds, and if not found creates, a model object
  for the specified entity and sets its values using
@@ -128,7 +128,7 @@ extern NSString *const kMagicalRecordImportRelationshipPrimaryKey;
  @param objectData A dictionary of values.
  @return A managed object.
  */
-+ (id) updateFromDictionary: (NSDictionary *) objectData;
++ (instancetype) updateFromDictionary: (NSDictionary *) objectData;
 
 /** Finds, and if not found creates, a model object
  for the specified entity and sets its values using
@@ -146,7 +146,7 @@ extern NSString *const kMagicalRecordImportRelationshipPrimaryKey;
  @param context A managed object context.
  @return A managed object.
  */
-+ (id) updateFromDictionary: (NSDictionary *) objectData inContext: (NSManagedObjectContext *) context;
++ (instancetype) updateFromDictionary: (NSDictionary *) objectData inContext: (NSManagedObjectContext *) context;
 
 /** Imports values into a Core Data model by
  creating new instances of the specified entity
