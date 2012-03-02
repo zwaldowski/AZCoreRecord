@@ -19,19 +19,19 @@
 	return saved;
 }
 
-+ (id) fetchedResultsControllerForRequest: (NSFetchRequest *) request {
++ (NSFetchedResultsController *) fetchedResultsControllerForRequest: (NSFetchRequest *) request {
 	return [self fetchedResultsControllerForRequest: request inContext: [NSManagedObjectContext contextForCurrentThread]];
 }
 
-+ (id) fetchedResultsControllerForRequest: (NSFetchRequest *) request inContext: (NSManagedObjectContext *) context {
++ (NSFetchedResultsController *) fetchedResultsControllerForRequest: (NSFetchRequest *) request inContext: (NSManagedObjectContext *) context {
 	return [self fetchedResultsControllerForRequest: request groupedBy: nil inContext: context];
 }
 
-+ (id) fetchedResultsControllerForRequest: (NSFetchRequest *) request groupedBy: (NSString *) group {
++ (NSFetchedResultsController *) fetchedResultsControllerForRequest: (NSFetchRequest *) request groupedBy: (NSString *) group {
 	return [self fetchedResultsControllerForRequest: request groupedBy: group inContext: [NSManagedObjectContext contextForCurrentThread]];
 }
 
-+ (id) fetchedResultsControllerForRequest: (NSFetchRequest *) request groupedBy: (NSString *) group inContext: (NSManagedObjectContext *) context {
++ (NSFetchedResultsController *) fetchedResultsControllerForRequest: (NSFetchRequest *) request groupedBy: (NSString *) group inContext: (NSManagedObjectContext *) context {
 	NSString *cacheName = nil;
 #if !TARGET_IPHONE_SIMULATOR
 	NSString *entityName = [[self entityDescriptionInContext: context] name];
@@ -43,11 +43,11 @@
 	return controller;
 }
 
-+ (id) fetchedResultsControllerForEntity: (Class) entityClass sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm groupedBy:(NSString *) keyPath {
++ (NSFetchedResultsController *) fetchedResultsControllerForEntity: (Class) entityClass sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm groupedBy:(NSString *) keyPath {
 	return [self fetchedResultsControllerForEntity: entityClass sortedBy: sortTerm ascending: ascending predicate: searchTerm groupedBy: keyPath inContext: [NSManagedObjectContext contextForCurrentThread]];
 }
 
-+ (id) fetchedResultsControllerForEntity: (Class)entityClass sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm groupedBy:(NSString *) keyPath inContext: (NSManagedObjectContext *) context{
++ (NSFetchedResultsController *) fetchedResultsControllerForEntity: (Class)entityClass sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm groupedBy:(NSString *) keyPath inContext: (NSManagedObjectContext *) context{
 	NSParameterAssert([entityClass isSubclassOfClass:[NSManagedObject class]]);
 	NSFetchRequest *request = [entityClass requestAllSortedBy: sortTerm ascending: ascending predicate: searchTerm inContext: context];
 	return [self fetchedResultsControllerForRequest: request groupedBy: keyPath inContext: context];

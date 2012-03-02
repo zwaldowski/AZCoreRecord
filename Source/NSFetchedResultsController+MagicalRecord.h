@@ -14,14 +14,14 @@
 
 - (BOOL)performFetch;
 
-+ (id) fetchedResultsControllerForRequest: (NSFetchRequest *) request;
-+ (id) fetchedResultsControllerForRequest: (NSFetchRequest *) request inContext: (NSManagedObjectContext *) context;
++ (NSFetchedResultsController *) fetchedResultsControllerForRequest: (NSFetchRequest *) request;
++ (NSFetchedResultsController *) fetchedResultsControllerForRequest: (NSFetchRequest *) request inContext: (NSManagedObjectContext *) context;
 
-+ (id) fetchedResultsControllerForRequest: (NSFetchRequest *) request groupedBy: (NSString *) group;
-+ (id) fetchedResultsControllerForRequest: (NSFetchRequest *) request groupedBy: (NSString *) group inContext: (NSManagedObjectContext *) context;
++ (NSFetchedResultsController *) fetchedResultsControllerForRequest: (NSFetchRequest *) request groupedBy: (NSString *) group;
++ (NSFetchedResultsController *) fetchedResultsControllerForRequest: (NSFetchRequest *) request groupedBy: (NSString *) group inContext: (NSManagedObjectContext *) context;
 
-+ (id) fetchedResultsControllerForEntity: (Class) entityClass sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm groupedBy: (NSString *) keyPath;
-+ (id) fetchedResultsControllerForEntity: (Class) entityClass sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm groupedBy: (NSString *) keyPath inContext: (NSManagedObjectContext *) context;
++ (NSFetchedResultsController *) fetchedResultsControllerForEntity: (Class) entityClass sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm groupedBy: (NSString *) keyPath;
++ (NSFetchedResultsController *) fetchedResultsControllerForEntity: (Class) entityClass sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm groupedBy: (NSString *) keyPath inContext: (NSManagedObjectContext *) context;
 
 @end
 
