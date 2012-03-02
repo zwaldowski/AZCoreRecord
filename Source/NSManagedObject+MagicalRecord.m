@@ -153,7 +153,7 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 - (void) delete
 {
-	[self deleteInContext: self.managedObjectContext];
+	[self.managedObjectContext deleteObject: self];
 }
 - (void) deleteInContext: (NSManagedObjectContext *) context
 {
