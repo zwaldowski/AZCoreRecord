@@ -12,10 +12,11 @@
 
 @implementation NSFetchedResultsController (MagicalRecord)
 
-- (void)performFetch {
+- (BOOL)performFetch {
 	NSError *error = nil;
-    [self performFetch: &error];
+    BOOL saved = [self performFetch: &error];
     [MagicalRecord handleError: error];
+	return saved;
 }
 
 + (id) fetchedResultsControllerForRequest: (NSFetchRequest *) request {

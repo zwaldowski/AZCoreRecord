@@ -12,7 +12,7 @@
 
 @interface NSFetchedResultsController (MagicalRecord)
 
-- (void)performFetch;
+- (BOOL)performFetch;
 
 + (id) fetchedResultsControllerForRequest: (NSFetchRequest *) request;
 + (id) fetchedResultsControllerForRequest: (NSFetchRequest *) request inContext: (NSManagedObjectContext *) context;

@@ -41,11 +41,11 @@
 - (void) delete;
 - (void) deleteInContext: (NSManagedObjectContext *) context;
 
-+ (BOOL) deleteAll;
-+ (BOOL) deleteAllInContext: (NSManagedObjectContext *) context;
++ (void) deleteAll;
++ (void) deleteAllInContext: (NSManagedObjectContext *) context;
 
-+ (BOOL) deleteAllMatchingPredicate: (NSPredicate *) predicate;
-+ (BOOL) deleteAllMatchingPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context;
++ (void) deleteAllMatchingPredicate: (NSPredicate *) predicate;
++ (void) deleteAllMatchingPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context;
 
 #pragma mark - Entity Count
 

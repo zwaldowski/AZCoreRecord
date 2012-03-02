@@ -160,34 +160,30 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	[context deleteObject: [self inContext: context]];
 }
 
-+ (BOOL) deleteAll
++ (void) deleteAll
 {
-	return [self deleteAllInContext: nil];
+	[self deleteAllInContext: nil];
 }
-+ (BOOL) deleteAllInContext: (NSManagedObjectContext *) context
++ (void) deleteAllInContext: (NSManagedObjectContext *) context
 {
 	if (!context)
 		context = [NSManagedObjectContext defaultContext];
 	
 	NSArray *objects = [self findAllInContext: context];
 	[objects makeObjectsPerformSelector:@selector(deleteInContext:) withObject:context];
-	
-	return YES;
 }
 
-+ (BOOL) deleteAllMatchingPredicate: (NSPredicate *) predicate
++ (void) deleteAllMatchingPredicate: (NSPredicate *) predicate
 {
-	return [self deleteAllMatchingPredicate: predicate inContext: [NSManagedObjectContext defaultContext]];
+	[self deleteAllMatchingPredicate: predicate inContext: [NSManagedObjectContext defaultContext]];
 }
-+ (BOOL) deleteAllMatchingPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context
++ (void) deleteAllMatchingPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context
 {
 	NSFetchRequest *request = [self requestAllWithPredicate: predicate inContext: context];
 	request.includesPropertyValues = NO;
 	
 	NSArray *objects = [context executeFetchRequest: request error: NULL];
 	[objects makeObjectsPerformSelector:@selector(deleteInContext:) withObject:context];
-	
-	return YES;
 }
 
 #pragma mark - Entity Count
