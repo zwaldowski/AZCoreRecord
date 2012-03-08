@@ -34,8 +34,7 @@
 + (NSFetchedResultsController *) fetchedResultsControllerForRequest: (NSFetchRequest *) request groupedBy: (NSString *) group inContext: (NSManagedObjectContext *) context {
 	NSString *cacheName = nil;
 #if !TARGET_IPHONE_SIMULATOR
-	NSString *entityName = [[self entityDescriptionInContext: context] name];
-	NSString *cacheName = [NSString stringWithFormat: @"MRCache-%@", entityName];
+	cacheName = [NSString stringWithFormat: @"MRCache-%@", [request entityName]];
 #endif
 	
 	NSFetchedResultsController *controller = [[NSFetchedResultsController alloc] initWithFetchRequest: request managedObjectContext: context sectionNameKeyPath: group cacheName: cacheName];
