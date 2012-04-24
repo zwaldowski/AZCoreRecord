@@ -38,18 +38,18 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 	NSFileManager *fm = [NSFileManager new];
 	
 	static dispatch_once_t onceToken;
-	static NSString *documentsDir = nil;
-	static NSString *appSupportDir = nil;
+	static NSURL *documentsDir = nil;
+	static NSURL *appSupportDir = nil;
 	dispatch_once(&onceToken, ^{
 		NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *) kCFBundleNameKey];
 		documentsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-		appSupportDir = [[[[NSFileManager defaultManager] URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] lastObject] stringByAppendingPathComponent: applicationName];
+		appSupportDir = [[[[NSFileManager defaultManager] URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] lastObject] URLByAppendingPathComponent: applicationName isDirectory: YES];
 	});
 	
 	NSArray *paths = [NSArray arrayWithObjects: documentsDir, appSupportDir, nil];
 	
 	// Set default URL (just in case)
-	__block NSURL *storeURL = [NSURL fileURLWithPath: [appSupportDir stringByAppendingPathComponent: storeFileName]];
+	__block NSURL *storeURL = [appSupportDir URLByAppendingPathComponent: storeFileName];
 	
 	[paths enumerateObjectsUsingBlock: ^(NSString *directory, NSUInteger idx, BOOL *stop) {
 		NSString *filePath = [directory stringByAppendingPathComponent: storeFileName];
