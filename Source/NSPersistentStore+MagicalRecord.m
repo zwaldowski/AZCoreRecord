@@ -38,31 +38,19 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 	NSFileManager *fm = [NSFileManager new];
 	
 	static dispatch_once_t onceToken;
-	static NSURL *documentsDir = nil;
-	static NSURL *appSupportDir = nil;
+	static NSURL *documentsURL = nil;
+	static NSURL *appSupportURL = nil;
 	dispatch_once(&onceToken, ^{
-		NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *) kCFBundleNameKey];
-		documentsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-		appSupportDir = [[[[NSFileManager defaultManager] URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] lastObject] URLByAppendingPathComponent: applicationName isDirectory: YES];
+		NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleName"];
+		documentsURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+		appSupportURL = [[[[NSFileManager defaultManager] URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] lastObject] URLByAppendingPathComponent: applicationName isDirectory: YES];
 	});
 	
-	NSArray *paths = [NSArray arrayWithObjects: documentsDir, appSupportDir, nil];
-	
-	// Set default URL (just in case)
-	__block NSURL *storeURL = [appSupportDir URLByAppendingPathComponent: storeFileName];
-	
-	[paths enumerateObjectsUsingBlock: ^(NSString *directory, NSUInteger idx, BOOL *stop) {
-		NSString *filePath = [directory stringByAppendingPathComponent: storeFileName];
-		if ([fm fileExistsAtPath: filePath])
-		{
-			// Replace `storeURL`, then return
-			storeURL = [NSURL fileURLWithPath: filePath];
-			*stop = YES;
-		}
-	}];
+	NSURL *documentsFile = [documentsURL URLByAppendingPathComponent: storeFileName];
+	NSURL *appSupportFile = [appSupportURL URLByAppendingPathComponent: storeFileName];
 	
 	// Guaranteed to be non-nil
-	return storeURL;
+	return [fm fileExistsAtPath: [documentsFile absoluteString]] ? documentsFile : appSupportFile;
 }
 
 + (NSURL *) URLForUbiquitousContainer: (NSString *) bucketName
@@ -77,8 +65,10 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 
 + (NSURL *) defaultLocalStoreURL
 {
-	NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(id)kCFBundleNameKey];
-	return [self URLForStoreName: applicationName];
+	NSString *storeName = [MagicalRecord mr_stackStoreName];
+	if (!storeName.length)
+		storeName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleName"];
+	return [self URLForStoreName: storeName];
 }
 
 @end

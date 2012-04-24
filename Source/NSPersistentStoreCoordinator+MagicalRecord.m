@@ -30,14 +30,7 @@ static NSDictionary *mr_automaticLightweightMigrationOptions(void) {
 {
 	if (!_defaultCoordinator)
 	{
-		NSURL *storeURL = [MagicalRecord mr_stackStoreURL];
-		
-		if (!storeURL)
-			storeURL = [NSPersistentStore URLForStoreName:[MagicalRecord mr_stackStoreName]];
-		
-		if (!storeURL)
-			storeURL = [NSPersistentStore defaultLocalStoreURL];
-		
+		NSURL *storeURL = [MagicalRecord mr_stackStoreURL] ?: [NSPersistentStore defaultLocalStoreURL];
 		NSString *storeType = [MagicalRecord mr_stackShouldUseInMemoryStore] ? NSInMemoryStoreType : NSSQLiteStoreType;
 		NSDictionary *options = [self _storeOptions];
 		
