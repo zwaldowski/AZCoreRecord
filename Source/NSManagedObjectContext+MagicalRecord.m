@@ -18,8 +18,8 @@ static void *kParentContextKey;
 @implementation NSManagedObjectContext (MagicalRecord)
 
 + (void)load {
-	mr_swizzle(@selector(_mr_setParentContext:), @selector(setParentContext:));
-	mr_swizzle(@selector(_mr_parentContext), @selector(parentContext));
+	mr_swizzle(@selector(mr_setParentContext:), @selector(setParentContext:));
+	mr_swizzle(@selector(mr_parentContext), @selector(parentContext));
 }
 
 #pragma mark - Instance Methods
@@ -75,7 +75,7 @@ static void *kParentContextKey;
 - (NSManagedObjectContext *) mr_parentContext
 {
 	NSManagedObjectContext *parentContext = objc_getAssociatedObject(self, &kParentContextKey);	
-	if (!parentContext && [self respondsToSelector: @selector(_mr_parentContext)])
+	if (!parentContext && [self respondsToSelector: @selector(mr_parentContext)])
 	{
 		return [self mr_parentContext];
 	}
