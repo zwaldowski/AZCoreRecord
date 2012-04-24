@@ -42,8 +42,8 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 	static NSString *appSupportDir = nil;
 	dispatch_once(&onceToken, ^{
 		NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *) kCFBundleNameKey];
-		documentsDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-		appSupportDir = [[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent: applicationName];
+		documentsDir = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+		appSupportDir = [[[[NSFileManager defaultManager] URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] lastObject] stringByAppendingPathComponent: applicationName];
 	});
 	
 	NSArray *paths = [NSArray arrayWithObjects: documentsDir, appSupportDir, nil];
