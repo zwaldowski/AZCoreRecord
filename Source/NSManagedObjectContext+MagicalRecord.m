@@ -140,6 +140,18 @@ static void *kParentContextKey;
 	return threadContext;
 }
 
++ (void) mr_saveDefaultContext: (NSNotification *) note
+{
+	if ([self mr_hasDefaultContext]) {
+		NSManagedObjectContext *context = [self defaultContext];
+		
+		if (!context.hasChanges)
+			return;
+		
+		[context save];
+	}
+}
+
 + (void) mr_setDefaultContext: (NSManagedObjectContext *) newDefault
 {
 	BOOL isUbiquitous = [MagicalRecord isUbiquityEnabled];
@@ -152,6 +164,11 @@ static void *kParentContextKey;
 	
 	if (isUbiquitous)
 		[_defaultManagedObjectContext startObservingUbiquitousChangesInCoordinator:coordinator];
+	
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(mr_saveDefaultContext:) name: UIApplicationWillTerminateNotification object: [UIApplication sharedApplication]];
+	});
 }
 
 #pragma mark - Context Factory Methods

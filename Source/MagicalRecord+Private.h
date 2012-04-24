@@ -23,6 +23,8 @@ extern void mr_swizzle_support(Class cls, SEL oldSel, SEL newSel);
 - (void) mr_setParentContext: (NSManagedObjectContext *) context;
 - (NSManagedObjectContext *) mr_parentContext;
 
++ (void) mr_saveDefaultContext: (NSNotification *) note;
+
 @end
 
 @interface NSManagedObjectModel (MagicalRecordPrivate)
