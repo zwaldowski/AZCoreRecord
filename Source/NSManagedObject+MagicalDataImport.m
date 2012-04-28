@@ -193,40 +193,17 @@ NSString *const kMagicalRecordImportRelationshipPrimaryKey = @"primaryKey";
 	NSAssert2([relatedObject.entity isKindOfEntity: relationshipInfo.destinationEntity], @"Related object entity %@ must be same as destination entity %@", relatedObject.entity.name, relationshipInfo.destinationEntity.name);
 	
 	// Add related object to set
-	NSString *selectorFormat = @"set%@:";
-	id relationshipSource = self;
-	if ([relationshipInfo isToMany]) {
-		selectorFormat = @"add%@Object:";
-		if ([relationshipInfo respondsToSelector:@selector(isOrdered)] && [relationshipInfo isOrdered])
-		{
-			//Need to get the ordered set
-			NSString *selectorName = [[relationshipInfo name] stringByAppendingString:@"Set"];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-			relationshipSource = [self performSelector:NSSelectorFromString(selectorName)];
-#pragma clank diagnostic pop
-			selectorFormat = @"addObject:";
+	NSString *key = relationshipInfo.name;
+	if (relationshipInfo.isToMany) {
+		if ([relationshipInfo respondsToSelector:@selector(isOrdered)] && [relationshipInfo isOrdered]) {
+			NSMutableOrderedSet *set = [self mutableOrderedSetValueForKey: key];
+			[set addObject: relatedObject];
+		} else {
+			NSMutableSet *set = [self mutableSetValueForKey: key];
+			[set addObject: relatedObject];
 		}
-	}
-	
-	
-	NSString *selectorString = [NSString stringWithFormat: selectorFormat, attributeNameFromString(relationshipInfo.name)];
-	
-	SEL selector = NSSelectorFromString(selectorString);
-	
-	@try
-	{
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-		[relationshipSource performSelector: selector withObject: relatedObject];
-#pragma clank diagnostic pop
-	}
-	@catch (NSException *exception)
-	{
-		MRLog(@"Adding object for relationship failed: %@", relationshipInfo);
-		MRLog(@"relatedObject.entity = %@", relatedObject.entity);
-		MRLog(@"relationshipInfo.destinationEntity = %@", relationshipInfo.destinationEntity);
-		MRLog(@"Perform Selector Exception: %@", exception);
+	} else {
+		[self setValue: relatedObject forKey: key];
 	}
 }
 - (void) mr_setAttributes: (NSDictionary *) attributes forDictionary: (NSDictionary *) objectData
