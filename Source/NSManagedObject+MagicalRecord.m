@@ -188,7 +188,7 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 
 #pragma mark - Specific Entity
 
-+ (id)exsitingObjectWithURI:(id)URI {
++ (id)existingObjectWithURI:(id)URI {
 	return [self existingObjectWithURI: URI inContext: [NSManagedObjectContext contextForCurrentThread]];
 }
 

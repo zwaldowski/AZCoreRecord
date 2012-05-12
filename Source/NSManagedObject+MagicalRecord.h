@@ -49,7 +49,7 @@
 
 #pragma mark - Specific Entity
 
-+ (id)exsitingObjectWithURI:(id)URI;
++ (id)existingObjectWithURI:(id)URI;
 + (id)existingObjectWithURI:(id)URI inContext:(NSManagedObjectContext *)context;
 
 + (id)existingObjectWithID:(NSManagedObjectID *)objectID;
