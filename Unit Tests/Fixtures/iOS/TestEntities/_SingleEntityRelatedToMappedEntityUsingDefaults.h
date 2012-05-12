@@ -31,7 +31,7 @@ extern const struct SingleEntityRelatedToMappedEntityUsingDefaultsFetchedPropert
 
 
 
-@property (nonatomic, strong) NSNumber *singleEntityRelatedToMappedEntityUsingDefaultsID;
+@property (nonatomic, strong) NSNumber* singleEntityRelatedToMappedEntityUsingDefaultsID;
 
 
 @property int16_t singleEntityRelatedToMappedEntityUsingDefaultsIDValue;
@@ -61,8 +61,8 @@ extern const struct SingleEntityRelatedToMappedEntityUsingDefaultsFetchedPropert
 @interface _SingleEntityRelatedToMappedEntityUsingDefaults (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSNumber *)primitiveSingleEntityRelatedToMappedEntityUsingDefaultsID;
-- (void)setPrimitiveSingleEntityRelatedToMappedEntityUsingDefaultsID:(NSNumber *)value;
+- (NSNumber*)primitiveSingleEntityRelatedToMappedEntityUsingDefaultsID;
+- (void)setPrimitiveSingleEntityRelatedToMappedEntityUsingDefaultsID:(NSNumber*)value;
 
 - (int16_t)primitiveSingleEntityRelatedToMappedEntityUsingDefaultsIDValue;
 - (void)setPrimitiveSingleEntityRelatedToMappedEntityUsingDefaultsIDValue:(int16_t)value_;

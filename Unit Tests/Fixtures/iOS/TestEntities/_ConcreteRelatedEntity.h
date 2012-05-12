@@ -29,7 +29,7 @@ extern const struct ConcreteRelatedEntityFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString *sampleConcreteAttribute;
+@property (nonatomic, strong) NSString* sampleConcreteAttribute;
 
 
 //- (BOOL)validateSampleConcreteAttribute:(id*)value_ error:(NSError**)error_;
@@ -48,8 +48,8 @@ extern const struct ConcreteRelatedEntityFetchedProperties {
 @interface _ConcreteRelatedEntity (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString *)primitiveSampleConcreteAttribute;
-- (void)setPrimitiveSampleConcreteAttribute:(NSString *)value;
+- (NSString*)primitiveSampleConcreteAttribute;
+- (void)setPrimitiveSampleConcreteAttribute:(NSString*)value;
 
 
 

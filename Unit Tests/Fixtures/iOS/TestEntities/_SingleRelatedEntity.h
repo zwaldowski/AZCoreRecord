@@ -37,7 +37,7 @@ extern const struct SingleRelatedEntityFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString *mappedStringAttribute;
+@property (nonatomic, strong) NSString* mappedStringAttribute;
 
 
 //- (BOOL)validateMappedStringAttribute:(id*)value_ error:(NSError**)error_;
@@ -94,8 +94,8 @@ extern const struct SingleRelatedEntityFetchedProperties {
 @interface _SingleRelatedEntity (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString *)primitiveMappedStringAttribute;
-- (void)setPrimitiveMappedStringAttribute:(NSString *)value;
+- (NSString*)primitiveMappedStringAttribute;
+- (void)setPrimitiveMappedStringAttribute:(NSString*)value;
 
 
 

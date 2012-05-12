@@ -31,7 +31,7 @@ extern const struct SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey
 
 
 
-@property (nonatomic, strong) NSNumber *testPrimaryKey;
+@property (nonatomic, strong) NSNumber* testPrimaryKey;
 
 
 @property int16_t testPrimaryKeyValue;
@@ -66,8 +66,8 @@ extern const struct SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey
 @interface _SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSNumber *)primitiveTestPrimaryKey;
-- (void)setPrimitiveTestPrimaryKey:(NSNumber *)value;
+- (NSNumber*)primitiveTestPrimaryKey;
+- (void)setPrimitiveTestPrimaryKey:(NSNumber*)value;
 
 - (int16_t)primitiveTestPrimaryKeyValue;
 - (void)setPrimitiveTestPrimaryKeyValue:(int16_t)value_;

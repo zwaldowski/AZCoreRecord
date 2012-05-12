@@ -31,7 +31,7 @@ extern const struct SingleEntityRelatedToMappedEntityWithSecondaryMappingsFetche
 
 
 
-@property (nonatomic, strong) NSString *secondaryMappedAttribute;
+@property (nonatomic, strong) NSString* secondaryMappedAttribute;
 
 
 //- (BOOL)validateSecondaryMappedAttribute:(id*)value_ error:(NSError**)error_;
@@ -57,8 +57,8 @@ extern const struct SingleEntityRelatedToMappedEntityWithSecondaryMappingsFetche
 @interface _SingleEntityRelatedToMappedEntityWithSecondaryMappings (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString *)primitiveSecondaryMappedAttribute;
-- (void)setPrimitiveSecondaryMappedAttribute:(NSString *)value;
+- (NSString*)primitiveSecondaryMappedAttribute;
+- (void)setPrimitiveSecondaryMappedAttribute:(NSString*)value;
 
 
 

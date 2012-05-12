@@ -35,7 +35,7 @@ extern const struct MappedEntityFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSNumber *mappedEntityID;
+@property (nonatomic, strong) NSNumber* mappedEntityID;
 
 
 @property int16_t mappedEntityIDValue;
@@ -47,7 +47,7 @@ extern const struct MappedEntityFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString *nestedAttribute;
+@property (nonatomic, strong) NSString* nestedAttribute;
 
 
 //- (BOOL)validateNestedAttribute:(id*)value_ error:(NSError**)error_;
@@ -55,7 +55,7 @@ extern const struct MappedEntityFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString *sampleAttribute;
+@property (nonatomic, strong) NSString* sampleAttribute;
 
 
 //- (BOOL)validateSampleAttribute:(id*)value_ error:(NSError**)error_;
@@ -63,7 +63,7 @@ extern const struct MappedEntityFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSNumber *testMappedEntityID;
+@property (nonatomic, strong) NSNumber* testMappedEntityID;
 
 
 @property int64_t testMappedEntityIDValue;
@@ -86,8 +86,8 @@ extern const struct MappedEntityFetchedProperties {
 @interface _MappedEntity (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSNumber *)primitiveMappedEntityID;
-- (void)setPrimitiveMappedEntityID:(NSNumber *)value;
+- (NSNumber*)primitiveMappedEntityID;
+- (void)setPrimitiveMappedEntityID:(NSNumber*)value;
 
 - (int16_t)primitiveMappedEntityIDValue;
 - (void)setPrimitiveMappedEntityIDValue:(int16_t)value_;
@@ -95,20 +95,20 @@ extern const struct MappedEntityFetchedProperties {
 
 
 
-- (NSString *)primitiveNestedAttribute;
-- (void)setPrimitiveNestedAttribute:(NSString *)value;
+- (NSString*)primitiveNestedAttribute;
+- (void)setPrimitiveNestedAttribute:(NSString*)value;
 
 
 
 
-- (NSString *)primitiveSampleAttribute;
-- (void)setPrimitiveSampleAttribute:(NSString *)value;
+- (NSString*)primitiveSampleAttribute;
+- (void)setPrimitiveSampleAttribute:(NSString*)value;
 
 
 
 
-- (NSNumber *)primitiveTestMappedEntityID;
-- (void)setPrimitiveTestMappedEntityID:(NSNumber *)value;
+- (NSNumber*)primitiveTestMappedEntityID;
+- (void)setPrimitiveTestMappedEntityID:(NSNumber*)value;
 
 - (int64_t)primitiveTestMappedEntityIDValue;
 - (void)setPrimitiveTestMappedEntityIDValue:(int64_t)value_;

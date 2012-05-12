@@ -29,7 +29,7 @@ extern const struct AbstractRelatedEntityFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString *sampleBaseAttribute;
+@property (nonatomic, strong) NSString* sampleBaseAttribute;
 
 
 //- (BOOL)validateSampleBaseAttribute:(id*)value_ error:(NSError**)error_;
@@ -48,8 +48,8 @@ extern const struct AbstractRelatedEntityFetchedProperties {
 @interface _AbstractRelatedEntity (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString *)primitiveSampleBaseAttribute;
-- (void)setPrimitiveSampleBaseAttribute:(NSString *)value;
+- (NSString*)primitiveSampleBaseAttribute;
+- (void)setPrimitiveSampleBaseAttribute:(NSString*)value;
 
 
 
