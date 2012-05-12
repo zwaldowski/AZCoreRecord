@@ -47,6 +47,14 @@
 + (void) deleteAllMatchingPredicate: (NSPredicate *) predicate;
 + (void) deleteAllMatchingPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context;
 
+#pragma mark - Specific Entity
+
++ (id)exsitingObjectWithURI:(id)URI;
++ (id)existingObjectWithURI:(id)URI inContext:(NSManagedObjectContext *)context;
+
++ (id)existingObjectWithID:(NSManagedObjectID *)objectID;
++ (id)existingObjectWithID:(NSManagedObjectID *)objectID inContext:(NSManagedObjectContext *)context;
+
 #pragma mark - Entity Count
 
 + (NSUInteger) countOfEntities;

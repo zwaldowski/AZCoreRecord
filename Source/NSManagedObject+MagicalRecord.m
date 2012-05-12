@@ -186,6 +186,38 @@ static NSString *const kURICodingKey = @"MRManagedObjectURI";
 	[objects makeObjectsPerformSelector:@selector(deleteInContext:) withObject:context];
 }
 
+#pragma mark - Specific Entity
+
++ (id)exsitingObjectWithURI:(id)URI {
+	return [self existingObjectWithURI: URI inContext: [NSManagedObjectContext contextForCurrentThread]];
+}
+
++ (id)existingObjectWithURI:(id)URI inContext:(NSManagedObjectContext *)context {
+	NSParameterAssert(URI);
+	
+	if ([URI isKindOfClass:[NSString class]])
+		URI = [NSURL URLWithString:URI];
+	
+	if ([URI isKindOfClass:[NSURL class]])
+		URI = [context.persistentStoreCoordinator managedObjectIDForURIRepresentation:URI];
+	
+	if (!URI || ![URI isKindOfClass:[NSManagedObjectID class]])
+		return nil;
+	
+	return [self existingObjectWithID: URI inContext: context];
+}
+
++ (id)existingObjectWithID:(NSManagedObjectID *)objectID {
+	return [self existingObjectWithID: objectID inContext: [NSManagedObjectContext contextForCurrentThread]];
+}
+
++ (id)existingObjectWithID:(NSManagedObjectID *)objectID inContext:(NSManagedObjectContext *)context {
+	NSError *error = nil;
+	id ret = [context existingObjectWithID: objectID error: &error];
+	[MagicalRecord handleError: error];
+	return ret;
+}
+
 #pragma mark - Entity Count
 
 + (NSUInteger) countOfEntities
