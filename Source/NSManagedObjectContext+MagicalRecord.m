@@ -60,8 +60,10 @@ static void *kParentContextKey;
 
 	if ([self respondsToSelector:@selector(initWithConcurrencyType:)])
 		context = [[NSManagedObjectContext alloc] initWithConcurrencyType: concurrencyType];
-	else
+	else {
 		context = [NSManagedObjectContext contextWithStoreCoordinator:self.persistentStoreCoordinator];
+		context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;
+	}
 	
 	context.parentContext = self;
 	
@@ -129,15 +131,17 @@ static void *kParentContextKey;
 		return [self defaultContext];
 	}
 	
-	NSMutableDictionary *threadDict = [[NSThread currentThread] threadDictionary];
-	NSManagedObjectContext *threadContext = [threadDict objectForKey:kMagicalRecordManagedObjectContextKey];
-	if (!threadContext)
-	{
-		threadContext = [[self defaultContext] newChildContext];
-		[threadDict setObject: threadContext forKey: kMagicalRecordManagedObjectContextKey];
+	NSManagedObjectContext *context = nil;
+	@synchronized(self) {
+		NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+		context = [dict objectForKey:kMagicalRecordManagedObjectContextKey];
+		if (!context)
+		{
+			context = [[self defaultContext] newChildContext];
+			[dict setObject: context forKey: kMagicalRecordManagedObjectContextKey];
+		}
 	}
-	
-	return threadContext;
+	return context;
 }
 
 + (void) mr_saveDefaultContext: (NSNotification *) note
