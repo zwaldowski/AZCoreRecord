@@ -8,8 +8,6 @@
 
 #import "MagicalRecord.h"
 
-DISPATCH_EXPORT DISPATCH_PURE DISPATCH_WARN_RESULT DISPATCH_NOTHROW dispatch_queue_t mr_get_background_queue(void);
-
 extern void mr_swizzle_support(Class cls, SEL oldSel, SEL newSel);
 #define mr_swizzle(oldSelector, newSelector) mr_swizzle_support([self class], oldSelector, newSelector)
 

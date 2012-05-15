@@ -9,8 +9,6 @@
 #import "MagicalRecord+Private.h"
 #import <objc/runtime.h>
 
-static dispatch_queue_t backgroundQueue = nil;
-
 #if __has_feature(objc_arc_weak)
 static __weak id <MRErrorHandler> errorHandlerTarget = nil;
 #else
@@ -28,16 +26,6 @@ static NSURL *stackStoreURL = nil;
 static NSString *stackModelName = nil;
 static NSURL *stackModelURL = nil;
 static NSDictionary *stackUbiquityOptions = nil;
-
-dispatch_queue_t mr_get_background_queue(void)
-{
-	static dispatch_once_t once;
-	dispatch_once(&once, ^{
-		backgroundQueue = dispatch_queue_create("com.magicalpanda.MagicalRecord.backgroundQueue", 0);
-	});
-	
-	return backgroundQueue;
-}
 
 extern void mr_swizzle_support(Class cls, SEL oldSel, SEL newSel) {
 	Method origMethod = class_getInstanceMethod(cls, oldSel);
@@ -159,8 +147,6 @@ static void mr_resetStoreCoordinator(void) {
 	stackModelName = nil;
 	stackModelURL = nil;
 	stackUbiquityOptions = nil;
-	
-	if (backgroundQueue) dispatch_release(backgroundQueue), backgroundQueue = nil;
 	
 	if ([NSManagedObjectContext mr_hasDefaultContext])
 		[NSManagedObjectContext mr_setDefaultContext: nil];
@@ -359,7 +345,7 @@ static void mr_resetStoreCoordinator(void) {
 	dispatch_queue_t queue = NULL;
 	
 	if (wantsBackground)
-		queue = mr_get_background_queue();
+		queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	else if (wantsMainThread)
 		queue = dispatch_get_main_queue();
 	else
