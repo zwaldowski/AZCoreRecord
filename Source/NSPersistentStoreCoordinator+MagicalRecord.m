@@ -93,21 +93,31 @@ static NSDictionary *mr_automaticLightweightMigrationOptions(void) {
 	[fileManager createDirectoryAtPath: storePath withIntermediateDirectories: YES attributes: nil error: &fmError];
     [MagicalRecord handleError: fmError];
 	
-	// Add the persistent store
-	dispatch_block_t addBlock = ^{
-		NSError *pscError = nil;
-		[psc addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &pscError];
-		[MagicalRecord handleError: pscError];
-	};
-	
-	addBlock();
-	
-	// HACK: Lame solution to fix automigration error "Migration failed after first pass"
-	if (!psc.persistentStores.count)
-	{
-		dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC);
-		dispatch_after(when, dispatch_get_main_queue(), addBlock);
-	}
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+		// Add the persistent store
+		dispatch_block_t addBlock = ^{
+			NSError *pscError = nil;
+			[psc lock];
+			[psc addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &pscError];
+			[psc unlock];
+			[MagicalRecord handleError: pscError];
+		};
+		
+		addBlock();
+		
+		// HACK: Lame solution to fix automigration error "Migration failed after first pass"
+		if (!psc.persistentStores.count)
+		{
+			dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC);
+			dispatch_after(when, dispatch_get_main_queue(), addBlock);
+		}
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			if (![NSPersistentStore mr_hasDefaultPersistentStore]) {
+				[NSPersistentStoreCoordinator mr_setDefaultStoreCoordinator: psc];
+			}
+		});
+	});
 	
 	return psc;
 }
