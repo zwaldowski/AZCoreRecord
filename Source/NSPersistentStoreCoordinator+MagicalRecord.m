@@ -32,7 +32,7 @@ static NSDictionary *mr_automaticLightweightMigrationOptions(void) {
 	{
 		NSURL *storeURL = [MagicalRecord mr_stackStoreURL] ?: [NSPersistentStore defaultLocalStoreURL];
 		NSString *storeType = [MagicalRecord mr_stackShouldUseInMemoryStore] ? NSInMemoryStoreType : NSSQLiteStoreType;
-		NSDictionary *options = [self _storeOptions];
+		NSDictionary *options = [self mr_storeOptions];
 		
 		NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
 		
@@ -142,7 +142,7 @@ static NSDictionary *mr_automaticLightweightMigrationOptions(void) {
 
 #pragma mark - Ubiquity
 
-+ (NSDictionary *)_storeOptions {
++ (NSDictionary *)mr_storeOptions {
 	BOOL shouldAutoMigrate = [MagicalRecord mr_stackShouldAutoMigrateStore];
 	BOOL shouldUseCloud = ([MagicalRecord mr_stackUbiquityOptions] != nil);
 	
@@ -157,13 +157,13 @@ static NSDictionary *mr_automaticLightweightMigrationOptions(void) {
 	return options;
 }
 
-- (void)_setUbiquityEnabled:(BOOL)enabled {
+- (void)mr_setUbiquityEnabled:(BOOL)enabled {
 	NSPersistentStore *mainStore = [NSPersistentStore defaultPersistentStore];
 	
 	if ((([mainStore.options objectForKey:NSPersistentStoreUbiquitousContentURLKey]) != nil) == enabled)
 		return;
 	
-	NSDictionary *newOptions = [NSPersistentStoreCoordinator _storeOptions];
+	NSDictionary *newOptions = [NSPersistentStoreCoordinator mr_storeOptions];
 	
 	NSError *err = nil;
 	[self migratePersistentStore:mainStore toURL:mainStore.URL options:newOptions withType:mainStore.type error:&err];
