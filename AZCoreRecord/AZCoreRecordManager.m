@@ -150,7 +150,7 @@
 
 #pragma mark - Utilities
 
-- (NSDictionary *)  azcr_storeOptions
+- (NSDictionary *) azcr_storeOptions
 {
 	BOOL shouldAutoMigrate = self.stackShouldAutoMigrateStore;
 	BOOL shouldUseCloud = self.stackUbiquityOptions != nil;
@@ -179,7 +179,7 @@
 
 #pragma mark - Stack Settings
 
-- (NSString *)stackStoreName
+- (NSString *) stackStoreName
 {
 	if (!_stackStoreName.pathExtension)
 		return [_stackStoreName stringByAppendingPathExtension:@"sqlite"];
@@ -187,6 +187,27 @@
 	return _stackStoreName;
 }
 
+- (void) configureWithManagedDocument: (id) managedDocument
+{
+	Class documentClass = NULL;
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+	documentClass = NSClassFromString(@"UIManagedDocument");
+#else
+	documentClass = NSClassFromString(@"NSPersistentDocument");
+#endif
+	
+	NSAssert(documentClass, @"Not available on this OS.");
+	NSParameterAssert([managedDocument isKindOfClass:documentClass]);
+	
+	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+	
+	[self azcr_resetStack];
+	self.managedObjectModel = [managedDocument managedObjectModel];
+	self.persistentStoreCoordinator = [[managedDocument managedObjectContext] persistentStoreCoordinator];
+	self.managedObjectContext = [managedDocument managedObjectContext];
+	
+	dispatch_semaphore_signal(self.semaphore);
+}
 - (void) setStackShouldAutoMigrateStore: (BOOL) stackShouldAutoMigrateStore
 {
 	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
@@ -223,8 +244,24 @@
 	
 	dispatch_semaphore_signal(self.semaphore);
 }
-
-
+- (void) setStackModelName: (NSString *) stackModelName
+{
+	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+	
+	[self azcr_resetStack];
+	_stackModelName = [stackModelName copy];
+	
+	dispatch_semaphore_signal(self.semaphore);
+}
+- (void) setStackModelURL: (NSURL *) stackModelURL
+{
+	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+	
+	[self azcr_resetStack];
+	_stackModelURL = [stackModelURL copy];
+	
+	dispatch_semaphore_signal(self.semaphore);
+}
 - (void) setStackStoreURL: (NSURL *) stackStoreURL
 {
 	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
@@ -235,51 +272,9 @@
 	dispatch_semaphore_signal(self.semaphore);
 }
 
-- (void) setStackModelName: (NSString *) stackModelName
-{
-	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-	
-	[self azcr_resetStack];
-	_stackModelName = [stackModelName copy];
-	
-	dispatch_semaphore_signal(self.semaphore);
-}
-
-- (void) setStackModelURL: (NSURL *) stackModelURL
-{
-	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-	
-	[self azcr_resetStack];
-	_stackModelURL = [stackModelURL copy];
-	
-	dispatch_semaphore_signal(self.semaphore);
-}
-
-- (void) configureWithManagedDocument: (id) managedDocument
-{
-	Class documentClass = NULL;
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-	documentClass = NSClassFromString(@"UIManagedDocument");
-#else
-	documentClass = NSClassFromString(@"NSPersistentDocument");
-#endif
-	
-	NSAssert(documentClass, @"Not available on this OS.");
-	NSParameterAssert([managedDocument isKindOfClass:documentClass]);
-	
-	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-	
-	[self azcr_resetStack];
-	self.managedObjectModel = [managedDocument managedObjectModel];
-	self.persistentStoreCoordinator = [[managedDocument managedObjectContext] persistentStoreCoordinator];
-	self.managedObjectContext = [managedDocument managedObjectContext];
-	
-	dispatch_semaphore_signal(self.semaphore);
-}
-
 #pragma mark - Ubiquity Support
 
-+ (BOOL)supportsUbiquity
++ (BOOL) supportsUbiquity
 {
 	NSFileManager *fileManager = [NSFileManager new];
 	
@@ -321,7 +316,6 @@
 	
 	return _stackShouldUseUbiquity;
 }
-
 - (void) setUbiquityEnabled: (BOOL) enabled
 {
 	if (_stackShouldUseUbiquity == enabled)
