@@ -10,4 +10,6 @@ Pod::Spec.new do |s|
   s.source_files = 'AZCoreRecord'
   s.framework    = 'CoreData'
   s.requires_arc = true
+  s.ios.deployment_target = '5.0'
+  s.osx.deployment_target = '10.7'
 end
