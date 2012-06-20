@@ -14,15 +14,6 @@
 #import "NSManagedObjectContext+AZCoreRecord.h"
 #import "NSManagedObjectModel+AZCoreRecord.h"
 
-#if __has_feature(objc_arc_weak)
-static __weak id <AZCoreRecordErrorHandler> errorHandlerTarget = nil;
-#else
-static __unsafe_unretained id <AZCoreRecordErrorHandler> errorHandlerTarget = nil;
-#endif
-
-static void (^errorHandlerBlock)(NSError *) = NULL;
-static BOOL errorHandlerIsClassMethod = NO;
-
 static BOOL stackShouldAutoMigrate = NO;
 static BOOL stackShouldUseUbiquity = NO;
 static BOOL stackShouldUseInMemoryStore = NO;
@@ -42,7 +33,29 @@ extern void azcr_swizzle_support(Class cls, SEL oldSel, SEL newSel) {
 		method_exchangeImplementations(origMethod, newMethod);
 }
 
+@interface AZCoreRecordManager ()
+
+#if __has_feature(objc_arc_weak)
+@property (weak) id <AZCoreRecordErrorHandler> errorDelegate;
+#else
+@property (unsafe_unretained) id <AZCoreRecordErrorHandler> _errorDelegate;
+#endif
+@property (copy) void(^errorHandler)(NSError *);
+
+@end
+
 @implementation AZCoreRecordManager
+
+@synthesize errorDelegate = _errorDelegate, errorHandler = _errorHandler;
+
++ (id)sharedManager {
+	static dispatch_once_t onceToken;
+	static AZCoreRecordManager *sharedManager = nil;
+	dispatch_once(&onceToken, ^{
+		sharedManager = [self new];
+	});
+	return sharedManager;
+}
 
 #pragma mark - Stack settings
 
@@ -158,11 +171,12 @@ static void azcr_resetStore(void) {
 
 + (void) azcr_cleanUp
 {
+	AZCoreRecordManager *shared = [self sharedManager];
+	
+	shared.errorDelegate = nil;
+	shared.errorHandler = NULL;
+	
 	@synchronized(self) {
-		errorHandlerTarget = nil;
-		errorHandlerBlock = NULL;
-		errorHandlerIsClassMethod = NO;
-		
 		stackShouldAutoMigrate = NO;
 		stackShouldUseInMemoryStore = NO;
 		stackStoreName = nil;
@@ -238,68 +252,44 @@ static void azcr_resetStore(void) {
 
 #pragma mark - Error Handling
 
-+ (NSString *) currentStack
-{
-	NSMutableString *status = [NSMutableString stringWithString:@"Current Default Core Data Stack: ---- \n"];
-	
-	[status appendFormat: @"Context:     %@\n", [NSManagedObjectContext defaultContext]];
-	[status appendFormat: @"Model:       %@\n", [NSManagedObjectModel defaultModel]];
-	[status appendFormat: @"Coordinator: %@\n", [NSPersistentStoreCoordinator defaultStoreCoordinator]];
-	[status appendFormat: @"Store:       %@\n", [NSPersistentStore defaultPersistentStore]];
-	
-	return [status copy];
-}
-
 + (void) handleError: (NSError *) error
 {
 	if (!error) return;
 	
-	void (^block)(NSError *) = [self errorHandler];
+	AZCoreRecordManager *shared = [self sharedManager];
+	
+	
+	
+	void (^block)(NSError *) = shared.errorHandler;
 	if (block)
 	{
 		block(error);
 		return;
 	}
 	
-	id target = [self errorHandlerTarget];
+	id target = shared.errorDelegate;
 	if (target)
 	{
-		if (errorHandlerIsClassMethod) target = [target class];
 		[target performSelector: @selector(handleError:) withObject: error];
-		return;
 	}
 }
 
 + (void (^)(NSError *)) errorHandler
 {
-	return errorHandlerBlock;
+	return [[self sharedManager] errorHandler];
 }
 + (void) setErrorHandler: (void (^)(NSError *)) block
 {
-	@synchronized(self) {
-		errorHandlerBlock = [block copy];
-	}
+	[[self sharedManager] setErrorHandler: block];
 }
 
-+ (id<AZCoreRecordErrorHandler>) errorHandlerTarget
++ (id<AZCoreRecordErrorHandler>) errorDelegate
 {
-	return errorHandlerTarget;
+	return [[self sharedManager] errorDelegate];
 }
-+ (void) setErrorHandlerTarget: (id<AZCoreRecordErrorHandler>) target
++ (void) setErrorDelegate: (id<AZCoreRecordErrorHandler>) target
 {
-	@synchronized(self) {
-		if (target)
-		{
-			if ([target respondsToSelector: @selector(handleError:)])
-				errorHandlerIsClassMethod = NO;
-			else if ([[target class] respondsToSelector: @selector(handleError:)])
-				errorHandlerIsClassMethod = YES;
-			else
-				NSAssert(NO, @"Error handler target must conform to the AZCoreRecordErrorHandler protocol");
-		}
-		
-		errorHandlerTarget = target;
-	}
+	[[self sharedManager] setErrorDelegate: target];
 }
 
 #pragma mark - Data Commit

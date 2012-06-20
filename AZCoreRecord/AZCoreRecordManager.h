@@ -17,14 +17,37 @@ typedef enum _AZCoreRecordSaveOptions {
 } AZCoreRecordSaveOptions;
 
 @protocol AZCoreRecordErrorHandler <NSObject>
-@optional
+@required
 
 - (void) handleError: (NSError *) error;
-+ (void) handleError: (NSError *) error;
 
 @end
 
-@interface AZCoreRecordManager : NSObject
+@interface AZCoreRecordManager : NSObject {
+#if __has_feature(objc_arc_weak)
+	__weak id <AZCoreRecordErrorHandler> _errorDelegate;
+#else
+	__unsafe_unretained id <AZCoreRecordErrorHandler> _errorDelegate;
+#endif
+	
+	void (^_errorHandler)(NSError *);
+	
+	BOOL _stackShouldAutoMigrate;
+	BOOL _stackShouldUseUbiquity;
+	BOOL _stackShouldUseInMemoryStore;
+	NSString *_stackStoreName;
+	NSURL *_stackStoreURL;
+	NSString *_stackModelName;
+	NSURL *_stackModelURL;
+	NSDictionary *_stackUbiquityOptions;
+	
+	NSManagedObjectContext *_managedObjectContext;
+	NSManagedObjectModel *_managedObjectModel;
+	NSPersistentStore *_persistentStore;
+	NSPersistentStoreCoordinator *_persistentStoreCoordinator;
+}
+
++ (id)sharedManager;
 
 #pragma mark - Stack settings
 
@@ -53,8 +76,8 @@ typedef enum _AZCoreRecordSaveOptions {
 + (void (^)(NSError *)) errorHandler;
 + (void) setErrorHandler: (void (^)(NSError *)) block;
 
-+ (id<AZCoreRecordErrorHandler>) errorHandlerTarget;
-+ (void) setErrorHandlerTarget: (id<AZCoreRecordErrorHandler>) target;
++ (id<AZCoreRecordErrorHandler>) errorDelegate;
++ (void) setErrorDelegate: (id<AZCoreRecordErrorHandler>) target;
 
 #pragma mark - Data Commit
 

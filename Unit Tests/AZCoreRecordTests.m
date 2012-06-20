@@ -73,9 +73,9 @@
 
 - (void) testCanSetAUserSpecifiedErrorHandler
 {
-	[AZCoreRecordManager setErrorHandlerTarget:self];
+	[AZCoreRecordManager setErrorDelegate: self];
 	
-	assertThat([AZCoreRecordManager errorHandlerTarget], is(equalTo(self)));
+	assertThat([AZCoreRecordManager errorDelegate], is(equalTo(self)));
 }
 
 - (void)handleError:(NSError *)error
@@ -98,7 +98,7 @@
 - (void) testUserSpecifiedErrorHandlerIsTriggeredOnError
 {
 	errorHandlerWasCalled_ = NO;
-	[AZCoreRecordManager setErrorHandlerTarget:self];
+	[AZCoreRecordManager setErrorDelegate: self];
 	[AZCoreRecordManager setErrorHandler:NULL];
 	
 	NSError *testError = [NSError errorWithDomain:@"AZCoreRecordUnitTests" code:1000 userInfo:nil];
@@ -113,7 +113,7 @@
 	[AZCoreRecordManager setErrorHandler: ^(NSError *error) {
 		[self handleError:error];
 	}];
-	[AZCoreRecordManager setErrorHandlerTarget:nil];
+	[AZCoreRecordManager setErrorDelegate: nil];
 	
 	NSError *testError = [NSError errorWithDomain:@"AZCoreRecordUnitTests" code:1000 userInfo:nil];
 	[AZCoreRecordManager handleError:testError];
@@ -127,7 +127,7 @@
 	id mockErrorHandler = [OCMockObject mockForProtocol:@protocol(AZCoreRecordErrorHandler)];
 	[[mockErrorHandler expect] handleError:testError];
 	
-	[AZCoreRecordManager setErrorHandlerTarget:mockErrorHandler];
+	[AZCoreRecordManager setErrorDelegate: mockErrorHandler];
 	[AZCoreRecordManager setErrorHandler:NULL];
 	[AZCoreRecordManager handleError:testError];
 	
