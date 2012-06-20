@@ -9,6 +9,8 @@
 
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 
+#import <CoreData/CoreData.h>
+
 @interface NSFetchedResultsController (AZCoreRecord)
 
 - (BOOL) performFetch;
