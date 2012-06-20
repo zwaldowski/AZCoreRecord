@@ -58,38 +58,38 @@ typedef enum _AZCoreRecordSaveOptions {
 @property (nonatomic, copy) NSURL *stackModelURL;
 
 @property (nonatomic, strong, readonly) NSDictionary *stackUbiquityOptions;
-- (void)setUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent;
+- (void) setUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent;
 
-- (void)configureWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
+- (void) configureWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
 
 #pragma mark - Ubiquity Support
 
-+ (void)setDefaultUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent;
++ (void) setDefaultUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent;
 
 @property (nonatomic, getter = isUbiquityEnabled) BOOL ubiquityEnabled;
 
-+ (BOOL)supportsUbiquity;
++ (BOOL) supportsUbiquity;
 
 #pragma mark - Default stack settings
 
-+ (void)setDefaultStackShouldAutoMigrateStore: (BOOL) shouldMigrate;
-+ (void)setDefaultStackShouldUseInMemoryStore: (BOOL) inMemory;
-+ (void)setDefaultStackStoreName: (NSString *) name;
-+ (void)setDefaultStackStoreURL: (NSURL *) name;
-+ (void)setDefaultStackModelName: (NSString *) name;
-+ (void)setDefaultStackModelURL: (NSURL *) name;
++ (void) setDefaultStackShouldAutoMigrateStore: (BOOL) shouldMigrate;
++ (void) setDefaultStackShouldUseInMemoryStore: (BOOL) inMemory;
++ (void) setDefaultStackStoreName: (NSString *) name;
++ (void) setDefaultStackStoreURL: (NSURL *) name;
++ (void) setDefaultStackModelName: (NSString *) name;
++ (void) setDefaultStackModelURL: (NSURL *) name;
 
-+ (void)setUpDefaultStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
++ (void) setUpDefaultStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
 
 #pragma mark - Error Handling
 
 + (void) handleError: (NSError *) error;
 
-+ (void (^)(NSError *)) errorHandler;
-+ (void) setErrorHandler: (void (^)(NSError *)) block;
++ (void (^)(NSError *error)) errorHandler;
++ (void) setErrorHandler: (void (^)(NSError *error)) block;
 
-+ (id<AZCoreRecordErrorHandler>) errorDelegate;
-+ (void) setErrorDelegate: (id<AZCoreRecordErrorHandler>) target;
++ (id <AZCoreRecordErrorHandler>) errorDelegate;
++ (void) setErrorDelegate: (id <AZCoreRecordErrorHandler>) target;
 
 #pragma mark - Data Commit
 
