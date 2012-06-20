@@ -48,7 +48,4 @@ extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
 - (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block;
 - (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block completion: (void (^)(void)) callback;
 
-+ (void) saveDataWithOptions: (AZCoreRecordSaveOptions) options block: (void (^)(NSManagedObjectContext *)) block;
-+ (void) saveDataWithOptions: (AZCoreRecordSaveOptions) options block: (void (^)(NSManagedObjectContext *)) block success: (void (^)(void)) callback failure: (void (^)(NSError *)) errorCallback;
-
 @end
