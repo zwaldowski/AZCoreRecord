@@ -20,6 +20,8 @@
 	__weak id <AZCoreRecordErrorHandler> _errorDelegate;	
 	void (^_errorHandler)(NSError *);
 	
+	dispatch_semaphore_t _semaphore;
+	
 	BOOL _stackShouldAutoMigrate;
 	BOOL _stackShouldUseUbiquity;
 	BOOL _stackShouldUseInMemoryStore;
@@ -84,9 +86,9 @@
 
 #pragma mark - Data Commit
 
-+ (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *)) block;
++ (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *context)) block;
 
-+ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block;
-+ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block completion: (void (^)(void)) callback;
++ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block;
++ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block completion: (void (^)(void)) callback;
 
 @end
