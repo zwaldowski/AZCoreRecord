@@ -8,18 +8,21 @@
 //
 
 #import "AZCoreRecordTests.h"
-#import "AZCoreRecordManager+Private.h"
-#import "AZCoreRecord.h"
+#import "AZCoreRecordManager.h"
+
+@interface AZCoreRecordManager ()
+- (void)azcr_cleanUp;
+@end
 
 @implementation AZCoreRecordTests
 
 - (void) setUp
 {
-	[AZCoreRecordManager setStackModelName:@"TestModel.momd"];
+	[AZCoreRecordManager setDefaultStackModelName:@"TestModel.momd"];
 }
 
 - (void) tearDown {
-	[AZCoreRecordManager azcr_cleanUp];
+	[[AZCoreRecordManager sharedManager] azcr_cleanUp];
 }
 
 - (void) assertDefaultStack
@@ -49,7 +52,7 @@
 
 - (void) testCreateInMemoryCoreDataStack
 {
-	[AZCoreRecordManager setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecordManager setDefaultStackShouldUseInMemoryStore:YES];
 	
 	[self assertDefaultStack];
 	
@@ -60,7 +63,7 @@
 - (void) testCreateSqliteStackWithCustomName
 {
 	NSString *testStoreName = @"MyTestDataStore.sqlite";
-	[AZCoreRecordManager setStackStoreName:testStoreName];
+	[AZCoreRecordManager setDefaultStackStoreName:testStoreName];
 	
 	[self assertDefaultStack];
 	

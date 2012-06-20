@@ -8,18 +8,11 @@
 //
 
 #import "NSManagedObjectContext+AZCoreRecord.h"
-#import "AZCoreRecordManager+Private.h"
+#import "AZCoreRecordManager.h"
 #import <objc/runtime.h>
 #import "NSPersistentStoreCoordinator+AZCoreRecord.h"
 
-#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-#import <UIKit/UIApplication.h>
-#elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
-#import <AppKit/NSApplication.h>
-#endif
-
 NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification = @"AZCoreRecordDidMergeUbiquitousChanges";
-static NSManagedObjectContext *_defaultManagedObjectContext = nil;
 static void *kParentContextKey;
 
 @implementation NSManagedObjectContext (AZCoreRecord)
@@ -106,30 +99,9 @@ static void *kParentContextKey;
 
 #pragma mark - Default Contexts
 
-+ (BOOL) azcr_hasDefaultContext
-{
-	return !!_defaultManagedObjectContext;
-}
-
 + (NSManagedObjectContext *) defaultContext
 {
-    if (!_defaultManagedObjectContext)
-	{
-		NSManagedObjectContext *newDefault = nil;
-        if ([self instancesRespondToSelector: @selector(initWithConcurrencyType:)])
-		{
-            newDefault = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-        }
-		else
-		{
-            newDefault = [NSManagedObjectContext new];
-        }
-		
-		newDefault.persistentStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
-		[self azcr_setDefaultContext:newDefault];
-	}
-	
-	return _defaultManagedObjectContext;
+    return [[AZCoreRecordManager sharedManager] managedObjectContext];
 }
 + (NSManagedObjectContext *) contextForCurrentThread
 {
@@ -150,41 +122,6 @@ static void *kParentContextKey;
 		}
 	}
 	return context;
-}
-
-+ (void) azcr_saveDefaultContext: (NSNotification *) note
-{
-	if ([self azcr_hasDefaultContext]) {
-		NSManagedObjectContext *context = [self defaultContext];
-		
-		if (!context.hasChanges)
-			return;
-		
-		[context save];
-	}
-}
-
-+ (void) azcr_setDefaultContext: (NSManagedObjectContext *) newDefault
-{
-	BOOL isUbiquitous = [AZCoreRecordManager isUbiquityEnabled];
-	NSPersistentStoreCoordinator *coordinator = coordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
-	
-	if (isUbiquitous)
-		[_defaultManagedObjectContext stopObservingUbiquitousChangesInCoordinator:coordinator];
-
-	_defaultManagedObjectContext = newDefault;
-	
-	if (isUbiquitous)
-		[_defaultManagedObjectContext startObservingUbiquitousChangesInCoordinator:coordinator];
-	
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-		[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(azcr_saveDefaultContext:) name: UIApplicationWillTerminateNotification object: [UIApplication sharedApplication]];
-#elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
-		[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(azcr_saveDefaultContext:) name: NSApplicationWillTerminateNotification object: [NSApplication sharedApplication]];
-#endif
-	});
 }
 
 #pragma mark - Context Factory Methods

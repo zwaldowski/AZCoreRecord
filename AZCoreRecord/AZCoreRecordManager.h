@@ -47,27 +47,44 @@ typedef enum _AZCoreRecordSaveOptions {
 	NSPersistentStoreCoordinator *_persistentStoreCoordinator;
 }
 
-+ (id)sharedManager;
++ (AZCoreRecordManager *)sharedManager;
 
-#pragma mark - Stack settings
+@property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong, readonly) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic, strong, readonly) NSPersistentStore *persistentStore;
+@property (nonatomic, strong, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
-+ (void)setStackShouldAutoMigrateStore: (BOOL) shouldMigrate;
-+ (void)setStackShouldUseInMemoryStore: (BOOL) inMemory;
-+ (void)setStackStoreName: (NSString *) name;
-+ (void)setStackStoreURL: (NSURL *) name;
-+ (void)setStackModelName: (NSString *) name;
-+ (void)setStackModelURL: (NSURL *) name;
+@property (nonatomic) BOOL stackShouldAutoMigrateStore;
+@property (nonatomic) BOOL stackShouldUseInMemoryStore;
+@property (nonatomic) BOOL stackShouldUseUbiquity;
+@property (nonatomic, copy) NSString *stackStoreName;
+@property (nonatomic, copy) NSURL *stackStoreURL;
+@property (nonatomic, copy) NSString *stackModelName;
+@property (nonatomic, copy) NSURL *stackModelURL;
 
-+ (void)setUpStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
+@property (nonatomic, strong, readonly) NSDictionary *stackUbiquityOptions;
+- (void)setUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent;
+
+- (void)configureWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
+
+#pragma mark - Default stack settings
+
++ (void)setDefaultStackShouldAutoMigrateStore: (BOOL) shouldMigrate;
++ (void)setDefaultStackShouldUseInMemoryStore: (BOOL) inMemory;
++ (void)setDefaultStackStoreName: (NSString *) name;
++ (void)setDefaultStackStoreURL: (NSURL *) name;
++ (void)setDefaultStackModelName: (NSString *) name;
++ (void)setDefaultStackModelURL: (NSURL *) name;
+ 
++ (void)setDefaultUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent;
+
++ (void)setUpDefaultStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
 
 #pragma mark - Ubiquity Support
 
+@property (nonatomic, getter = isUbiquityEnabled) BOOL ubiquityEnabled;
+
 + (BOOL)supportsUbiquity;
-
-+ (void)setUbiquityEnabled: (BOOL) enabled;
-+ (BOOL)isUbiquityEnabled;
-
-+ (void)setUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent;
 
 #pragma mark - Error Handling
 
@@ -90,3 +107,6 @@ typedef enum _AZCoreRecordSaveOptions {
 + (void) saveDataWithOptions: (AZCoreRecordSaveOptions) options block: (void (^)(NSManagedObjectContext *)) block success: (void (^)(void)) callback failure: (void (^)(NSError *)) errorCallback;
 
 @end
+
+extern void azcr_swizzle_support(Class cls, SEL oldSel, SEL newSel);
+#define azcr_swizzle(oldSelector, newSelector) azcr_swizzle_support([self class], oldSelector, newSelector)

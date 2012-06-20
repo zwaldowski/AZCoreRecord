@@ -8,18 +8,22 @@
 //
 
 #import "NSManagedObjectContextHelperTests.h"
-#import "AZCoreRecordManager+Private.h"
+#import "AZCoreRecordManager.h"
+
+@interface AZCoreRecordManager ()
+- (void)azcr_cleanUp;
+@end
 
 @implementation NSManagedObjectContextHelperTests
 
 - (void)setUp
 {
-	[AZCoreRecordManager setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecordManager setDefaultStackShouldUseInMemoryStore:YES];
 }
 
 - (void)tearDown
 {
-	[AZCoreRecordManager azcr_cleanUp];
+	[[AZCoreRecordManager sharedManager] azcr_cleanUp];
 }
 
 - (void) testCanCreateContextForCurrentThead

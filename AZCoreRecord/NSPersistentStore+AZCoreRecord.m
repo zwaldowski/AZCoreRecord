@@ -8,24 +8,13 @@
 //
 
 #import "NSPersistentStore+AZCoreRecord.h"
-#import "AZCoreRecordManager+Private.h"
-
-static NSPersistentStore *_defaultPersistentStore = nil;
+#import "AZCoreRecordManager.h"
 
 @implementation NSPersistentStore (AZCoreRecord)
 
 + (NSPersistentStore *) defaultPersistentStore
 {
-	return _defaultPersistentStore;
-}
-
-+ (BOOL) azcr_hasDefaultPersistentStore
-{
-	return !!_defaultPersistentStore;
-}
-+ (void) azcr_setDefaultPersistentStore: (NSPersistentStore *) store
-{
-	_defaultPersistentStore = store;
+	return [[AZCoreRecordManager sharedManager] persistentStore];
 }
 
 + (NSURL *) URLForStoreName: (NSString *) storeFileName
@@ -66,7 +55,7 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 
 + (NSURL *) defaultLocalStoreURL
 {
-	NSString *storeName = [AZCoreRecordManager azcr_stackStoreName];
+	NSString *storeName = [[AZCoreRecordManager sharedManager] stackStoreName];
 	if (!storeName.length)
 		storeName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleName"];
 	return [self URLForStoreName: storeName];

@@ -8,7 +8,11 @@
 //
 
 #import "AZCoreRecordImportTestCase.h"
-#import "AZCoreRecordManager+Private.h"
+#import "AZCoreRecordManager.h"
+
+@interface AZCoreRecordManager ()
+- (void)azcr_cleanUp;
+@end
 
 @implementation AZCoreRecordImportTestCase
 
@@ -17,8 +21,8 @@
 
 - (void) setUp
 {
-	[AZCoreRecordManager setStackModelName:@"TestModel.momd"];
-	[AZCoreRecordManager setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecordManager setDefaultStackModelName:@"TestModel.momd"];
+	[AZCoreRecordManager setDefaultStackShouldUseInMemoryStore:YES];
 	
 	if ([self respondsToSelector:@selector(setupTestData)])
 	{
@@ -29,7 +33,7 @@
 }
 
 - (void)tearDown {
-	[AZCoreRecordManager azcr_cleanUp];
+	[[AZCoreRecordManager sharedManager] azcr_cleanUp];
 }
 
 - (Class) testEntityClass

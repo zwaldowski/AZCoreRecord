@@ -8,12 +8,16 @@
 //
 
 #import "NSPersistentStoreCoordinatorHelperTests.h"
-#import "AZCoreRecordManager+Private.h"
+#import "AZCoreRecordManager.h"
+
+@interface AZCoreRecordManager ()
+- (void)azcr_cleanUp;
+@end
 
 @implementation NSPersistentStoreCoordinatorHelperTests
 
 - (void)tearDown {
-	[AZCoreRecordManager azcr_cleanUp];
+	[[AZCoreRecordManager sharedManager] azcr_cleanUp];
 	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:@"TestStore.sqlite"];
 	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 }

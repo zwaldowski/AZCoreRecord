@@ -186,7 +186,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		6C93DA40149522350074327E /* AZCoreRecordManager+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "AZCoreRecordManager+Private.h"; sourceTree = "<group>"; };
 		6C93DA41149522350074327E /* NSManagedObject+AZCoreRecordImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+AZCoreRecordImport.h"; sourceTree = "<group>"; };
 		6C93DA42149522350074327E /* NSManagedObject+AZCoreRecordImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+AZCoreRecordImport.m"; sourceTree = "<group>"; };
 		6C93DA43149522350074327E /* NSManagedObject+AZCoreRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+AZCoreRecord.h"; sourceTree = "<group>"; };
@@ -543,7 +542,6 @@
 				6CAF8DBE1591984100B9169B /* AZCoreRecord.h */,
 				C721C86613D0C7030097AB6F /* AZCoreRecordManager.h */,
 				C721C86713D0C7030097AB6F /* AZCoreRecordManager.m */,
-				6C93DA40149522350074327E /* AZCoreRecordManager+Private.h */,
 				6C93DA41149522350074327E /* NSManagedObject+AZCoreRecordImport.h */,
 				6C93DA42149522350074327E /* NSManagedObject+AZCoreRecordImport.m */,
 				6C93DA43149522350074327E /* NSManagedObject+AZCoreRecord.h */,

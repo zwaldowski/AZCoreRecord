@@ -8,9 +8,7 @@
 //
 
 #import "NSManagedObjectModel+AZCoreRecord.h"
-#import "AZCoreRecordManager+Private.h"
-
-static NSManagedObjectModel *_defaultManagedObjectModel = nil;
+#import "AZCoreRecordManager.h"
 
 @implementation NSManagedObjectModel (AZCoreRecord)
 
@@ -18,29 +16,7 @@ static NSManagedObjectModel *_defaultManagedObjectModel = nil;
 
 + (NSManagedObjectModel *) defaultModel
 {
-	if (!_defaultManagedObjectModel)
-	{
-		NSURL *storeURL = [AZCoreRecordManager azcr_stackModelURL];
-		NSString *storeName = [AZCoreRecordManager azcr_stackModelName];
-		
-		if (!storeURL && storeName)
-			_defaultManagedObjectModel = [self modelNamed:storeName];
-		else if (storeURL) 
-			_defaultManagedObjectModel = [self modelAtURL:storeURL];
-		else
-			_defaultManagedObjectModel = [self model];
-	}
-	
-	return _defaultManagedObjectModel;
-}
-
-+ (BOOL) azcr_hasDefaultModel
-{
-	return !!_defaultManagedObjectModel;
-}
-+ (void) azcr_setDefaultModel: (NSManagedObjectModel *) newModel
-{
-	_defaultManagedObjectModel = newModel;
+	return [[AZCoreRecordManager sharedManager] managedObjectModel];
 }
 
 #pragma mark - Model Factory Methods

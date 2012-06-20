@@ -9,7 +9,11 @@
 
 #import "SingleEntityWithNoRelationships.h"
 #import "NSManagedObject+AZCoreRecordImport.h"
-#import "AZCoreRecordManager+Private.h"
+#import "AZCoreRecordManager.h"
+
+@interface AZCoreRecordManager ()
+- (void)azcr_cleanUp;
+@end
 
 @interface ImportSingleEntityWithNoRelationshipsTests : GHTestCase
 
@@ -23,8 +27,8 @@
 
 - (void) setUpClass
 {
-	[AZCoreRecordManager setStackModelName:@"TestModel.momd"];
-	[AZCoreRecordManager setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecordManager setDefaultStackModelName:@"TestModel.momd"];
+	[AZCoreRecordManager setDefaultStackShouldUseInMemoryStore:YES];
     
 	id singleEntity = [self dataFromJSONFixture];
 	
@@ -35,7 +39,7 @@
 
 - (void) tearDownClass
 {
-	[AZCoreRecordManager azcr_cleanUp];
+	[[AZCoreRecordManager sharedManager] azcr_cleanUp];
 }
 
 - (void) testImportASingleEntity

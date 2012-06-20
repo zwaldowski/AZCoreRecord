@@ -10,20 +10,22 @@
 #import "NSManagedObjectHelperTests.h"
 #import "SingleRelatedEntity.h"
 #import "AZCoreRecord.h"
-#import "AZCoreRecordManager+Private.h"
+
+@interface AZCoreRecordManager ()
+- (void)azcr_cleanUp;
+@end
 
 @implementation NSManagedObjectHelperTests
 
 - (void) setUp
 {
-	[AZCoreRecordManager azcr_cleanUp];
-	[AZCoreRecordManager setStackModelName:@"TestModel.momd"];
-	[AZCoreRecordManager setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecordManager setDefaultStackModelName:@"TestModel.momd"];
+	[AZCoreRecordManager setDefaultStackShouldUseInMemoryStore:YES];
 }
 
 - (void) tearDown
 {
-	[AZCoreRecordManager azcr_cleanUp];
+	[[AZCoreRecordManager sharedManager] azcr_cleanUp];
 }
 
 -(BOOL)shouldRunOnMainThread

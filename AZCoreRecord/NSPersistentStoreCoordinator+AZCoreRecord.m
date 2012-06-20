@@ -8,23 +8,9 @@
 //
 
 #import "NSPersistentStoreCoordinator+AZCoreRecord.h"
-#import "AZCoreRecordManager+Private.h"
+#import "AZCoreRecordManager.h"
 #import "NSPersistentStore+AZCoreRecord.h"
 #import "NSManagedObjectModel+AZCoreRecord.h"
-
-static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
-
-static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
-	static NSDictionary *options = nil;
-	static dispatch_once_t once;
-	dispatch_once(&once, ^{
-		id yes = (__bridge id)kCFBooleanTrue;
-		options = [NSDictionary dictionaryWithObjectsAndKeys:
-				   yes, NSMigratePersistentStoresAutomaticallyOption,
-				   yes, NSInferMappingModelAutomaticallyOption, nil];
-	});
-	return options;
-}
 
 @implementation NSPersistentStoreCoordinator (AZCoreRecord)
 
@@ -32,34 +18,7 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 
 + (NSPersistentStoreCoordinator *) defaultStoreCoordinator
 {
-	if (!_defaultCoordinator)
-	{
-		NSURL *storeURL = [AZCoreRecordManager azcr_stackStoreURL] ?: [NSPersistentStore defaultLocalStoreURL];
-		NSString *storeType = [AZCoreRecordManager azcr_stackShouldUseInMemoryStore] ? NSInMemoryStoreType : NSSQLiteStoreType;
-		NSDictionary *options = [self azcr_storeOptions];
-		
-		NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
-		
-		[self azcr_setDefaultStoreCoordinator:psc];
-	}
-	
-	return _defaultCoordinator;
-}
-
-+ (BOOL) azcr_hasDefaultStoreCoordinator
-{
-	return !!_defaultCoordinator;
-}
-+ (void) azcr_setDefaultStoreCoordinator:(NSPersistentStoreCoordinator *)coordinator
-{
-	_defaultCoordinator = coordinator;
-	
-	// NB: If `_defaultCoordinator` is nil, then `persistentStores` is also nil, so `count` returns 0
-	if (![NSPersistentStore azcr_hasDefaultPersistentStore] && _defaultCoordinator.persistentStores.count)
-	{
-		NSPersistentStore *defaultStore = [_defaultCoordinator.persistentStores objectAtIndex: 0];
-		[NSPersistentStore azcr_setDefaultPersistentStore: defaultStore];
-	}
+	return [[AZCoreRecordManager sharedManager] persistentStoreCoordinator];
 }
 
 #pragma mark - Store Coordinator Factory Methods
@@ -115,12 +74,6 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 			dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC);
 			dispatch_after(when, dispatch_get_main_queue(), addBlock);
 		}
-		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			if (![NSPersistentStore azcr_hasDefaultPersistentStore]) {
-				[NSPersistentStoreCoordinator azcr_setDefaultStoreCoordinator: psc];
-			}
-		});
 	});
 	
 	return psc;
@@ -142,36 +95,6 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 	NSPersistentStore *store = [self addPersistentStoreWithType: NSInMemoryStoreType configuration: nil URL: nil options: nil error: &error];
     [AZCoreRecordManager handleError: error];
 	return store;
-}
-
-#pragma mark - Ubiquity
-
-+ (NSDictionary *)aczr_storeOptions {
-	BOOL shouldAutoMigrate = [AZCoreRecordManager azcr_stackShouldAutoMigrateStore];
-	BOOL shouldUseCloud = ([AZCoreRecordManager azcr_stackUbiquityOptions] != nil);
-	
-	NSMutableDictionary *options = shouldAutoMigrate || shouldUseCloud ? [NSMutableDictionary dictionary] : nil;
-	
-	if (shouldAutoMigrate)
-		[options addEntriesFromDictionary:azcr_automaticLightweightMigrationOptions()];
-	
-	if (shouldUseCloud)
-		[options addEntriesFromDictionary:[AZCoreRecordManager azcr_stackUbiquityOptions]];
-	
-	return options;
-}
-
-- (void)_setUbiquityEnabled:(BOOL)enabled {
-	NSPersistentStore *mainStore = [NSPersistentStore defaultPersistentStore];
-	
-	if ((([mainStore.options objectForKey:NSPersistentStoreUbiquitousContentURLKey]) != nil) == enabled)
-		return;
-	
-	NSDictionary *newOptions = [NSPersistentStoreCoordinator aczr_storeOptions];
-	
-	NSError *err = nil;
-	[self migratePersistentStore:mainStore toURL:mainStore.URL options:newOptions withType:mainStore.type error:&err];
-	[AZCoreRecordManager handleError:err];
 }
 
 @end

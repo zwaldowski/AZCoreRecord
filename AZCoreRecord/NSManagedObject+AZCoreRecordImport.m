@@ -8,7 +8,7 @@
 //
 
 #import "NSManagedObject+AZCoreRecordImport.h"
-#import "AZCoreRecordManager+Private.h"
+#import "AZCoreRecordManager.h"
 #import <objc/message.h>
 #import "NSManagedObject+AZCoreRecord.h"
 #import "NSManagedObjectContext+AZCoreRecord.h"
