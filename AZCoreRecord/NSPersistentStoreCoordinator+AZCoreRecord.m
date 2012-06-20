@@ -34,8 +34,8 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 {
 	if (!_defaultCoordinator)
 	{
-		NSURL *storeURL = [AZCoreRecord azcr_stackStoreURL] ?: [NSPersistentStore defaultLocalStoreURL];
-		NSString *storeType = [AZCoreRecord azcr_stackShouldUseInMemoryStore] ? NSInMemoryStoreType : NSSQLiteStoreType;
+		NSURL *storeURL = [AZCoreRecordManager azcr_stackStoreURL] ?: [NSPersistentStore defaultLocalStoreURL];
+		NSString *storeType = [AZCoreRecordManager azcr_stackShouldUseInMemoryStore] ? NSInMemoryStoreType : NSSQLiteStoreType;
 		NSDictionary *options = [self azcr_storeOptions];
 		
 		NSPersistentStoreCoordinator *psc = [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
@@ -95,7 +95,7 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 	
 	NSError *fmError = nil;
 	[fileManager createDirectoryAtPath: storePath withIntermediateDirectories: YES attributes: nil error: &fmError];
-    [AZCoreRecord handleError: fmError];
+    [AZCoreRecordManager handleError: fmError];
 	
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 		// Add the persistent store
@@ -104,7 +104,7 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 			[psc lock];
 			[psc addPersistentStoreWithType: storeType configuration: nil URL: storeURL options: options error: &pscError];
 			[psc unlock];
-			[AZCoreRecord handleError: pscError];
+			[AZCoreRecordManager handleError: pscError];
 		};
 		
 		addBlock();
@@ -140,15 +140,15 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 {
 	NSError *error = nil;
 	NSPersistentStore *store = [self addPersistentStoreWithType: NSInMemoryStoreType configuration: nil URL: nil options: nil error: &error];
-    [AZCoreRecord handleError: error];
+    [AZCoreRecordManager handleError: error];
 	return store;
 }
 
 #pragma mark - Ubiquity
 
 + (NSDictionary *)aczr_storeOptions {
-	BOOL shouldAutoMigrate = [AZCoreRecord azcr_stackShouldAutoMigrateStore];
-	BOOL shouldUseCloud = ([AZCoreRecord azcr_stackUbiquityOptions] != nil);
+	BOOL shouldAutoMigrate = [AZCoreRecordManager azcr_stackShouldAutoMigrateStore];
+	BOOL shouldUseCloud = ([AZCoreRecordManager azcr_stackUbiquityOptions] != nil);
 	
 	NSMutableDictionary *options = shouldAutoMigrate || shouldUseCloud ? [NSMutableDictionary dictionary] : nil;
 	
@@ -156,7 +156,7 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 		[options addEntriesFromDictionary:azcr_automaticLightweightMigrationOptions()];
 	
 	if (shouldUseCloud)
-		[options addEntriesFromDictionary:[AZCoreRecord azcr_stackUbiquityOptions]];
+		[options addEntriesFromDictionary:[AZCoreRecordManager azcr_stackUbiquityOptions]];
 	
 	return options;
 }
@@ -171,7 +171,7 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 	
 	NSError *err = nil;
 	[self migratePersistentStore:mainStore toURL:mainStore.URL options:newOptions withType:mainStore.type error:&err];
-	[AZCoreRecord handleError:err];
+	[AZCoreRecordManager handleError:err];
 }
 
 @end

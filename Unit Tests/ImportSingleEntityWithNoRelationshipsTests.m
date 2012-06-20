@@ -23,8 +23,8 @@
 
 - (void) setUpClass
 {
-	[AZCoreRecord setStackModelName:@"TestModel.momd"];
-	[AZCoreRecord setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecordManager setStackModelName:@"TestModel.momd"];
+	[AZCoreRecordManager setStackShouldUseInMemoryStore:YES];
     
 	id singleEntity = [self dataFromJSONFixture];
 	
@@ -35,7 +35,7 @@
 
 - (void) tearDownClass
 {
-	[AZCoreRecord azcr_cleanUp];
+	[AZCoreRecordManager azcr_cleanUp];
 }
 
 - (void) testImportASingleEntity

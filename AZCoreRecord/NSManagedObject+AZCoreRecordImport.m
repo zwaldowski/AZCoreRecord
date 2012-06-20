@@ -413,7 +413,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 {
 	__block NSArray *objectIDs = nil;
 	
-	[AZCoreRecord saveDataWithBlock: ^(NSManagedObjectContext *localContext) {
+	[AZCoreRecordManager saveDataWithBlock: ^(NSManagedObjectContext *localContext) {
 		NSMutableArray *objects = [NSMutableArray array];
 		
 		[listOfObjectData enumerateObjectsUsingBlock: ^(NSDictionary *objectData, NSUInteger idx, BOOL *stop) {
@@ -437,7 +437,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 {
 	__block NSArray *objectIDs = nil;
 	
-	[AZCoreRecord saveDataWithBlock: ^(NSManagedObjectContext *localContext) {
+	[AZCoreRecordManager saveDataWithBlock: ^(NSManagedObjectContext *localContext) {
 		NSMutableArray *objects = [NSMutableArray array];
 		
 		[listOfObjectData enumerateObjectsUsingBlock: ^(id objectData, NSUInteger idx, BOOL *stop) {

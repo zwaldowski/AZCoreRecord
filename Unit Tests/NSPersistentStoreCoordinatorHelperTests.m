@@ -13,7 +13,7 @@
 @implementation NSPersistentStoreCoordinatorHelperTests
 
 - (void)tearDown {
-	[AZCoreRecord azcr_cleanUp];
+	[AZCoreRecordManager azcr_cleanUp];
 	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:@"TestStore.sqlite"];
 	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 }

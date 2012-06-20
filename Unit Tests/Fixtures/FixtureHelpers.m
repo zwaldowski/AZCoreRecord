@@ -19,7 +19,7 @@
 	NSError *error = nil;
 	id obj = [NSJSONSerialization JSONObjectWithData: jsonData options: 0 error: &error];
 	
-	[AZCoreRecord handleError:error];
+	[AZCoreRecordManager handleError:error];
 	
 	return obj;
 }

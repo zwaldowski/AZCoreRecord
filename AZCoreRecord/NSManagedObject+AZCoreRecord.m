@@ -35,7 +35,7 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 	
 	NSError *error = nil;
 	id ret = [[NSManagedObjectContext defaultContext] existingObjectWithID:objectID error:&error];
-	[AZCoreRecord handleError:error];
+	[AZCoreRecordManager handleError:error];
 	
 	return ret;
 }
@@ -58,7 +58,7 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 	{
 		NSError *error = nil;
 		[myContext obtainPermanentIDsForObjects: [NSArray arrayWithObject: self] error: &error];
-		[AZCoreRecord handleError: error];
+		[AZCoreRecordManager handleError: error];
 	}
 	
 	if ([context isEqual:self.managedObjectContext])
@@ -66,7 +66,7 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 
 	NSError *error = nil;
 	NSManagedObject *inContext = [context existingObjectWithID: self.objectID error: &error];
-	[AZCoreRecord handleError: error];
+	[AZCoreRecordManager handleError: error];
 	
 	return inContext;
 }
@@ -91,7 +91,7 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 		if ([self.managedObjectContext obtainPermanentIDsForObjects: [NSArray arrayWithObject: self] error: &error])
 			objectID = self.objectID;
 		
-		[AZCoreRecord handleError: error];
+		[AZCoreRecordManager handleError: error];
 	}
 	
 	return objectID.URIRepresentation;
@@ -218,7 +218,7 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 + (id)existingObjectWithID:(NSManagedObjectID *)objectID inContext:(NSManagedObjectContext *)context {
 	NSError *error = nil;
 	id ret = [context existingObjectWithID: objectID error: &error];
-	[AZCoreRecord handleError: error];
+	[AZCoreRecordManager handleError: error];
 	return ret;
 }
 
@@ -245,7 +245,7 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 	NSError *error = nil;
 	NSFetchRequest *request = [self requestAllWithPredicate: searchFilter inContext: context];
 	NSUInteger count = [context countForFetchRequest: request error: &error];
-	[AZCoreRecord handleError: error];
+	[AZCoreRecordManager handleError: error];
 	return count;
 }
 
@@ -509,7 +509,7 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 	NSFetchRequest *request = [self requestAllSortedBy: sortTerm ascending: ascending predicate: searchTerm inContext: context];
 	NSError *error = nil;
 	NSArray *results = [context executeFetchRequest: request error: &error];
-	[AZCoreRecord handleError: error];
+	[AZCoreRecordManager handleError: error];
 	return results;
 }
 

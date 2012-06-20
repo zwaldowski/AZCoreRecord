@@ -48,7 +48,7 @@ static void *kParentContextKey;
 		}
 		else
 		{
-			[AZCoreRecord handleError: error];
+			[AZCoreRecordManager handleError: error];
 		}
 	}
 	
@@ -166,7 +166,7 @@ static void *kParentContextKey;
 
 + (void) azcr_setDefaultContext: (NSManagedObjectContext *) newDefault
 {
-	BOOL isUbiquitous = [AZCoreRecord isUbiquityEnabled];
+	BOOL isUbiquitous = [AZCoreRecordManager isUbiquityEnabled];
 	NSPersistentStoreCoordinator *coordinator = coordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 	
 	if (isUbiquitous)

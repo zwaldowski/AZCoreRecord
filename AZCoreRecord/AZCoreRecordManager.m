@@ -42,7 +42,7 @@ extern void azcr_swizzle_support(Class cls, SEL oldSel, SEL newSel) {
 		method_exchangeImplementations(origMethod, newMethod);
 }
 
-@implementation AZCoreRecord
+@implementation AZCoreRecordManager
 
 #pragma mark - Stack settings
 

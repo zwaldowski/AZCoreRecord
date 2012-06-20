@@ -66,7 +66,7 @@ static NSPersistentStore *_defaultPersistentStore = nil;
 
 + (NSURL *) defaultLocalStoreURL
 {
-	NSString *storeName = [AZCoreRecord azcr_stackStoreName];
+	NSString *storeName = [AZCoreRecordManager azcr_stackStoreName];
 	if (!storeName.length)
 		storeName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleName"];
 	return [self URLForStoreName: storeName];

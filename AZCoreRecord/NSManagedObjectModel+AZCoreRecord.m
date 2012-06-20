@@ -20,8 +20,8 @@ static NSManagedObjectModel *_defaultManagedObjectModel = nil;
 {
 	if (!_defaultManagedObjectModel)
 	{
-		NSURL *storeURL = [AZCoreRecord azcr_stackModelURL];
-		NSString *storeName = [AZCoreRecord azcr_stackModelName];
+		NSURL *storeURL = [AZCoreRecordManager azcr_stackModelURL];
+		NSString *storeName = [AZCoreRecordManager azcr_stackModelName];
 		
 		if (!storeURL && storeName)
 			_defaultManagedObjectModel = [self modelNamed:storeName];

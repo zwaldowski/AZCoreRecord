@@ -48,7 +48,7 @@ extern void azcr_swizzle_support(Class cls, SEL oldSel, SEL newSel);
 
 @end
 
-@interface AZCoreRecord (AZCoreRecordPrivate)
+@interface AZCoreRecordManager (AZCoreRecordPrivate)
 
 + (void) azcr_cleanUp;
 

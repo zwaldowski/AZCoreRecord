@@ -9,16 +9,17 @@
 
 #import "AZCoreRecordTests.h"
 #import "AZCoreRecordManager+Private.h"
+#import "AZCoreRecord.h"
 
 @implementation AZCoreRecordTests
 
 - (void) setUp
 {
-	[AZCoreRecord setStackModelName:@"TestModel.momd"];
+	[AZCoreRecordManager setStackModelName:@"TestModel.momd"];
 }
 
 - (void) tearDown {
-	[AZCoreRecord azcr_cleanUp];
+	[AZCoreRecordManager azcr_cleanUp];
 }
 
 - (void) assertDefaultStack
@@ -48,7 +49,7 @@
 
 - (void) testCreateInMemoryCoreDataStack
 {
-	[AZCoreRecord setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecordManager setStackShouldUseInMemoryStore:YES];
 	
 	[self assertDefaultStack];
 	
@@ -59,7 +60,7 @@
 - (void) testCreateSqliteStackWithCustomName
 {
 	NSString *testStoreName = @"MyTestDataStore.sqlite";
-	[AZCoreRecord setStackStoreName:testStoreName];
+	[AZCoreRecordManager setStackStoreName:testStoreName];
 	
 	[self assertDefaultStack];
 	
@@ -72,9 +73,9 @@
 
 - (void) testCanSetAUserSpecifiedErrorHandler
 {
-	[AZCoreRecord setErrorHandlerTarget:self];
+	[AZCoreRecordManager setErrorHandlerTarget:self];
 	
-	assertThat([AZCoreRecord errorHandlerTarget], is(equalTo(self)));
+	assertThat([AZCoreRecordManager errorHandlerTarget], is(equalTo(self)));
 }
 
 - (void)handleError:(NSError *)error
@@ -87,21 +88,21 @@
 
 - (void) testCanSetAUserSpecifiedErrorHandlerBlock
 {
-	[AZCoreRecord setErrorHandler: ^(NSError *error){
+	[AZCoreRecordManager setErrorHandler: ^(NSError *error){
 		// this block intentionally left empty
 	}];
 	
-	assertThat([AZCoreRecord errorHandler], is(notNilValue()));
+	assertThat([AZCoreRecordManager errorHandler], is(notNilValue()));
 }
 
 - (void) testUserSpecifiedErrorHandlerIsTriggeredOnError
 {
 	errorHandlerWasCalled_ = NO;
-	[AZCoreRecord setErrorHandlerTarget:self];
-	[AZCoreRecord setErrorHandler:NULL];
+	[AZCoreRecordManager setErrorHandlerTarget:self];
+	[AZCoreRecordManager setErrorHandler:NULL];
 	
 	NSError *testError = [NSError errorWithDomain:@"AZCoreRecordUnitTests" code:1000 userInfo:nil];
-	[AZCoreRecord handleError:testError];
+	[AZCoreRecordManager handleError:testError];
 	
 	assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
 }
@@ -109,13 +110,13 @@
 - (void) testUserSpecifiedErrorHandlerBlockIsTriggeredOnError
 {
 	errorHandlerWasCalled_ = NO;
-	[AZCoreRecord setErrorHandler: ^(NSError *error) {
+	[AZCoreRecordManager setErrorHandler: ^(NSError *error) {
 		[self handleError:error];
 	}];
-	[AZCoreRecord setErrorHandlerTarget:nil];
+	[AZCoreRecordManager setErrorHandlerTarget:nil];
 	
 	NSError *testError = [NSError errorWithDomain:@"AZCoreRecordUnitTests" code:1000 userInfo:nil];
-	[AZCoreRecord handleError:testError];
+	[AZCoreRecordManager handleError:testError];
 	
 	assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
 }
@@ -126,9 +127,9 @@
 	id mockErrorHandler = [OCMockObject mockForProtocol:@protocol(AZCoreRecordErrorHandler)];
 	[[mockErrorHandler expect] handleError:testError];
 	
-	[AZCoreRecord setErrorHandlerTarget:mockErrorHandler];
-	[AZCoreRecord setErrorHandler:NULL];
-	[AZCoreRecord handleError:testError];
+	[AZCoreRecordManager setErrorHandlerTarget:mockErrorHandler];
+	[AZCoreRecordManager setErrorHandler:NULL];
+	[AZCoreRecordManager handleError:testError];
 	
 	[mockErrorHandler verify];
 }

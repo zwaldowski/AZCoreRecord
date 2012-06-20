@@ -16,7 +16,7 @@
 - (BOOL)performFetch {
 	NSError *error = nil;
     BOOL saved = [self performFetch: &error];
-    [AZCoreRecord handleError: error];
+    [AZCoreRecordManager handleError: error];
 	return saved;
 }
 

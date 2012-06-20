@@ -17,8 +17,8 @@
 
 - (void) setUp
 {
-	[AZCoreRecord setStackModelName:@"TestModel.momd"];
-	[AZCoreRecord setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecordManager setStackModelName:@"TestModel.momd"];
+	[AZCoreRecordManager setStackShouldUseInMemoryStore:YES];
 	
 	if ([self respondsToSelector:@selector(setupTestData)])
 	{
@@ -29,7 +29,7 @@
 }
 
 - (void)tearDown {
-	[AZCoreRecord azcr_cleanUp];
+	[AZCoreRecordManager azcr_cleanUp];
 }
 
 - (Class) testEntityClass

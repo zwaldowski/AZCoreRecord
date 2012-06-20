@@ -14,12 +14,12 @@
 
 - (void)setUp
 {
-	[AZCoreRecord setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecordManager setStackShouldUseInMemoryStore:YES];
 }
 
 - (void)tearDown
 {
-	[AZCoreRecord azcr_cleanUp];
+	[AZCoreRecordManager azcr_cleanUp];
 }
 
 - (void) testCanCreateContextForCurrentThead

@@ -16,14 +16,14 @@
 
 - (void) setUp
 {
-	[AZCoreRecord azcr_cleanUp];
-	[AZCoreRecord setStackModelName:@"TestModel.momd"];
-	[AZCoreRecord setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecordManager azcr_cleanUp];
+	[AZCoreRecordManager setStackModelName:@"TestModel.momd"];
+	[AZCoreRecordManager setStackShouldUseInMemoryStore:YES];
 }
 
 - (void) tearDown
 {
-	[AZCoreRecord azcr_cleanUp];
+	[AZCoreRecordManager azcr_cleanUp];
 }
 
 -(BOOL)shouldRunOnMainThread

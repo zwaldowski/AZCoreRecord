@@ -24,7 +24,7 @@ typedef enum _AZCoreRecordSaveOptions {
 
 @end
 
-@interface AZCoreRecord : NSObject
+@interface AZCoreRecordManager : NSObject
 
 #pragma mark - Stack settings
 

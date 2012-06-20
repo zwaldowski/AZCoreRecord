@@ -7,6 +7,8 @@
 //  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
+#import "AZCoreRecord.h"
+
 @interface AZCoreRecordTests : GHTestCase <AZCoreRecordErrorHandler>
 {
 	BOOL errorHandlerWasCalled_;
