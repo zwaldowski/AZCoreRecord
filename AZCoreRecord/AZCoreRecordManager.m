@@ -68,7 +68,7 @@
 {
 	if ((self = [super init]))
 	{
-		self.semaphore = dispatch_semaphore_create(0);
+		self.semaphore = dispatch_semaphore_create(1);
 	}
 	
 	return self;
@@ -208,10 +208,28 @@
 	
 	dispatch_semaphore_signal(self.semaphore);
 }
+- (void) setStackModelName: (NSString *) stackModelName
+{
+	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+	
+	[self azcr_resetStack];
+	_stackModelName = [stackModelName copy];
+	
+	dispatch_semaphore_signal(self.semaphore);
+}
+- (void) setStackModelURL: (NSURL *) stackModelURL
+{
+	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+	
+	[self azcr_resetStack];
+	_stackModelURL = [stackModelURL copy];
+	
+	dispatch_semaphore_signal(self.semaphore);
+}
 - (void) setStackShouldAutoMigrateStore: (BOOL) stackShouldAutoMigrateStore
 {
 	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-
+	
 	[self azcr_resetStack];
 	_stackShouldAutoMigrate = stackShouldAutoMigrateStore;
 	
@@ -241,24 +259,6 @@
 	
 	[self azcr_resetStack];
 	_stackStoreName = [stackStoreName copy];
-	
-	dispatch_semaphore_signal(self.semaphore);
-}
-- (void) setStackModelName: (NSString *) stackModelName
-{
-	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-	
-	[self azcr_resetStack];
-	_stackModelName = [stackModelName copy];
-	
-	dispatch_semaphore_signal(self.semaphore);
-}
-- (void) setStackModelURL: (NSURL *) stackModelURL
-{
-	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-	
-	[self azcr_resetStack];
-	_stackModelURL = [stackModelURL copy];
 	
 	dispatch_semaphore_signal(self.semaphore);
 }
