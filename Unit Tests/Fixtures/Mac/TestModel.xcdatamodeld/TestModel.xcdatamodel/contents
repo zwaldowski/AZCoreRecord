@@ -1,32 +1,58 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1130" systemVersion="11C74" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1480" systemVersion="12A248" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="AbstractRelatedEntity" representedClassName="AbstractRelatedEntity" isAbstract="YES">
-        <attribute name="sampleBaseAttribute" optional="YES" attributeType="String"/>
-        <relationship name="mainTestEntity" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="SingleRelatedEntity" inverseName="testRelationship" inverseEntity="SingleRelatedEntity"/>
+        <attribute name="sampleBaseAttribute" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <relationship name="mainTestEntity" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="SingleRelatedEntity" inverseName="testRelationship" inverseEntity="SingleRelatedEntity">
+            <userInfo/>
+        </relationship>
+        <userInfo/>
     </entity>
     <entity name="ConcreteRelatedEntity" representedClassName="ConcreteRelatedEntity" parentEntity="AbstractRelatedEntity">
-        <attribute name="sampleConcreteAttribute" optional="YES" attributeType="String"/>
+        <attribute name="sampleConcreteAttribute" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <userInfo/>
     </entity>
-    <entity name="EntityWithDiffernentClassName" representedClassName="DifferentClassNameMapping"/>
+    <entity name="EntityWithDiffernentClassName" representedClassName="DifferentClassNameMapping">
+        <userInfo/>
+    </entity>
     <entity name="SingleEntityWithNoRelationships" representedClassName="SingleEntityWithNoRelationships">
-        <attribute name="booleanTestAttribute" optional="YES" attributeType="Boolean"/>
+        <attribute name="booleanTestAttribute" optional="YES" attributeType="Boolean">
+            <userInfo/>
+        </attribute>
         <attribute name="colorTestAttribute" optional="YES" attributeType="Transformable">
             <userInfo>
                 <entry key="className" value="NSColor"/>
             </userInfo>
         </attribute>
-        <attribute name="dateTestAttribute" optional="YES" attributeType="Date"/>
+        <attribute name="dateTestAttribute" optional="YES" attributeType="Date">
+            <userInfo/>
+        </attribute>
         <attribute name="dateWithCustomFormat" optional="YES" attributeType="Date" syncable="YES">
             <userInfo>
                 <entry key="dateFormat" value="M/d/yyyy H-mm-ss a"/>
             </userInfo>
         </attribute>
-        <attribute name="decimalTestAttribute" optional="YES" attributeType="Decimal" defaultValueString="0.0"/>
-        <attribute name="doubleTestAttribute" optional="YES" attributeType="Double" defaultValueString="0.0"/>
-        <attribute name="floatTestAttribute" optional="YES" attributeType="Float" defaultValueString="0"/>
-        <attribute name="int16TestAttribute" optional="YES" attributeType="Integer 16" defaultValueString="0"/>
-        <attribute name="int32TestAttribute" optional="YES" attributeType="Integer 32" defaultValueString="0"/>
-        <attribute name="int64TestAttribute" optional="YES" attributeType="Integer 64" defaultValueString="0"/>
+        <attribute name="decimalTestAttribute" optional="YES" attributeType="Decimal" defaultValueString="0.0">
+            <userInfo/>
+        </attribute>
+        <attribute name="doubleTestAttribute" optional="YES" attributeType="Double" defaultValueString="0.0">
+            <userInfo/>
+        </attribute>
+        <attribute name="floatTestAttribute" optional="YES" attributeType="Float" defaultValueString="0">
+            <userInfo/>
+        </attribute>
+        <attribute name="int16TestAttribute" optional="YES" attributeType="Integer 16" defaultValueString="0">
+            <userInfo/>
+        </attribute>
+        <attribute name="int32TestAttribute" optional="YES" attributeType="Integer 32" defaultValueString="0">
+            <userInfo/>
+        </attribute>
+        <attribute name="int64TestAttribute" optional="YES" attributeType="Integer 64" defaultValueString="0">
+            <userInfo/>
+        </attribute>
         <attribute name="mappedStringAttribute" optional="YES" attributeType="String" syncable="YES">
             <userInfo>
                 <entry key="mappedKey" value="mappedAttributeWithStringValue"/>
@@ -34,11 +60,17 @@
         </attribute>
         <attribute name="notInJsonAttribute" optional="YES" attributeType="String" defaultValueString="Set From Core Data Model Editor" syncable="YES"/>
         <attribute name="nullTestAttribute" optional="YES" attributeType="Integer 64" defaultValueString="100" syncable="YES"/>
-        <attribute name="stringTestAttribute" optional="YES" attributeType="String"/>
+        <attribute name="stringTestAttribute" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <userInfo/>
     </entity>
     <entity name="SingleRelatedEntity" representedClassName="SingleRelatedEntity">
         <attribute name="mappedStringAttribute" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="testRelationship" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ConcreteRelatedEntity" inverseName="mainTestEntity" inverseEntity="AbstractRelatedEntity"/>
+        <relationship name="testRelationship" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ConcreteRelatedEntity" inverseName="mainTestEntity" inverseEntity="AbstractRelatedEntity">
+            <userInfo/>
+        </relationship>
+        <userInfo/>
     </entity>
     <elements>
         <element name="AbstractRelatedEntity" positionX="-81" positionY="-149679" width="128" height="75"/>

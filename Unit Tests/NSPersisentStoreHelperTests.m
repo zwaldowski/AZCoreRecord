@@ -1,13 +1,14 @@
 //
 //  NSPersisentStoreHelperTests.m
-//  Magical Record
+//  AZCoreRecord Unit Tests
 //
 //  Created by Saul Mora on 7/15/11.
-//  Copyright 2011 Magical Panda Software LLC. All rights reserved.
+//  Copyright 2010-2011 Magical Panda Software, LLC. All rights reserved.
+//  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
 #import "NSPersisentStoreHelperTests.h"
-#import "MagicalRecord+Private.h"
+#import "AZCoreRecord+Private.h"
 
 @implementation NSPersisentStoreHelperTests
 
@@ -75,7 +76,7 @@
 {
 	NSString *applictionSupportDirectory = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) lastObject];
 	NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
-	NSString *defaultStoreName = kMagicalRecordDefaultStoreFileName;
+	NSString *defaultStoreName = @"Mac App Unit Tests.sqlite";
 	
 	NSURL *expectedStoreUrl = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@/%@", applictionSupportDirectory, applicationName, defaultStoreName]];
 	

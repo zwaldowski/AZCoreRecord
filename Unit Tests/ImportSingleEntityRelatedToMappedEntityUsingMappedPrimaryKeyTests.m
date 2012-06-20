@@ -1,16 +1,17 @@
 //
 //  ImportSingleEntityRelatedToMappedEntityUsingMappedPrimaryKey.m
-//  Magical Record
+//  AZCoreRecord Unit Tests
 //
 //  Created by Saul Mora on 8/11/11.
-//  Copyright (c) 2011 Magical Panda Software LLC. All rights reserved.
+//  Copyright 2010-2011 Magical Panda Software, LLC. All rights reserved.
+//  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
 #import "MappedEntity.h"
 #import "SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey.h"
-#import "MagicalDataImportTestCase.h"
+#import "AZCoreRecordImportTestCase.h"
 
-@interface ImportSingleEntityRelatedToMappedEntityUsingMappedPrimaryKeyTests : MagicalDataImportTestCase
+@interface ImportSingleEntityRelatedToMappedEntityUsingMappedPrimaryKeyTests : AZCoreRecordImportTestCase
 
 @end
 
@@ -42,7 +43,7 @@
 	//verify mapping in relationship description userinfo
 	NSEntityDescription *mappedEntity = [entity entity];
 	NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
-	assertThat([[testRelationship userInfo] valueForKey:kMagicalRecordImportMapKey], is(equalTo(@"someRandomAttributeName")));
+	assertThat([[testRelationship userInfo] valueForKey: AZCoreRecordImportMapKey], is(equalTo(@"someRandomAttributeName")));
 	
 	assertThatInteger([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey countOfEntities], is(equalToInteger(1)));
 	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(2)));
@@ -61,7 +62,7 @@
 	//verify mapping in relationship description userinfo
 	NSEntityDescription *mappedEntity = [entity entity];
 	NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
-	assertThat([[testRelationship userInfo] valueForKey:kMagicalRecordImportMapKey], is(equalTo(@"someRandomAttributeName")));
+	assertThat([[testRelationship userInfo] valueForKey: AZCoreRecordImportMapKey], is(equalTo(@"someRandomAttributeName")));
 	
 	assertThatInteger([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey countOfEntities], is(equalToInteger(1)));
 	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(1)));
@@ -79,7 +80,7 @@
 	//verify mapping in relationship description userinfo
 	NSEntityDescription *mappedEntity = [entity entity];
 	NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
-	assertThat([[testRelationship userInfo] valueForKey:kMagicalRecordImportRelationshipPrimaryKey], is(equalTo(@"testMappedEntityID")));
+	assertThat([[testRelationship userInfo] valueForKey: AZCoreRecordImportRelationshipPrimaryKey], is(equalTo(@"testMappedEntityID")));
 	
 	assertThatInteger([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey countOfEntities], is(equalToInteger(1)));
 	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(2)));
@@ -98,7 +99,7 @@
 	//verify mapping in relationship description userinfo
 	NSEntityDescription *mappedEntity = [entity entity];
 	NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
-	assertThat([[testRelationship userInfo] valueForKey:kMagicalRecordImportRelationshipPrimaryKey], is(equalTo(@"testMappedEntityID")));
+	assertThat([[testRelationship userInfo] valueForKey: AZCoreRecordImportRelationshipPrimaryKey], is(equalTo(@"testMappedEntityID")));
 	
 	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(1)));
 	assertThat([testRelatedEntity testMappedEntityID], is(equalToInteger(42)));

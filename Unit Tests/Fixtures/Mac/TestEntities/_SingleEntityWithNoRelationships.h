@@ -55,7 +55,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSNumber *booleanTestAttribute;
+@property (nonatomic, strong) NSNumber* booleanTestAttribute;
 
 
 @property BOOL booleanTestAttributeValue;
@@ -67,7 +67,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSObject *colorTestAttribute;
+@property (nonatomic, strong) id colorTestAttribute;
 
 
 //- (BOOL)validateColorTestAttribute:(id*)value_ error:(NSError**)error_;
@@ -75,7 +75,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSDate *dateTestAttribute;
+@property (nonatomic, strong) NSDate* dateTestAttribute;
 
 
 //- (BOOL)validateDateTestAttribute:(id*)value_ error:(NSError**)error_;
@@ -83,7 +83,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSDate *dateWithCustomFormat;
+@property (nonatomic, strong) NSDate* dateWithCustomFormat;
 
 
 //- (BOOL)validateDateWithCustomFormat:(id*)value_ error:(NSError**)error_;
@@ -91,7 +91,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSDecimalNumber *decimalTestAttribute;
+@property (nonatomic, strong) NSDecimalNumber* decimalTestAttribute;
 
 
 //- (BOOL)validateDecimalTestAttribute:(id*)value_ error:(NSError**)error_;
@@ -99,7 +99,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSNumber *doubleTestAttribute;
+@property (nonatomic, strong) NSNumber* doubleTestAttribute;
 
 
 @property double doubleTestAttributeValue;
@@ -111,7 +111,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSNumber *floatTestAttribute;
+@property (nonatomic, strong) NSNumber* floatTestAttribute;
 
 
 @property float floatTestAttributeValue;
@@ -123,43 +123,43 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSNumber *int16TestAttribute;
+@property (nonatomic, strong) NSNumber* int16TestAttribute;
 
 
-@property short int16TestAttributeValue;
-- (short)int16TestAttributeValue;
-- (void)setInt16TestAttributeValue:(short)value_;
+@property int16_t int16TestAttributeValue;
+- (int16_t)int16TestAttributeValue;
+- (void)setInt16TestAttributeValue:(int16_t)value_;
 
 //- (BOOL)validateInt16TestAttribute:(id*)value_ error:(NSError**)error_;
 
 
 
 
-@property (nonatomic, strong) NSNumber *int32TestAttribute;
+@property (nonatomic, strong) NSNumber* int32TestAttribute;
 
 
-@property int int32TestAttributeValue;
-- (int)int32TestAttributeValue;
-- (void)setInt32TestAttributeValue:(int)value_;
+@property int32_t int32TestAttributeValue;
+- (int32_t)int32TestAttributeValue;
+- (void)setInt32TestAttributeValue:(int32_t)value_;
 
 //- (BOOL)validateInt32TestAttribute:(id*)value_ error:(NSError**)error_;
 
 
 
 
-@property (nonatomic, strong) NSNumber *int64TestAttribute;
+@property (nonatomic, strong) NSNumber* int64TestAttribute;
 
 
-@property long long int64TestAttributeValue;
-- (long long)int64TestAttributeValue;
-- (void)setInt64TestAttributeValue:(long long)value_;
+@property int64_t int64TestAttributeValue;
+- (int64_t)int64TestAttributeValue;
+- (void)setInt64TestAttributeValue:(int64_t)value_;
 
 //- (BOOL)validateInt64TestAttribute:(id*)value_ error:(NSError**)error_;
 
 
 
 
-@property (nonatomic, strong) NSString *mappedStringAttribute;
+@property (nonatomic, strong) NSString* mappedStringAttribute;
 
 
 //- (BOOL)validateMappedStringAttribute:(id*)value_ error:(NSError**)error_;
@@ -167,7 +167,7 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString *notInJsonAttribute;
+@property (nonatomic, strong) NSString* notInJsonAttribute;
 
 
 //- (BOOL)validateNotInJsonAttribute:(id*)value_ error:(NSError**)error_;
@@ -175,22 +175,23 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSNumber *nullTestAttribute;
+@property (nonatomic, strong) NSNumber* nullTestAttribute;
 
 
-@property long long nullTestAttributeValue;
-- (long long)nullTestAttributeValue;
-- (void)setNullTestAttributeValue:(long long)value_;
+@property int64_t nullTestAttributeValue;
+- (int64_t)nullTestAttributeValue;
+- (void)setNullTestAttributeValue:(int64_t)value_;
 
 //- (BOOL)validateNullTestAttribute:(id*)value_ error:(NSError**)error_;
 
 
 
 
-@property (nonatomic, strong) NSString *stringTestAttribute;
+@property (nonatomic, strong) NSString* stringTestAttribute;
 
 
 //- (BOOL)validateStringTestAttribute:(id*)value_ error:(NSError**)error_;
+
 
 
 
@@ -214,8 +215,8 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 
 
 
-- (NSObject*)primitiveColorTestAttribute;
-- (void)setPrimitiveColorTestAttribute:(NSObject*)value;
+- (id)primitiveColorTestAttribute;
+- (void)setPrimitiveColorTestAttribute:(id)value;
 
 
 
@@ -259,8 +260,8 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 - (NSNumber*)primitiveInt16TestAttribute;
 - (void)setPrimitiveInt16TestAttribute:(NSNumber*)value;
 
-- (short)primitiveInt16TestAttributeValue;
-- (void)setPrimitiveInt16TestAttributeValue:(short)value_;
+- (int16_t)primitiveInt16TestAttributeValue;
+- (void)setPrimitiveInt16TestAttributeValue:(int16_t)value_;
 
 
 
@@ -268,8 +269,8 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 - (NSNumber*)primitiveInt32TestAttribute;
 - (void)setPrimitiveInt32TestAttribute:(NSNumber*)value;
 
-- (int)primitiveInt32TestAttributeValue;
-- (void)setPrimitiveInt32TestAttributeValue:(int)value_;
+- (int32_t)primitiveInt32TestAttributeValue;
+- (void)setPrimitiveInt32TestAttributeValue:(int32_t)value_;
 
 
 
@@ -277,8 +278,8 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 - (NSNumber*)primitiveInt64TestAttribute;
 - (void)setPrimitiveInt64TestAttribute:(NSNumber*)value;
 
-- (long long)primitiveInt64TestAttributeValue;
-- (void)setPrimitiveInt64TestAttributeValue:(long long)value_;
+- (int64_t)primitiveInt64TestAttributeValue;
+- (void)setPrimitiveInt64TestAttributeValue:(int64_t)value_;
 
 
 
@@ -298,8 +299,8 @@ extern const struct SingleEntityWithNoRelationshipsFetchedProperties {
 - (NSNumber*)primitiveNullTestAttribute;
 - (void)setPrimitiveNullTestAttribute:(NSNumber*)value;
 
-- (long long)primitiveNullTestAttributeValue;
-- (void)setPrimitiveNullTestAttributeValue:(long long)value_;
+- (int64_t)primitiveNullTestAttributeValue;
+- (void)setPrimitiveNullTestAttributeValue:(int64_t)value_;
 
 
 

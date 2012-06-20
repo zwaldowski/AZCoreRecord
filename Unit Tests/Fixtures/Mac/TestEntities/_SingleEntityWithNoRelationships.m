@@ -197,21 +197,21 @@ const struct SingleEntityWithNoRelationshipsFetchedProperties SingleEntityWithNo
 
 
 
-- (short)int16TestAttributeValue {
+- (int16_t)int16TestAttributeValue {
 	NSNumber *result = [self int16TestAttribute];
 	return [result shortValue];
 }
 
-- (void)setInt16TestAttributeValue:(short)value_ {
+- (void)setInt16TestAttributeValue:(int16_t)value_ {
 	[self setInt16TestAttribute:[NSNumber numberWithShort:value_]];
 }
 
-- (short)primitiveInt16TestAttributeValue {
+- (int16_t)primitiveInt16TestAttributeValue {
 	NSNumber *result = [self primitiveInt16TestAttribute];
 	return [result shortValue];
 }
 
-- (void)setPrimitiveInt16TestAttributeValue:(short)value_ {
+- (void)setPrimitiveInt16TestAttributeValue:(int16_t)value_ {
 	[self setPrimitiveInt16TestAttribute:[NSNumber numberWithShort:value_]];
 }
 
@@ -223,21 +223,21 @@ const struct SingleEntityWithNoRelationshipsFetchedProperties SingleEntityWithNo
 
 
 
-- (int)int32TestAttributeValue {
+- (int32_t)int32TestAttributeValue {
 	NSNumber *result = [self int32TestAttribute];
 	return [result intValue];
 }
 
-- (void)setInt32TestAttributeValue:(int)value_ {
+- (void)setInt32TestAttributeValue:(int32_t)value_ {
 	[self setInt32TestAttribute:[NSNumber numberWithInt:value_]];
 }
 
-- (int)primitiveInt32TestAttributeValue {
+- (int32_t)primitiveInt32TestAttributeValue {
 	NSNumber *result = [self primitiveInt32TestAttribute];
 	return [result intValue];
 }
 
-- (void)setPrimitiveInt32TestAttributeValue:(int)value_ {
+- (void)setPrimitiveInt32TestAttributeValue:(int32_t)value_ {
 	[self setPrimitiveInt32TestAttribute:[NSNumber numberWithInt:value_]];
 }
 
@@ -249,21 +249,21 @@ const struct SingleEntityWithNoRelationshipsFetchedProperties SingleEntityWithNo
 
 
 
-- (long long)int64TestAttributeValue {
+- (int64_t)int64TestAttributeValue {
 	NSNumber *result = [self int64TestAttribute];
 	return [result longLongValue];
 }
 
-- (void)setInt64TestAttributeValue:(long long)value_ {
+- (void)setInt64TestAttributeValue:(int64_t)value_ {
 	[self setInt64TestAttribute:[NSNumber numberWithLongLong:value_]];
 }
 
-- (long long)primitiveInt64TestAttributeValue {
+- (int64_t)primitiveInt64TestAttributeValue {
 	NSNumber *result = [self primitiveInt64TestAttribute];
 	return [result longLongValue];
 }
 
-- (void)setPrimitiveInt64TestAttributeValue:(long long)value_ {
+- (void)setPrimitiveInt64TestAttributeValue:(int64_t)value_ {
 	[self setPrimitiveInt64TestAttribute:[NSNumber numberWithLongLong:value_]];
 }
 
@@ -289,21 +289,21 @@ const struct SingleEntityWithNoRelationshipsFetchedProperties SingleEntityWithNo
 
 
 
-- (long long)nullTestAttributeValue {
+- (int64_t)nullTestAttributeValue {
 	NSNumber *result = [self nullTestAttribute];
 	return [result longLongValue];
 }
 
-- (void)setNullTestAttributeValue:(long long)value_ {
+- (void)setNullTestAttributeValue:(int64_t)value_ {
 	[self setNullTestAttribute:[NSNumber numberWithLongLong:value_]];
 }
 
-- (long long)primitiveNullTestAttributeValue {
+- (int64_t)primitiveNullTestAttributeValue {
 	NSNumber *result = [self primitiveNullTestAttribute];
 	return [result longLongValue];
 }
 
-- (void)setPrimitiveNullTestAttributeValue:(long long)value_ {
+- (void)setPrimitiveNullTestAttributeValue:(int64_t)value_ {
 	[self setPrimitiveNullTestAttribute:[NSNumber numberWithLongLong:value_]];
 }
 
@@ -312,6 +312,7 @@ const struct SingleEntityWithNoRelationshipsFetchedProperties SingleEntityWithNo
 
 
 @dynamic stringTestAttribute;
+
 
 
 

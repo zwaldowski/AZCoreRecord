@@ -11,5 +11,5 @@
 	#import <OCHamcrest/OCHamcrest.h>
 
 	#import "FixtureHelpers.h"
-	#import "MagicalRecord.h"
+	#import "AZCoreRecord.h"
 #endif

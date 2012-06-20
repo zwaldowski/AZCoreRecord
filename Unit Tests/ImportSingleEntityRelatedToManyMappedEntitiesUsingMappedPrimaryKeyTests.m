@@ -1,15 +1,16 @@
 //
 //  Import SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKeyTests.m
-//  Magical Record
+//  AZCoreRecord Unit Tests
 //
 //  Created by Saul Mora on 8/16/11.
-//  Copyright 2011 Magical Panda Software LLC. All rights reserved.
+//  Copyright 2010-2011 Magical Panda Software, LLC. All rights reserved.
+//  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
 #import "SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey.h"
-#import "MagicalDataImportTestCase.h"
+#import "AZCoreRecordImportTestCase.h"
 
-@interface ImportSingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKeyTests : MagicalDataImportTestCase
+@interface ImportSingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKeyTests : AZCoreRecordImportTestCase
 
 @end
 

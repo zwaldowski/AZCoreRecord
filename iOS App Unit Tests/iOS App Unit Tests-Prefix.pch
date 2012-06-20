@@ -19,6 +19,6 @@
 	#define HC_SHORTHAND
 	#import <OCHamcrestIOS/OCHamcrestIOS.h>
 
-	#import "MagicalRecord.h"
+	#import "AZCoreRecord.h"
 	#import "FixtureHelpers.h"
 #endif

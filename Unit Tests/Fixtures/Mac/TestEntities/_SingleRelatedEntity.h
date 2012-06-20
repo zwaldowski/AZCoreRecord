@@ -31,7 +31,7 @@ extern const struct SingleRelatedEntityFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString *mappedStringAttribute;
+@property (nonatomic, strong) NSString* mappedStringAttribute;
 
 
 //- (BOOL)validateMappedStringAttribute:(id*)value_ error:(NSError**)error_;
@@ -43,6 +43,7 @@ extern const struct SingleRelatedEntityFetchedProperties {
 @property (nonatomic, strong) ConcreteRelatedEntity* testRelationship;
 
 //- (BOOL)validateTestRelationship:(id*)value_ error:(NSError**)error_;
+
 
 
 

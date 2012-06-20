@@ -49,4 +49,5 @@ const struct DifferentClassNameMappingFetchedProperties DifferentClassNameMappin
 
 
 
+
 @end

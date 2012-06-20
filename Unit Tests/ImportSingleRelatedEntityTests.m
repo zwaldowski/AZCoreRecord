@@ -1,18 +1,19 @@
 //
 //  ImportSingleEntityWithRelatedEntitiesTests.m
-//  Magical Record
+//  AZCoreRecord Unit Tests
 //
 //  Created by Saul Mora on 7/23/11.
-//  Copyright 2011 Magical Panda Software LLC. All rights reserved.
+//  Copyright 2010-2011 Magical Panda Software, LLC. All rights reserved.
+//  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
 #import "SingleRelatedEntity.h"
 #import "AbstractRelatedEntity.h"
 #import "ConcreteRelatedEntity.h"
 #import "MappedEntity.h"
-#import "MagicalDataImportTestCase.h"
+#import "AZCoreRecordImportTestCase.h"
 
-@interface ImportSingleRelatedEntityTests : MagicalDataImportTestCase
+@interface ImportSingleRelatedEntityTests : AZCoreRecordImportTestCase
 
 @property (nonatomic, retain) SingleRelatedEntity *singleTestEntity;
 

@@ -1,13 +1,15 @@
 //
 //  DataImportTests.m
-//  Magical Record
+//  AZCoreRecord Unit Tests
 //
 //  Created by Saul Mora on 7/15/11.
-//  Copyright 2011 Magical Panda Software LLC. All rights reserved.
+//  Copyright 2010-2011 Magical Panda Software, LLC. All rights reserved.
+//  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
 #import "SingleEntityWithNoRelationships.h"
-#import "MagicalRecord+Private.h"
+#import "NSManagedObject+AZCoreRecordImport.h"
+#import "AZCoreRecord+Private.h"
 
 @interface ImportSingleEntityWithNoRelationshipsTests : GHTestCase
 
@@ -21,17 +23,19 @@
 
 - (void) setUpClass
 {
-	[MagicalRecord setStackModelName:@"TestModel.momd"];
-	[MagicalRecord setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecord setStackModelName:@"TestModel.momd"];
+	[AZCoreRecord setStackShouldUseInMemoryStore:YES];
     
 	id singleEntity = [self dataFromJSONFixture];
+	
+	
 	
 	testEntity = [SingleEntityWithNoRelationships importFromDictionary:singleEntity];
 }
 
 - (void) tearDownClass
 {
-	[MagicalRecord mr_cleanUp];
+	[AZCoreRecord azcr_cleanUp];
 }
 
 - (void) testImportASingleEntity

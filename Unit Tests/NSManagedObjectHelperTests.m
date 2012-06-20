@@ -1,27 +1,28 @@
 //
 //  NSManagedObjectHelperTests.m
-//  Magical Record
+//  AZCoreRecord Unit Tests
 //
 //  Created by Saul Mora on 7/15/11.
-//  Copyright 2011 Magical Panda Software LLC. All rights reserved.
+//  Copyright 2010-2011 Magical Panda Software, LLC. All rights reserved.
+//  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
 #import "NSManagedObjectHelperTests.h"
 #import "SingleRelatedEntity.h"
-#import "MagicalRecord+Private.h"
+#import "AZCoreRecord+Private.h"
 
 @implementation NSManagedObjectHelperTests
 
 - (void) setUp
 {
-	[MagicalRecord mr_cleanUp];
-	[MagicalRecord setStackModelName:@"TestModel.momd"];
-	[MagicalRecord setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecord azcr_cleanUp];
+	[AZCoreRecord setStackModelName:@"TestModel.momd"];
+	[AZCoreRecord setStackShouldUseInMemoryStore:YES];
 }
 
 - (void) tearDown
 {
-	[MagicalRecord mr_cleanUp];
+	[AZCoreRecord azcr_cleanUp];
 }
 
 -(BOOL)shouldRunOnMainThread
@@ -95,7 +96,7 @@
 	for (NSInteger i = 0; i < numberOfTestEntitiesToCreate; i++) 
 	{
 		SingleRelatedEntity *testEntity = [SingleRelatedEntity create];
-		testEntity.mappedStringAttribute = [NSString stringWithFormat:@"%d", i / 5];
+		testEntity.mappedStringAttribute = [NSString stringWithFormat:@"%ld", i / 5];
 	}
 	
 	[[NSManagedObjectContext defaultContext] save];

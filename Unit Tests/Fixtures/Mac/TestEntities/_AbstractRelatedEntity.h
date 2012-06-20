@@ -31,7 +31,7 @@ extern const struct AbstractRelatedEntityFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString *sampleBaseAttribute;
+@property (nonatomic, strong) NSString* sampleBaseAttribute;
 
 
 //- (BOOL)validateSampleBaseAttribute:(id*)value_ error:(NSError**)error_;
@@ -43,6 +43,7 @@ extern const struct AbstractRelatedEntityFetchedProperties {
 @property (nonatomic, strong) SingleRelatedEntity* mainTestEntity;
 
 //- (BOOL)validateMainTestEntity:(id*)value_ error:(NSError**)error_;
+
 
 
 

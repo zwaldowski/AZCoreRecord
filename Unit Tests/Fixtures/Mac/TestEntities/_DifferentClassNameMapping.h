@@ -28,6 +28,7 @@ extern const struct DifferentClassNameMappingFetchedProperties {
 
 
 
+
 @end
 
 @interface _DifferentClassNameMapping (CoreDataGeneratedAccessors)

@@ -1,24 +1,25 @@
 //
 //  NSManagedObjectContextHelperTests.m
-//  Magical Record
+//  AZCoreRecord Unit Tests
 //
 //  Created by Saul Mora on 7/15/11.
-//  Copyright 2011 Magical Panda Software LLC. All rights reserved.
+//  Copyright 2010-2011 Magical Panda Software, LLC. All rights reserved.
+//  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
 #import "NSManagedObjectContextHelperTests.h"
-#import "MagicalRecord+Private.h"
+#import "AZCoreRecord+Private.h"
 
 @implementation NSManagedObjectContextHelperTests
 
 - (void)setUp
 {
-	[MagicalRecord setStackShouldUseInMemoryStore:YES];
+	[AZCoreRecord setStackShouldUseInMemoryStore:YES];
 }
 
 - (void)tearDown
 {
-	[MagicalRecord mr_cleanUp];
+	[AZCoreRecord azcr_cleanUp];
 }
 
 - (void) testCanCreateContextForCurrentThead

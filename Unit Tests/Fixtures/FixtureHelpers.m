@@ -1,13 +1,13 @@
 //
 //  FixtureHelpers.m
-//  Magical Record
+//  AZCoreRecord Unit Tests
 //
 //  Created by Saul Mora on 7/15/11.
-//  Copyright 2011 Magical Panda Software LLC. All rights reserved.
+//  Copyright 2010-2011 Magical Panda Software, LLC. All rights reserved.
+//  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
 #import "FixtureHelpers.h"
-#import "JSONKit.h"
 
 @implementation FixtureHelpers
 
@@ -17,14 +17,9 @@
 	NSData *jsonData = [NSData dataWithContentsOfFile:resource];
 	
 	NSError *error = nil;
-	id obj = nil;
+	id obj = [NSJSONSerialization JSONObjectWithData: jsonData options: 0 error: &error];
 	
-	if (NSClassFromString(@"NSJSONSerialization"))
-		obj = [NSJSONSerialization JSONObjectWithData: jsonData options: 0 error: &error]; 
-	else
-		obj = [jsonData objectFromJSONDataWithParseOptions: 0 error: &error];
-	
-	[MagicalRecord handleError:error];
+	[AZCoreRecord handleError:error];
 	
 	return obj;
 }
