@@ -46,11 +46,17 @@ extern void azcr_swizzle_support(Class cls, SEL oldSel, SEL newSel) {
 
 #pragma mark - Stack settings
 
-static void azcr_resetStoreCoordinator(void) {
-	if ([NSPersistentStoreCoordinator azcr_hasDefaultStoreCoordinator])
-		[NSPersistentStoreCoordinator azcr_setDefaultStoreCoordinator:nil];
+static void azcr_resetStore(void) {
 	if ([NSManagedObjectContext azcr_hasDefaultContext])
-		[NSManagedObjectContext azcr_setDefaultContext:nil];
+		[NSManagedObjectContext azcr_setDefaultContext: nil];
+	
+	if ([NSPersistentStoreCoordinator azcr_hasDefaultStoreCoordinator]) {
+		[NSPersistentStore azcr_setDefaultPersistentStore: nil];
+		[NSPersistentStoreCoordinator azcr_setDefaultStoreCoordinator: nil];		
+	}
+	
+	if ([NSManagedObjectModel azcr_hasDefaultModel])
+		[NSManagedObjectModel azcr_setDefaultModel: nil];
 }
 
 + (BOOL)azcr_stackShouldAutoMigrateStore
@@ -59,8 +65,10 @@ static void azcr_resetStoreCoordinator(void) {
 }
 + (void)setStackShouldAutoMigrateStore:(BOOL)shouldMigrate
 {
-	stackShouldAutoMigrate = shouldMigrate;	
-	azcr_resetStoreCoordinator();
+	@synchronized(self) {
+		azcr_resetStore();
+		stackShouldAutoMigrate = shouldMigrate;
+	}
 }
 
 + (BOOL)azcr_stackShouldUseInMemoryStore
@@ -69,8 +77,10 @@ static void azcr_resetStoreCoordinator(void) {
 }
 + (void)setStackShouldUseInMemoryStore:(BOOL)inMemory
 {
-	stackShouldUseInMemoryStore = inMemory;
-	azcr_resetStoreCoordinator();
+	@synchronized(self) {
+		azcr_resetStore();
+		stackShouldUseInMemoryStore = inMemory;
+	}
 }
 
 + (NSString *)azcr_stackStoreName
@@ -81,8 +91,10 @@ static void azcr_resetStoreCoordinator(void) {
 }
 + (void)setStackStoreName:(NSString *)name
 {
-	stackStoreName = [name copy];
-	azcr_resetStoreCoordinator();
+	@synchronized(self) {
+		azcr_resetStore();
+		stackStoreName = [name copy];
+	}
 }
 
 + (NSURL *)azcr_stackStoreURL
@@ -91,8 +103,10 @@ static void azcr_resetStoreCoordinator(void) {
 }
 + (void)setStackStoreURL:(NSURL *)URL
 {
-	stackStoreURL = URL;
-	azcr_resetStoreCoordinator();
+	@synchronized(self) {
+		azcr_resetStore();
+		stackStoreURL = URL;
+	}
 }
 
 + (NSString *)azcr_stackModelName
@@ -101,8 +115,10 @@ static void azcr_resetStoreCoordinator(void) {
 }
 + (void)setStackModelName:(NSString *)name
 {
-	stackModelName = [name copy];
-	[self azcr_cleanUp];
+	@synchronized(self) {
+		azcr_resetStore();
+		stackModelName = [name copy];
+	}
 }
 
 + (NSURL *)azcr_stackModelURL
@@ -111,8 +127,10 @@ static void azcr_resetStoreCoordinator(void) {
 }
 + (void)setStackModelURL:(NSURL *)URL
 {
-	stackModelURL = URL;
-	[self azcr_cleanUp];
+	@synchronized(self) {
+		azcr_resetStore();
+		stackModelURL = URL;
+	}
 }
 
 + (void)setUpStackWithManagedDocument: (id) managedDocument {
@@ -124,44 +142,36 @@ static void azcr_resetStoreCoordinator(void) {
 #endif
 	NSAssert(documentClass, @"Not available on this OS.");
 	NSParameterAssert([managedDocument isKindOfClass:documentClass]);
-	[NSManagedObjectModel azcr_setDefaultModel: [managedDocument managedObjectModel]];
-	[NSPersistentStoreCoordinator azcr_setDefaultStoreCoordinator: [[managedDocument managedObjectContext] persistentStoreCoordinator]];
-	[NSManagedObjectContext azcr_setDefaultContext: [managedDocument managedObjectContext]];
+	
+	@synchronized(self) {
+		azcr_resetStore();
+		[NSManagedObjectModel azcr_setDefaultModel: [managedDocument managedObjectModel]];
+		[NSPersistentStoreCoordinator azcr_setDefaultStoreCoordinator: [[managedDocument managedObjectContext] persistentStoreCoordinator]];
+		[NSManagedObjectContext azcr_setDefaultContext: [managedDocument managedObjectContext]];
+	}
 }
 
 + (NSDictionary *) azcr_stackUbiquityOptions
 {
 	return stackUbiquityOptions;
 }
-+ (void)setStackUbiquityOptions:(NSDictionary *)dict
-{
-	stackUbiquityOptions = dict;
-	azcr_resetStoreCoordinator();
-}
 
 + (void) azcr_cleanUp
 {
-	errorHandlerTarget = nil;
-	errorHandlerBlock = NULL;
-	errorHandlerIsClassMethod = NO;
-	
-	stackShouldAutoMigrate = NO;
-	stackShouldUseInMemoryStore = NO;
-	stackStoreName = nil;
-	stackStoreURL = nil;
-	stackModelName = nil;
-	stackModelURL = nil;
-	stackUbiquityOptions = nil;
-	
-	if ([NSManagedObjectContext azcr_hasDefaultContext])
-		[NSManagedObjectContext azcr_setDefaultContext: nil];
-	
-	if ([NSManagedObjectModel azcr_hasDefaultModel])
-		[NSManagedObjectModel azcr_setDefaultModel: nil];
-	
-	if ([NSPersistentStoreCoordinator azcr_hasDefaultStoreCoordinator]) {
-		[NSPersistentStore azcr_setDefaultPersistentStore: nil];
-		[NSPersistentStoreCoordinator azcr_setDefaultStoreCoordinator: nil];		
+	@synchronized(self) {
+		errorHandlerTarget = nil;
+		errorHandlerBlock = NULL;
+		errorHandlerIsClassMethod = NO;
+		
+		stackShouldAutoMigrate = NO;
+		stackShouldUseInMemoryStore = NO;
+		stackStoreName = nil;
+		stackStoreURL = nil;
+		stackModelName = nil;
+		stackModelURL = nil;
+		stackUbiquityOptions = nil;
+		
+		azcr_resetStore();
 	}
 }
 
@@ -187,25 +197,27 @@ static void azcr_resetStoreCoordinator(void) {
 	if (stackShouldUseUbiquity == enabled)
 		return;
 	
-	stackShouldUseUbiquity = enabled;
-	
-	if (![self azcr_stackUbiquityOptions])
-		[self setUbiquitousContainer:nil contentNameKey:nil cloudStorePathComponent:nil];
-	
-	if (![NSPersistentStoreCoordinator azcr_hasDefaultStoreCoordinator])
-		return;
-	
-	NSPersistentStoreCoordinator *psc = [NSPersistentStoreCoordinator defaultStoreCoordinator];
-	
-	if ([NSManagedObjectContext azcr_hasDefaultContext]) {
-		NSManagedObjectContext *moc = [NSManagedObjectContext defaultContext];
-		if (enabled)
-			[moc startObservingUbiquitousChangesInCoordinator:psc];
-		else
-			[moc stopObservingUbiquitousChangesInCoordinator:psc];
+	@synchronized(self) {
+		stackShouldUseUbiquity = enabled;
+		
+		if (![self azcr_stackUbiquityOptions])
+			[self setUbiquitousContainer:nil contentNameKey:nil cloudStorePathComponent:nil];
+		
+		if (![NSPersistentStoreCoordinator azcr_hasDefaultStoreCoordinator])
+			return;
+		
+		NSPersistentStoreCoordinator *psc = [NSPersistentStoreCoordinator defaultStoreCoordinator];
+		
+		if ([NSManagedObjectContext azcr_hasDefaultContext]) {
+			NSManagedObjectContext *moc = [NSManagedObjectContext defaultContext];
+			if (enabled)
+				[moc startObservingUbiquitousChangesInCoordinator:psc];
+			else
+				[moc stopObservingUbiquitousChangesInCoordinator:psc];
+		}
+		
+		[psc azcr_setUbiquityEnabled:enabled];
 	}
-	
-	[psc azcr_setUbiquityEnabled:enabled];
 }
 
 + (void)setUbiquitousContainer:(NSString *)containerID contentNameKey:(NSString *)key cloudStorePathComponent:(NSString *)pathComponent
@@ -217,7 +229,11 @@ static void azcr_resetStoreCoordinator(void) {
 	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
 							 key, NSPersistentStoreUbiquitousContentNameKey,
 							 cloudURL, NSPersistentStoreUbiquitousContentURLKey, nil];
-	[self setStackUbiquityOptions:options];
+	
+	@synchronized(self) {
+		azcr_resetStore();
+		stackUbiquityOptions = options;
+	}
 }
 
 #pragma mark - Error Handling
@@ -260,7 +276,9 @@ static void azcr_resetStoreCoordinator(void) {
 }
 + (void) setErrorHandler: (void (^)(NSError *)) block
 {
-	errorHandlerBlock = [block copy];
+	@synchronized(self) {
+		errorHandlerBlock = [block copy];
+	}
 }
 
 + (id<AZCoreRecordErrorHandler>) errorHandlerTarget
@@ -268,18 +286,20 @@ static void azcr_resetStoreCoordinator(void) {
 	return errorHandlerTarget;
 }
 + (void) setErrorHandlerTarget: (id<AZCoreRecordErrorHandler>) target
-{	
-	if (target)
-	{
-		if ([target respondsToSelector: @selector(handleError:)])
-			errorHandlerIsClassMethod = NO;
-		else if ([[target class] respondsToSelector: @selector(handleError:)])
-			errorHandlerIsClassMethod = YES;
-		else
-			NSAssert(NO, @"Error handler target must conform to the AZCoreRecordErrorHandler protocol");
+{
+	@synchronized(self) {
+		if (target)
+		{
+			if ([target respondsToSelector: @selector(handleError:)])
+				errorHandlerIsClassMethod = NO;
+			else if ([[target class] respondsToSelector: @selector(handleError:)])
+				errorHandlerIsClassMethod = YES;
+			else
+				NSAssert(NO, @"Error handler target must conform to the AZCoreRecordErrorHandler protocol");
+		}
+		
+		errorHandlerTarget = target;
 	}
-	
-	errorHandlerTarget = target;
 }
 
 #pragma mark - Data Commit
