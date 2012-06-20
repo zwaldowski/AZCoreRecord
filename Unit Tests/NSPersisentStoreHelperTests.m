@@ -28,7 +28,7 @@
 	
 	NSURL *expectedStoreUrl = [NSURL fileURLWithPath:[applicationLibraryDirectory stringByAppendingPathComponent:defaultStoreName]];
 	
-	NSURL *defaultStoreUrl = [NSPersistentStore defaultLocalStoreURL];
+	NSURL *defaultStoreUrl = [NSPersistentStore URLForStoreName: nil];
 	
 	assertThat(defaultStoreUrl, is(equalTo(expectedStoreUrl)));
 }
@@ -80,7 +80,7 @@
 	
 	NSURL *expectedStoreUrl = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@/%@", applictionSupportDirectory, applicationName, defaultStoreName]];
 	
-	NSURL *defaultStoreUrl = [NSPersistentStore defaultLocalStoreURL];
+	NSURL *defaultStoreUrl = [NSPersistentStore URLForStoreName: nil];
 	assertThat(defaultStoreUrl, is(equalTo(expectedStoreUrl)));
 }
 

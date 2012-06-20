@@ -17,8 +17,6 @@
 
 #pragma mark - Store Coordinator Factory Methods
 
-+ (NSPersistentStoreCoordinator *) coordinator;
-
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType;
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType options: (NSDictionary *) options;
 

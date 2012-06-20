@@ -21,18 +21,13 @@
 
 /** Creates and returns a URL for a given store name.
  
+ If a store name is not provided, the store name is either
+ the store name of the default Core Record stack or the
+ application's bundle name.
+ 
  @param storeFileName A file name, like @"Nyan.sqlite"
- @return A URL for the store in the user's path.
+ @return A URL for the store in the sandboxed user directory.
  */
 + (NSURL *) URLForStoreName: (NSString *) storeFileName;
-
-+ (NSURL *) URLForUbiquitousContainer: (NSString *) bucketName;
-
-/** Creates and returns a URL for the default store
- name in the user's directory.
- 
- @return A URL for <<App Name>>.sqlite in the user's directory.
- */
-+ (NSURL *) defaultLocalStoreURL;
 
 @end

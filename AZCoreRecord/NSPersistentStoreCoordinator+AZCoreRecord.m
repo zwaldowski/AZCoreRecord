@@ -23,11 +23,6 @@
 
 #pragma mark - Store Coordinator Factory Methods
 
-+ (NSPersistentStoreCoordinator *) coordinator
-{
-	return [self coordinatorWithStoreAtURL: [NSPersistentStore defaultLocalStoreURL] ofType: NSSQLiteStoreType];
-}
-
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType
 {
 	return [self coordinatorWithStoreNamed: storeName ofType: storeType options: nil];

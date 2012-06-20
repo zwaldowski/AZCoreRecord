@@ -132,7 +132,7 @@
 {
 	if (!_persistentStoreCoordinator)
 	{
-		NSURL *storeURL = self.stackStoreURL ?: [NSPersistentStore defaultLocalStoreURL];
+		NSURL *storeURL = self.stackStoreURL ?: [NSPersistentStore URLForStoreName: nil];
 		NSString *storeType = self.stackShouldUseInMemoryStore ? NSInMemoryStoreType : NSSQLiteStoreType;
 		_persistentStoreCoordinator = [NSPersistentStoreCoordinator coordinatorWithStoreAtURL: storeURL ofType: storeType options: [self azcr_storeOptions]];
 	}
@@ -279,8 +279,8 @@
 
 - (void) setUbiquitousContainer:  (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent
 {
-	NSURL *cloudURL = [NSPersistentStore URLForUbiquitousContainer: containerID];
-	if (pathComponent) cloudURL = [cloudURL URLByAppendingPathComponent: pathComponent];
+	NSURL *cloudURL = [[NSFileManager new] URLForUbiquityContainerIdentifier: nil];
+	if (pathComponent) cloudURL = [cloudURL URLByAppendingPathComponent:pathComponent];
 	
 	if (!key) key = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *) kCFBundleNameKey];
 	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:

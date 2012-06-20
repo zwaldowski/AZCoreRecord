@@ -19,8 +19,11 @@
 
 + (NSURL *) URLForStoreName: (NSString *) storeFileName
 {
-	if (!storeFileName)
-		return nil;
+	if (!storeFileName.length)
+		storeFileName = [[AZCoreRecordManager sharedManager] stackStoreName];
+	
+	if (!storeFileName.length)
+		storeFileName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleName"];
 	
 	if (!storeFileName.pathExtension.length) 
 		storeFileName = [storeFileName stringByAppendingPathExtension:@"sqlite"];
@@ -41,18 +44,6 @@
 	
 	// Guaranteed to be non-nil
 	return [fm fileExistsAtPath: [documentsFile absoluteString]] ? documentsFile : appSupportFile;
-}
-
-+ (NSURL *) URLForUbiquitousContainer: (NSString *) bucketName {
-	return [[NSFileManager new] URLForUbiquityContainerIdentifier:bucketName];
-}
-
-+ (NSURL *) defaultLocalStoreURL
-{
-	NSString *storeName = [[AZCoreRecordManager sharedManager] stackStoreName];
-	if (!storeName.length)
-		storeName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleName"];
-	return [self URLForStoreName: storeName];
 }
 
 @end
