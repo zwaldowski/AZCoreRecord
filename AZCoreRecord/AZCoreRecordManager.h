@@ -102,6 +102,3 @@ typedef enum _AZCoreRecordSaveOptions {
 + (void) saveDataWithOptions: (AZCoreRecordSaveOptions) options block: (void (^)(NSManagedObjectContext *)) block success: (void (^)(void)) callback failure: (void (^)(NSError *)) errorCallback;
 
 @end
-
-extern void azcr_swizzle_support(Class cls, SEL oldSel, SEL newSel);
-#define azcr_swizzle(oldSelector, newSelector) azcr_swizzle_support([self class], oldSelector, newSelector)

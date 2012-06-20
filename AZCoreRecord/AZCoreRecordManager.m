@@ -20,28 +20,6 @@
 #import <AppKit/NSApplication.h>
 #endif
 
-void azcr_swizzle_support(Class cls, SEL oldSel, SEL newSel) {
-	Method origMethod = class_getInstanceMethod(cls, oldSel);
-	Method newMethod = class_getInstanceMethod(cls, newSel);
-	
-	if (class_addMethod(cls, oldSel, method_getImplementation(newMethod), method_getTypeEncoding(newMethod)))
-		class_replaceMethod(cls, newSel, method_getImplementation(origMethod), method_getTypeEncoding(origMethod));
-	else
-		method_exchangeImplementations(origMethod, newMethod);
-}
-
-static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
-	static NSDictionary *options = nil;
-	static dispatch_once_t once;
-	dispatch_once(&once, ^{
-		id yes = (__bridge id)kCFBooleanTrue;
-		options = [NSDictionary dictionaryWithObjectsAndKeys:
-				   yes, NSMigratePersistentStoresAutomaticallyOption,
-				   yes, NSInferMappingModelAutomaticallyOption, nil];
-	});
-	return options;
-}
-
 @interface AZCoreRecordManager ()
 
 @property (nonatomic, weak) id <AZCoreRecordErrorHandler> errorDelegate;
@@ -162,8 +140,16 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 	BOOL shouldUseCloud = self.stackUbiquityOptions != nil;
 	NSMutableDictionary *options = shouldAutoMigrate || shouldUseCloud ? [NSMutableDictionary dictionary] : nil;
 	
-	if (shouldAutoMigrate)
-		[options addEntriesFromDictionary:azcr_automaticLightweightMigrationOptions()];
+	if (shouldAutoMigrate) {
+		static NSDictionary *lightweightMigrationOptions = nil;
+		static dispatch_once_t once;
+		dispatch_once(&once, ^{
+			lightweightMigrationOptions = [NSDictionary dictionaryWithObjectsAndKeys:
+					   (__bridge id)kCFBooleanTrue, NSMigratePersistentStoresAutomaticallyOption,
+					   (__bridge id)kCFBooleanTrue, NSInferMappingModelAutomaticallyOption, nil];
+		});
+		[options addEntriesFromDictionary: lightweightMigrationOptions];
+	}
 	
 	if (shouldUseCloud)
 		[options addEntriesFromDictionary: self.stackUbiquityOptions];
