@@ -339,7 +339,8 @@
 		
 		NSPersistentStoreCoordinator *psc = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 		
-		if (_managedObjectContext) {
+		if (_managedObjectContext)
+		{
 			if (enabled)
 				[_managedObjectContext startObservingUbiquitousChangesInCoordinator:psc];
 			else
@@ -348,8 +349,9 @@
 		
 		NSPersistentStore *storeToChange = nil;
 		
-		if (!enabled) {
-			NSUInteger cloudStoreIndex = [_persistentStoreCoordinator.persistentStores indexOfObjectPassingTest:^BOOL(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
+		if (!enabled)
+		{
+			NSUInteger cloudStoreIndex = [_persistentStoreCoordinator.persistentStores indexOfObjectPassingTest: ^BOOL(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
 				return ([obj.options objectForKey: NSPersistentStoreUbiquitousContentURLKey] != nil);
 			}];
 			
@@ -357,10 +359,14 @@
 				break;
 			
 			storeToChange = [_persistentStoreCoordinator.persistentStores objectAtIndex: cloudStoreIndex];
-		} else if (_persistentStoreCoordinator.persistentStores.count == 1) {
+		}
+		else if (_persistentStoreCoordinator.persistentStores.count == 1)
+		{
 			storeToChange = _persistentStoreCoordinator.persistentStores.lastObject;
-		} else {
-			NSUInteger notCloudStoreIndex = [_persistentStoreCoordinator.persistentStores indexOfObjectPassingTest:^BOOL(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
+		}
+		else
+		{
+			NSUInteger notCloudStoreIndex = [_persistentStoreCoordinator.persistentStores indexOfObjectPassingTest: ^BOOL(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
 				return ![obj.options objectForKey: NSPersistentStoreUbiquitousContentURLKey] && [obj.type isEqualToString: NSSQLiteStoreType];
 			}];
 			

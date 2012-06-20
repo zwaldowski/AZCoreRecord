@@ -16,7 +16,8 @@
 
 @end
 
-@interface AZCoreRecordManager : NSObject {
+@interface AZCoreRecordManager : NSObject
+{
 	__weak id <AZCoreRecordErrorHandler> _errorDelegate;	
 	void (^_errorHandler)(NSError *);
 	

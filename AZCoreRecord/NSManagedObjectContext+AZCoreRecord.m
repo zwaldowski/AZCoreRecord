@@ -53,16 +53,26 @@
 		return [self defaultContext];
 	
 	NSManagedObjectContext *context = nil;
-	@synchronized(self) {
-		NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
-		static NSString const *AZCoreRecordManagedObjectContextKey = @"AZCoreRecordManagedObjectContext";
-		context = [dict objectForKey: AZCoreRecordManagedObjectContextKey];
-		if (!context)
-		{
-			context = [[self defaultContext] newChildContext];
-			[dict setObject: context forKey: AZCoreRecordManagedObjectContextKey];
-		}
+	
+	static dispatch_semaphore_t semaphore = NULL;
+	static dispatch_once_t token;
+	dispatch_once(&token, ^{
+		semaphore = dispatch_semaphore_create(0);
+	});
+	
+	dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+
+	NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+	static NSString const *AZCoreRecordManagedObjectContextKey = @"AZCoreRecordManagedObjectContext";
+	context = [dict objectForKey: AZCoreRecordManagedObjectContextKey];
+	if (!context)
+	{
+		context = [[self defaultContext] newChildContext];
+		[dict setObject: context forKey: AZCoreRecordManagedObjectContextKey];
 	}
+	
+	dispatch_semaphore_signal(semaphore);
+	
 	return context;
 }
 
@@ -70,9 +80,11 @@
 
 + (NSManagedObjectContext *) contextWithStoreCoordinator: (NSPersistentStoreCoordinator *) coordinator
 {
-	NSParameterAssert(coordinator);
+	NSParameterAssert(coordinator != nil);
+	
 	NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType: NSConfinementConcurrencyType];
 	context.persistentStoreCoordinator = coordinator;
+	
 	return context;
 }
 
@@ -89,20 +101,21 @@
 
 #pragma mark - Ubiquity Support
 
-- (void)azcr_mergeUbiquitousChanges:(NSNotification *)notification {
-	[self performBlock:^{
-		[self mergeChangesFromContextDidSaveNotification:notification];
+- (void) azcr_mergeUbiquitousChanges: (NSNotification *) notification
+{
+	[self performBlock: ^{
+		[self mergeChangesFromContextDidSaveNotification: notification];
 	}];
 }
 
-- (void)startObservingUbiquitousChangesInCoordinator:(NSPersistentStoreCoordinator *)coordinator
+- (void) startObservingUbiquitousChangesInCoordinator: (NSPersistentStoreCoordinator *) coordinator
 {
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(azcr_mergeUbiquitousChanges:) name:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:coordinator];
+	[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(azcr_mergeUbiquitousChanges:) name: NSPersistentStoreDidImportUbiquitousContentChangesNotification object: coordinator];
 }
 
-- (void)stopObservingUbiquitousChangesInCoordinator:(NSPersistentStoreCoordinator *)coordinator
+- (void) stopObservingUbiquitousChangesInCoordinator: (NSPersistentStoreCoordinator *) coordinator
 {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSPersistentStoreDidImportUbiquitousContentChangesNotification object:coordinator];
+	[[NSNotificationCenter defaultCenter] removeObserver: self name: NSPersistentStoreDidImportUbiquitousContentChangesNotification object: coordinator];
 }
 
 #pragma mark - Reset Context
@@ -110,44 +123,54 @@
 + (void) resetDefaultContext
 {
 	NSManagedObjectContext *context = [NSManagedObjectContext defaultContext];
-	[context performBlockAndWait:^{
+	[context performBlockAndWait: ^{
 		[context reset];
 	}];
 }
 + (void) resetContextForCurrentThread 
 {
 	NSManagedObjectContext *context = [NSManagedObjectContext contextForCurrentThread];
-	[context performBlockAndWait:^{
+	[context performBlockAndWait: ^{
 		[context reset];
 	}];
 }
 
 #pragma mark - Data saving
 
-- (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *)) block {
-	NSParameterAssert(block);
+- (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *context)) block
+{
+	NSParameterAssert(block != nil);
+	
 	NSManagedObjectContext *localContext = [self newChildContext];
+	
 	NSMergePolicy *backupMergePolicy = self.mergePolicy;
 	self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
 	localContext.mergePolicy = NSOverwriteMergePolicy;
-	[localContext performBlockAndWait:^{
+	
+	[localContext performBlockAndWait: ^{
 		block(localContext);
 	}];
 	[localContext save];
+	
 	self.mergePolicy = backupMergePolicy;
 }
 
-- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block {
+- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block
+{
 	[self saveDataInBackgroundWithBlock: block completion: NULL];
 }
 
-- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block completion: (void (^)(void)) callback {
-	NSParameterAssert(block);
+- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block completion: (void (^)(void)) callback
+{
+	NSParameterAssert(block != nil);
+	
 	NSManagedObjectContext *localContext = [self newChildContext];
+	
 	NSMergePolicy *backupMergePolicy = self.mergePolicy;
 	self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
 	localContext.mergePolicy = NSOverwriteMergePolicy;
-	[localContext performBlock:^{
+	
+	[localContext performBlock: ^{
 		block(localContext);
 		
 		[localContext save];
@@ -158,6 +181,5 @@
 			dispatch_async(dispatch_get_main_queue(), callback);
 	}];
 }
-
 
 @end

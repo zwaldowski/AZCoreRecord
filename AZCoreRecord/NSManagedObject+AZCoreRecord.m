@@ -192,11 +192,13 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 
 #pragma mark - Specific Entity
 
-+ (id)existingObjectWithURI:(id)URI {
++ (id) existingObjectWithURI: (id) URI
+{
 	return [self existingObjectWithURI: URI inContext: [NSManagedObjectContext contextForCurrentThread]];
 }
 
-+ (id)existingObjectWithURI:(id)URI inContext:(NSManagedObjectContext *)context {
++ (id) existingObjectWithURI: (id) URI inContext: (NSManagedObjectContext *) context
+{
 	NSParameterAssert(URI);
 	
 	if ([URI isKindOfClass:[NSString class]])
@@ -211,11 +213,13 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 	return [self existingObjectWithID: URI inContext: context];
 }
 
-+ (id)existingObjectWithID:(NSManagedObjectID *)objectID {
++ (id) existingObjectWithID: (NSManagedObjectID *)objectID
+{
 	return [self existingObjectWithID: objectID inContext: [NSManagedObjectContext contextForCurrentThread]];
 }
 
-+ (id)existingObjectWithID:(NSManagedObjectID *)objectID inContext:(NSManagedObjectContext *)context {
++ (id) existingObjectWithID: (NSManagedObjectID *)objectID inContext: (NSManagedObjectContext *) context
+{
 	NSError *error = nil;
 	id ret = [context existingObjectWithID: objectID error: &error];
 	[AZCoreRecordManager handleError: error];
@@ -368,7 +372,8 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 	request.predicate = searchTerm;
 	request.fetchBatchSize = self.defaultBatchSize;
 
-	if (sortTerm.length) {
+	if (sortTerm.length)
+	{
 		NSSortDescriptor *sortBy = [NSSortDescriptor sortDescriptorWithKey: sortTerm ascending: ascending];
 		request.sortDescriptors = [NSArray arrayWithObject: sortBy];
 	}

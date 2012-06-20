@@ -55,15 +55,21 @@ static id colorFromString(NSString *serializedColor)
 	id color = nil;
 	
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-	if (isHSB || isHSV) {
+	if (isHSB || isHSV)
+	{
 		color = [UIColor colorWithHue:componentValues[0] saturation:componentValues[1] brightness:componentValues[2] alpha:componentValues[3]];
-	} else {
+	}
+	else
+	{
 		color = [UIColor colorWithRed:componentValues[0] green:componentValues[1] blue:componentValues[2] alpha:componentValues[3]];
 	}
 #else
-	if (isHSB || isHSV) {
+	if (isHSB || isHSV)
+	{
 		color = [NSColor colorWithDeviceHue:componentValues[0] saturation:componentValues[1] brightness:componentValues[2] alpha:componentValues[3]];
-	} else {
+	}
+	else
+	{
 		color = [NSColor colorWithDeviceRed:componentValues[0] green:componentValues[1] blue:componentValues[2] alpha:componentValues[3]];
 	}
 #endif
@@ -203,12 +209,15 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 	
 	// Add related object to set
 	NSString *key = relationshipInfo.name;
-	if (relationshipInfo.isToMany) {
+	if (relationshipInfo.isToMany)
+	{
 		if (relationshipInfo.isOrdered)
 			[[self mutableOrderedSetValueForKey: key] addObject: relatedObject];
 		else
 			[[self mutableSetValueForKey: key] addObject: relatedObject];
-	} else {
+	}
+	else
+	{
 		[self setValue: relatedObject forKey: key];
 	}
 }
@@ -271,7 +280,9 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 				NSManagedObject *obj = setRelationship(relationshipInfo, singleRelatedObjectData);
 				[self azcr_addObject: obj forRelationship: relationshipInfo];
 			}
-		} else {
+		}
+		else
+		{
 			NSManagedObject *obj = setRelationship(relationshipInfo, relatedObjectData);
 			[self azcr_addObject: obj forRelationship: relationshipInfo];
 		}

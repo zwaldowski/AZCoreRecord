@@ -11,7 +11,7 @@
 
 @interface NSFetchedResultsController (AZCoreRecord)
 
-- (BOOL)performFetch;
+- (BOOL) performFetch;
 
 + (NSFetchedResultsController *) fetchedResultsControllerForRequest: (NSFetchRequest *) request;
 + (NSFetchedResultsController *) fetchedResultsControllerForRequest: (NSFetchRequest *) request inContext: (NSManagedObjectContext *) context;

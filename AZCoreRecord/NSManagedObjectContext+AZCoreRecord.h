@@ -33,8 +33,8 @@ extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
 
 #pragma mark - Ubiquity Support
 
-- (void)startObservingUbiquitousChangesInCoordinator:(NSPersistentStoreCoordinator *)coordinator;
-- (void)stopObservingUbiquitousChangesInCoordinator:(NSPersistentStoreCoordinator *)coordinator;
+- (void) startObservingUbiquitousChangesInCoordinator: (NSPersistentStoreCoordinator *) coordinator;
+- (void) stopObservingUbiquitousChangesInCoordinator: (NSPersistentStoreCoordinator *) coordinator;
 
 #pragma mark - Reset Context
 
@@ -43,9 +43,9 @@ extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
 
 #pragma mark - Data saving
 
-- (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *)) block;
+- (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *context)) block;
 
-- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block;
-- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block completion: (void (^)(void)) callback;
+- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block;
+- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block completion: (void (^)(void)) callback;
 
 @end
