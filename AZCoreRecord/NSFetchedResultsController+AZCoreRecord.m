@@ -7,7 +7,10 @@
 //  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
+#import "AZCoreRecordManager.h"
 #import "NSFetchedResultsController+AZCoreRecord.h"
+#import "NSManagedObject+AZCoreRecord.h"
+#import "NSManagedObjectContext+AZCoreRecord.h"
 
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 
