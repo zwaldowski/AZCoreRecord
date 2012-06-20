@@ -43,14 +43,8 @@
 	return [fm fileExistsAtPath: [documentsFile absoluteString]] ? documentsFile : appSupportFile;
 }
 
-+ (NSURL *) URLForUbiquitousContainer: (NSString *) bucketName
-{
-	if (![NSFileManager instancesRespondToSelector:@selector(URLForUbiquityContainerIdentifier:)])
-		return nil;
-		
-	NSFileManager *fm = [NSFileManager new];
-	NSURL *cloudURL = [fm URLForUbiquityContainerIdentifier:bucketName];
-	return cloudURL;	
++ (NSURL *) URLForUbiquitousContainer: (NSString *) bucketName {
+	return [[NSFileManager new] URLForUbiquityContainerIdentifier:bucketName];
 }
 
 + (NSURL *) defaultLocalStoreURL

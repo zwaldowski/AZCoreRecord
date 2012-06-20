@@ -204,13 +204,10 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 	// Add related object to set
 	NSString *key = relationshipInfo.name;
 	if (relationshipInfo.isToMany) {
-		if ([relationshipInfo respondsToSelector:@selector(isOrdered)] && [relationshipInfo isOrdered]) {
-			NSMutableOrderedSet *set = [self mutableOrderedSetValueForKey: key];
-			[set addObject: relatedObject];
-		} else {
-			NSMutableSet *set = [self mutableSetValueForKey: key];
-			[set addObject: relatedObject];
-		}
+		if (relationshipInfo.isOrdered)
+			[[self mutableOrderedSetValueForKey: key] addObject: relatedObject];
+		else
+			[[self mutableSetValueForKey: key] addObject: relatedObject];
 	} else {
 		[self setValue: relatedObject forKey: key];
 	}

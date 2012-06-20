@@ -12,7 +12,7 @@ The primary benefits you'll get out of AZCoreRecord include:
 * Clear, simple, one-line fetches, searches, and deletes
 * Drop-in support for Ubiquity/iCloud - the first of its kind.
 
-AZCoreRecord is built using ARC against the iOS 5.0/OS X 10.7 SDK. It is backwards compatible to iOS 4.3 and OS X 10.6.
+AZCoreRecord is built using ARC targetting iOS 5.0 and OS X 10.7.
 
 ## Installation
 

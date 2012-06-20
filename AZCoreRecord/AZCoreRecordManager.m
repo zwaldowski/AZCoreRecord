@@ -44,12 +44,8 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 
 @interface AZCoreRecordManager ()
 
-#if __has_feature(objc_arc_weak)
-@property (weak) id <AZCoreRecordErrorHandler> errorDelegate;
-#else
-@property (unsafe_unretained) id <AZCoreRecordErrorHandler> errorDelegate;
-#endif
-@property (copy) void(^errorHandler)(NSError *);
+@property (nonatomic, weak) id <AZCoreRecordErrorHandler> errorDelegate;
+@property (nonatomic, copy) void(^errorHandler)(NSError *);
 
 @property (nonatomic, strong, readwrite, setter = azcr_setManagedObjectContext:) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readwrite, setter = azcr_setManagedObjectModel:) NSManagedObjectModel *managedObjectModel;
@@ -91,16 +87,7 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 - (NSManagedObjectContext *)managedObjectContext {
 	if (!_managedObjectContext)
 	{
-		NSManagedObjectContext *managedObjectContext = nil;
-        if ([NSManagedObjectContext instancesRespondToSelector: @selector(initWithConcurrencyType:)])
-		{
-            managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType: NSMainQueueConcurrencyType];
-        }
-		else
-		{
-            managedObjectContext = [NSManagedObjectContext new];
-        }
-		
+		NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType: NSMainQueueConcurrencyType];
 		managedObjectContext.persistentStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 		self.managedObjectContext = managedObjectContext;
 	}

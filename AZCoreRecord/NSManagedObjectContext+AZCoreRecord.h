@@ -18,13 +18,6 @@ extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
 - (BOOL) save;
 - (BOOL) saveWithErrorHandler: (void (^)(NSError *)) errorCallback;
 
-#pragma mark - Child Contexts
-
-- (NSManagedObjectContext *) newChildContext;
-- (NSManagedObjectContext *) newChildContextWithConcurrencyType: (NSManagedObjectContextConcurrencyType) concurrencyType NS_AVAILABLE(10_7, 5_0);
-
-@property (nonatomic, strong) NSManagedObjectContext *parentContext NS_AVAILABLE(10_6, 4_0);
-
 #pragma mark - Default Contexts
 
 + (NSManagedObjectContext *) defaultContext;
@@ -32,8 +25,11 @@ extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
 
 #pragma mark - Context Factory Methods
 
-+ (NSManagedObjectContext *) context;
 + (NSManagedObjectContext *) contextWithStoreCoordinator: (NSPersistentStoreCoordinator *) coordinator;
+
+#pragma mark - Child Contexts
+
+- (NSManagedObjectContext *) newChildContext;
 
 #pragma mark - Ubiquity Support
 

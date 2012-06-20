@@ -24,12 +24,7 @@ typedef enum _AZCoreRecordSaveOptions {
 @end
 
 @interface AZCoreRecordManager : NSObject {
-#if __has_feature(objc_arc_weak)
-	__weak id <AZCoreRecordErrorHandler> _errorDelegate;
-#else
-	__unsafe_unretained id <AZCoreRecordErrorHandler> _errorDelegate;
-#endif
-	
+	__weak id <AZCoreRecordErrorHandler> _errorDelegate;	
 	void (^_errorHandler)(NSError *);
 	
 	BOOL _stackShouldAutoMigrate;
