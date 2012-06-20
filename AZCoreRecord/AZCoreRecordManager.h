@@ -67,6 +67,14 @@ typedef enum _AZCoreRecordSaveOptions {
 
 - (void)configureWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
 
+#pragma mark - Ubiquity Support
+
++ (void)setDefaultUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent;
+
+@property (nonatomic, getter = isUbiquityEnabled) BOOL ubiquityEnabled;
+
++ (BOOL)supportsUbiquity;
+
 #pragma mark - Default stack settings
 
 + (void)setDefaultStackShouldAutoMigrateStore: (BOOL) shouldMigrate;
@@ -75,16 +83,8 @@ typedef enum _AZCoreRecordSaveOptions {
 + (void)setDefaultStackStoreURL: (NSURL *) name;
 + (void)setDefaultStackModelName: (NSString *) name;
 + (void)setDefaultStackModelURL: (NSURL *) name;
- 
-+ (void)setDefaultUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent;
 
 + (void)setUpDefaultStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
-
-#pragma mark - Ubiquity Support
-
-@property (nonatomic, getter = isUbiquityEnabled) BOOL ubiquityEnabled;
-
-+ (BOOL)supportsUbiquity;
 
 #pragma mark - Error Handling
 

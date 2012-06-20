@@ -241,21 +241,6 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 	}
 }
 
-- (void)setUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent {
-	NSURL *cloudURL = [NSPersistentStore URLForUbiquitousContainer: containerID];
-	if (pathComponent) cloudURL = [cloudURL URLByAppendingPathComponent:pathComponent];
-	
-	if (!key) key = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *) kCFBundleNameKey];
-	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-							 key, NSPersistentStoreUbiquitousContentNameKey,
-							 cloudURL, NSPersistentStoreUbiquitousContentURLKey, nil];
-	
-	@synchronized(self) {
-		[self azcr_resetStack];
-		self.stackUbiquityOptions = options;
-	}
-}
-
 - (void)configureWithManagedDocument: (id) managedDocument  {
 	Class documentClass = NULL;
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
@@ -271,6 +256,67 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 		self.managedObjectModel = [managedDocument managedObjectModel];
 		self.persistentStoreCoordinator = [[managedDocument managedObjectContext] persistentStoreCoordinator];
 		self.managedObjectContext = [managedDocument managedObjectContext];
+	}
+}
+
+#pragma mark - Ubiquity Support
+
++ (BOOL)supportsUbiquity
+{
+	return [NSPersistentStore URLForUbiquitousContainer:nil] != nil;
+}
+
+- (void)setUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent {
+	NSURL *cloudURL = [NSPersistentStore URLForUbiquitousContainer: containerID];
+	if (pathComponent) cloudURL = [cloudURL URLByAppendingPathComponent:pathComponent];
+	
+	if (!key) key = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *) kCFBundleNameKey];
+	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+							 key, NSPersistentStoreUbiquitousContentNameKey,
+							 cloudURL, NSPersistentStoreUbiquitousContentURLKey, nil];
+	
+	@synchronized(self) {
+		[self azcr_resetStack];
+		self.stackUbiquityOptions = options;
+	}
+}
+
+- (BOOL)isUbiquityEnabled {
+	if (![[self class] supportsUbiquity])
+		return NO;
+	
+	if (!self.stackUbiquityOptions.count)
+		return NO;
+	
+	return _stackShouldUseUbiquity;
+}
+
+- (void)setUbiquityEnabled:(BOOL)enabled {
+	if (_stackShouldUseUbiquity == enabled)
+		return;
+	
+	@synchronized(self) {
+		if (enabled && !self.stackUbiquityOptions.count)
+			[self setUbiquitousContainer:nil contentNameKey:nil cloudStorePathComponent:nil];
+		
+		if (!_persistentStoreCoordinator)
+			return;
+		
+		NSPersistentStoreCoordinator *psc = [NSPersistentStoreCoordinator defaultStoreCoordinator];
+		
+		if (_managedObjectContext) {
+			if (enabled)
+				[_managedObjectContext startObservingUbiquitousChangesInCoordinator:psc];
+			else
+				[_managedObjectContext stopObservingUbiquitousChangesInCoordinator:psc];
+		}
+		
+		if ((([_persistentStore.options objectForKey:NSPersistentStoreUbiquitousContentURLKey]) != nil) == enabled)
+			return;
+		
+		NSError *err = nil;
+		[psc migratePersistentStore: _persistentStore toURL: _persistentStore.URL options: self.storeOptions withType: _persistentStore.type error: &err];
+		[AZCoreRecordManager handleError:err];
 	}
 }
 
@@ -302,7 +348,6 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 + (void)setUpDefaultStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0) {
 	[[self sharedManager] configureWithManagedDocument: managedObject];
 }
-
 
 #pragma mark - Stack cleanup
 
@@ -337,52 +382,6 @@ static NSDictionary *azcr_automaticLightweightMigrationOptions(void) {
 		self.errorHandler = NULL;
 		[self azcr_resetStackOptions];
 		[self azcr_resetStack];
-	}
-}
-
-#pragma mark - Ubiquity Support
-
-+ (BOOL)supportsUbiquity
-{
-	return [NSPersistentStore URLForUbiquitousContainer:nil] != nil;
-}
-
-- (BOOL)isUbiquityEnabled {
-	if (![[self class] supportsUbiquity])
-		return NO;
-	
-	if (!self.stackUbiquityOptions.count)
-		return NO;
-	
-	return _stackShouldUseUbiquity;
-}
-
-- (void)setUbiquityEnabled:(BOOL)enabled {
-	if (_stackShouldUseUbiquity == enabled)
-		return;
-		
-	@synchronized(self) {
-		if (enabled && !self.stackUbiquityOptions.count)
-			[self setUbiquitousContainer:nil contentNameKey:nil cloudStorePathComponent:nil];
-		
-		if (!_persistentStoreCoordinator)
-			return;
-		
-		NSPersistentStoreCoordinator *psc = [NSPersistentStoreCoordinator defaultStoreCoordinator];
-		
-		if (_managedObjectContext) {
-			if (enabled)
-				[_managedObjectContext startObservingUbiquitousChangesInCoordinator:psc];
-			else
-				[_managedObjectContext stopObservingUbiquitousChangesInCoordinator:psc];
-		}
-		
-		if ((([_persistentStore.options objectForKey:NSPersistentStoreUbiquitousContentURLKey]) != nil) == enabled)
-			return;
-				
-		NSError *err = nil;
-		[psc migratePersistentStore: _persistentStore toURL: _persistentStore.URL options: self.storeOptions withType: _persistentStore.type error: &err];
-		[AZCoreRecordManager handleError:err];
 	}
 }
 
