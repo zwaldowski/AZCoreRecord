@@ -8,7 +8,7 @@
 //
 
 #import "AZCoreRecordImportTestCase.h"
-#import "AZCoreRecord+Private.h"
+#import "AZCoreRecordManager+Private.h"
 
 @implementation AZCoreRecordImportTestCase
 

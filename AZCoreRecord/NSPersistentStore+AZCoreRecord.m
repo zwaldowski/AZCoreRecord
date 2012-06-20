@@ -8,7 +8,7 @@
 //
 
 #import "NSPersistentStore+AZCoreRecord.h"
-#import "AZCoreRecord+Private.h"
+#import "AZCoreRecordManager+Private.h"
 
 static NSPersistentStore *_defaultPersistentStore = nil;
 

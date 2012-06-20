@@ -7,7 +7,7 @@
 //  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
-#import "AZCoreRecord.h"
+#import "AZCoreRecordManager.h"
 
 extern void azcr_swizzle_support(Class cls, SEL oldSel, SEL newSel);
 #define azcr_swizzle(oldSelector, newSelector) azcr_swizzle_support([self class], oldSelector, newSelector)

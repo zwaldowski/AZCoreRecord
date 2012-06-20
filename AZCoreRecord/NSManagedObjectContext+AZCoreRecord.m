@@ -8,13 +8,14 @@
 //
 
 #import "NSManagedObjectContext+AZCoreRecord.h"
-#import "AZCoreRecord+Private.h"
+#import "AZCoreRecordManager+Private.h"
 #import <objc/runtime.h>
+#import "NSPersistentStoreCoordinator+AZCoreRecord.h"
 
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-#import <UIKit/UIKit.h>
+#import <UIKit/UIApplication.h>
 #elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
-#import <Cocoa/Cocoa.h>
+#import <AppKit/NSApplication.h>
 #endif
 
 NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification = @"AZCoreRecordDidMergeUbiquitousChanges";

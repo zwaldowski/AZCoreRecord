@@ -8,7 +8,9 @@
 //
 
 #import "NSPersistentStoreCoordinator+AZCoreRecord.h"
-#import "AZCoreRecord+Private.h"
+#import "AZCoreRecordManager+Private.h"
+#import "NSPersistentStore+AZCoreRecord.h"
+#import "NSManagedObjectModel+AZCoreRecord.h"
 
 static NSPersistentStoreCoordinator *_defaultCoordinator = nil;
 

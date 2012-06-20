@@ -8,7 +8,7 @@
 //
 
 #import "NSManagedObjectModel+AZCoreRecord.h"
-#import "AZCoreRecord+Private.h"
+#import "AZCoreRecordManager+Private.h"
 
 static NSManagedObjectModel *_defaultManagedObjectModel = nil;
 

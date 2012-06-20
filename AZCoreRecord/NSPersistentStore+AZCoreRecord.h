@@ -7,7 +7,7 @@
 //  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
-#import "AZCoreRecord.h"
+#import <CoreData/CoreData.h>
 
 /** AZCoreRecord for NSPersistentStore.  Allows for
  a default persistent store and automatic store creation. */

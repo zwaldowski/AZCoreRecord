@@ -8,7 +8,10 @@
 //
 
 #import "NSManagedObject+AZCoreRecord.h"
-#import "AZCoreRecord+Private.h"
+#import "AZCoreRecordManager+Private.h"
+#import "NSPersistentStoreCoordinator+AZCoreRecord.h"
+#import "NSManagedObjectContext+AZCoreRecord.h"
+#import "NSPersistentStore+AZCoreRecord.h"
 
 static NSUInteger defaultBatchSize = 20;
 static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";

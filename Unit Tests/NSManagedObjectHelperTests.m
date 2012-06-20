@@ -9,7 +9,8 @@
 
 #import "NSManagedObjectHelperTests.h"
 #import "SingleRelatedEntity.h"
-#import "AZCoreRecord+Private.h"
+#import "AZCoreRecord.h"
+#import "AZCoreRecordManager+Private.h"
 
 @implementation NSManagedObjectHelperTests
 
@@ -93,10 +94,10 @@
 
 - (void) createSampleData:(NSInteger)numberOfTestEntitiesToCreate
 {
-	for (NSInteger i = 0; i < numberOfTestEntitiesToCreate; i++) 
+	for (int i = 0; i < numberOfTestEntitiesToCreate; i++)
 	{
 		SingleRelatedEntity *testEntity = [SingleRelatedEntity create];
-		testEntity.mappedStringAttribute = [NSString stringWithFormat:@"%ld", i / 5];
+		testEntity.mappedStringAttribute = [NSString stringWithFormat:@"%i", i / 5];
 	}
 	
 	[[NSManagedObjectContext defaultContext] save];

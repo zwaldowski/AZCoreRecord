@@ -13,6 +13,8 @@
 	#import <GHUnitIOS/GHUnit.h>
 #endif
 
+#import "AZCoreRecord.h"
+
 @interface AZCoreRecordImportTestCase : GHTestCase
 
 @property (nonatomic, retain) id testEntityData;

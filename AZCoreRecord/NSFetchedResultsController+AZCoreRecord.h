@@ -7,8 +7,6 @@
 //  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
-#import "AZCoreRecord.h"
-
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 
 @interface NSFetchedResultsController (AZCoreRecord)

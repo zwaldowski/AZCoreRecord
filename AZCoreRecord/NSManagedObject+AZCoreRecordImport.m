@@ -8,8 +8,10 @@
 //
 
 #import "NSManagedObject+AZCoreRecordImport.h"
-#import "AZCoreRecord+Private.h"
+#import "AZCoreRecordManager+Private.h"
 #import <objc/message.h>
+#import "NSManagedObject+AZCoreRecord.h"
+#import "NSManagedObjectContext+AZCoreRecord.h"
 
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <UIKit/UIKit.h>

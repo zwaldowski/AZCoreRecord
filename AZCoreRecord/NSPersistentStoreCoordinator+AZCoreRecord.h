@@ -7,7 +7,7 @@
 //  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
-#import "AZCoreRecord.h"
+#import <CoreData/CoreData.h>
 
 @interface NSPersistentStoreCoordinator (AZCoreRecord)
 

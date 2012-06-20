@@ -7,8 +7,12 @@
 //  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
-#import "AZCoreRecord+Private.h"
+#import "AZCoreRecordManager+Private.h"
 #import <objc/runtime.h>
+#import "NSPersistentStore+AZCoreRecord.h"
+#import "NSPersistentStoreCoordinator+AZCoreRecord.h"
+#import "NSManagedObjectContext+AZCoreRecord.h"
+#import "NSManagedObjectModel+AZCoreRecord.h"
 
 #if __has_feature(objc_arc_weak)
 static __weak id <AZCoreRecordErrorHandler> errorHandlerTarget = nil;

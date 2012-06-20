@@ -8,7 +8,7 @@
 //
 
 #import "NSManagedObjectContextHelperTests.h"
-#import "AZCoreRecord+Private.h"
+#import "AZCoreRecordManager+Private.h"
 
 @implementation NSManagedObjectContextHelperTests
 

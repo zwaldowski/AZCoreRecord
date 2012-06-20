@@ -9,7 +9,7 @@
 
 #import "SingleEntityWithNoRelationships.h"
 #import "NSManagedObject+AZCoreRecordImport.h"
-#import "AZCoreRecord+Private.h"
+#import "AZCoreRecordManager+Private.h"
 
 @interface ImportSingleEntityWithNoRelationshipsTests : GHTestCase
 

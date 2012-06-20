@@ -8,7 +8,7 @@
 //
 
 #import "NSPersisentStoreHelperTests.h"
-#import "AZCoreRecord+Private.h"
+#import "AZCoreRecordManager+Private.h"
 
 @implementation NSPersisentStoreHelperTests
 
