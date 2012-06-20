@@ -38,7 +38,6 @@ typedef enum _AZCoreRecordSaveOptions {
 	
 	NSManagedObjectContext *_managedObjectContext;
 	NSManagedObjectModel *_managedObjectModel;
-	NSPersistentStore *_persistentStore;
 	NSPersistentStoreCoordinator *_persistentStoreCoordinator;
 }
 
@@ -46,7 +45,6 @@ typedef enum _AZCoreRecordSaveOptions {
 
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readonly) NSManagedObjectModel *managedObjectModel;
-@property (nonatomic, strong, readonly) NSPersistentStore *persistentStore;
 @property (nonatomic, strong, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
 @property (nonatomic) BOOL stackShouldAutoMigrateStore;

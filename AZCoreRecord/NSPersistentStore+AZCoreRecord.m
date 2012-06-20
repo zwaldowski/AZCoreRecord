@@ -12,11 +12,6 @@
 
 @implementation NSPersistentStore (AZCoreRecord)
 
-+ (NSPersistentStore *) defaultPersistentStore
-{
-	return [[AZCoreRecordManager sharedManager] persistentStore];
-}
-
 + (NSURL *) URLForStoreName: (NSString *) storeFileName
 {
 	if (!storeFileName.length)

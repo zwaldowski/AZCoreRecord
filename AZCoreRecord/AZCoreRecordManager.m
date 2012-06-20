@@ -7,19 +7,18 @@
 //  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
-#import <objc/runtime.h>
-
-#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-	#import <UIKit/UIApplication.h>
-#elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
-	#import <AppKit/NSApplication.h>
-#endif
-
 #import "AZCoreRecordManager.h"
+#import <objc/runtime.h>
 #import "NSPersistentStore+AZCoreRecord.h"
 #import "NSPersistentStoreCoordinator+AZCoreRecord.h"
 #import "NSManagedObjectContext+AZCoreRecord.h"
 #import "NSManagedObjectModel+AZCoreRecord.h"
+
+#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
+#import <UIKit/UIApplication.h>
+#elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
+#import <AppKit/NSApplication.h>
+#endif
 
 @interface AZCoreRecordManager ()
 
@@ -28,7 +27,6 @@
 
 @property (nonatomic, strong, readwrite, setter = azcr_setManagedObjectContext:) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readwrite, setter = azcr_setManagedObjectModel:) NSManagedObjectModel *managedObjectModel;
-@property (nonatomic, strong, readwrite, setter = azcr_setPersistentStore:) NSPersistentStore *persistentStore;
 @property (nonatomic, strong, readwrite, setter = azcr_setPersistentStoreCoordinator:) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, strong, readwrite, setter = azcr_setStackUbiquityOptions:) NSDictionary *stackUbiquityOptions;
 @property (nonatomic, readonly, getter = azcr_storeOptions) NSDictionary *storeOptions;
@@ -41,7 +39,6 @@
 @synthesize errorHandler = _errorHandler;
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
-@synthesize persistentStore = _persistentStore;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 @synthesize stackShouldAutoMigrateStore = _stackShouldAutoMigrate;
 @synthesize stackShouldUseInMemoryStore = _stackShouldUseInMemoryStore;
@@ -52,21 +49,18 @@
 @synthesize stackModelURL = _stackModelURL;
 @synthesize stackUbiquityOptions = _stackUbiquityOptions;
 
-+ (AZCoreRecordManager *) sharedManager
-{
++ (AZCoreRecordManager *)sharedManager {
 	static dispatch_once_t onceToken;
 	static AZCoreRecordManager *sharedManager = nil;
 	dispatch_once(&onceToken, ^{
 		sharedManager = [self new];
 	});
-	
 	return sharedManager;
 }
 
 #pragma mark - Stack storage
 
-- (NSManagedObjectContext *) managedObjectContext
-{
+- (NSManagedObjectContext *)managedObjectContext {
 	if (!_managedObjectContext)
 	{
 		NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType: NSMainQueueConcurrencyType];
@@ -77,8 +71,7 @@
 	return _managedObjectContext;
 }
 
-- (void) azcr_setManagedObjectContext: (NSManagedObjectContext *) managedObjectContext
-{
+- (void)azcr_setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
 	BOOL isUbiquitous = self.ubiquityEnabled;
 	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 	
@@ -91,28 +84,27 @@
 	[[NSNotificationCenter defaultCenter] removeObserver: _managedObjectContext name: key object: nil];
 	
 	if (isUbiquitous && _managedObjectContext)
-		[_managedObjectContext stopObservingUbiquitousChangesInCoordinator: coordinator];
+		[_managedObjectContext stopObservingUbiquitousChangesInCoordinator:coordinator];
 	
 	_managedObjectContext = managedObjectContext;
 	
 	if (isUbiquitous && _managedObjectContext)
-		[_managedObjectContext startObservingUbiquitousChangesInCoordinator: coordinator];
+		[_managedObjectContext startObservingUbiquitousChangesInCoordinator:coordinator];
 	
 	if (_managedObjectContext)
 		[[NSNotificationCenter defaultCenter] addObserver: _managedObjectContext selector: @selector(save) name: key object: nil];
 }
 
-- (NSManagedObjectModel *) managedObjectModel
-{
+- (NSManagedObjectModel *)managedObjectModel {
 	if (!_managedObjectModel)
 	{
 		NSURL *storeURL = self.stackModelURL;
 		NSString *storeName = self.stackModelName;
 		
 		if (!storeURL && storeName)
-			_managedObjectModel = [NSManagedObjectModel modelNamed: storeName];
+			_managedObjectModel = [NSManagedObjectModel modelNamed:storeName];
 		else if (storeURL) 
-			_managedObjectModel = [NSManagedObjectModel modelAtURL: storeURL];
+			_managedObjectModel = [NSManagedObjectModel modelAtURL:storeURL];
 		else
 			_managedObjectModel = [NSManagedObjectModel model];
 	}
@@ -120,16 +112,7 @@
 	return _managedObjectModel;
 }
 
-- (void) setPersistentStoreCoordinator: (NSPersistentStoreCoordinator *) persistentStoreCoordinator {
-	_persistentStoreCoordinator = persistentStoreCoordinator;
-	
-	// NB: If `_defaultCoordinator` is nil, then `persistentStores` is also nil, so `count` returns 0
-	if (!_persistentStore && _persistentStoreCoordinator.persistentStores.count)
-		[self azcr_setPersistentStore: [_persistentStoreCoordinator.persistentStores objectAtIndex: 0]];
-}
-
-- (NSPersistentStoreCoordinator *) persistentStoreCoordinator
-{
+- (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
 	if (!_persistentStoreCoordinator)
 	{
 		NSURL *storeURL = self.stackStoreURL ?: [NSPersistentStore URLForStoreName: nil];
@@ -142,120 +125,96 @@
 
 #pragma mark - Utilities
 
-- (NSDictionary *) azcr_storeOptions
-{
+- (NSDictionary *) azcr_storeOptions {
 	BOOL shouldAutoMigrate = self.stackShouldAutoMigrateStore;
 	BOOL shouldUseCloud = self.stackUbiquityOptions != nil;
 	NSMutableDictionary *options = shouldAutoMigrate || shouldUseCloud ? [NSMutableDictionary dictionary] : nil;
 	
-	if (shouldAutoMigrate)
-	{
+	if (shouldAutoMigrate) {
 		static NSDictionary *lightweightMigrationOptions = nil;
 		static dispatch_once_t once;
 		dispatch_once(&once, ^{
 			lightweightMigrationOptions = [NSDictionary dictionaryWithObjectsAndKeys:
-					   (__bridge id) kCFBooleanTrue, NSMigratePersistentStoresAutomaticallyOption,
-					   (__bridge id) kCFBooleanTrue, NSInferMappingModelAutomaticallyOption, nil];
+					   (__bridge id)kCFBooleanTrue, NSMigratePersistentStoresAutomaticallyOption,
+					   (__bridge id)kCFBooleanTrue, NSInferMappingModelAutomaticallyOption, nil];
 		});
-		
 		[options addEntriesFromDictionary: lightweightMigrationOptions];
 	}
 	
 	if (shouldUseCloud)
-	{
 		[options addEntriesFromDictionary: self.stackUbiquityOptions];
-	}
 	
 	return options;
 }
 
 #pragma mark - Stack settings
 
-- (void) setStackShouldAutoMigrateStore: (BOOL) stackShouldAutoMigrateStore
-{
-	@synchronized(self)
-	{
+- (void)setStackShouldAutoMigrateStore:(BOOL)stackShouldAutoMigrateStore {
+	@synchronized(self) {
 		[self azcr_resetStack];
 		_stackShouldAutoMigrate = stackShouldAutoMigrateStore;
 	}
 }
 
-- (void) setStackShouldUseInMemoryStore: (BOOL) stackShouldUseInMemoryStore
-{
-	@synchronized(self)
-	{
+- (void)setStackShouldUseInMemoryStore:(BOOL)stackShouldUseInMemoryStore {
+	@synchronized(self) {
 		[self azcr_resetStack];
 		_stackShouldUseInMemoryStore = stackShouldUseInMemoryStore;
 	}
 }
 
-- (void) setStackShouldUseUbiquity: (BOOL) stackShouldUseUbiquity
-{
-	@synchronized(self)
-	{
+- (void)setStackShouldUseUbiquity:(BOOL)stackShouldUseUbiquity {
+	@synchronized(self) {
 		[self azcr_resetStack];
 		_stackShouldUseUbiquity = stackShouldUseUbiquity;
 	}
 }
 
-- (void) setStackStoreName: (NSString *) stackStoreName
-{
-	@synchronized(self)
-	{
+- (void)setStackStoreName:(NSString *)stackStoreName {
+	@synchronized(self) {
 		[self azcr_resetStack];
 		_stackStoreName = [stackStoreName copy];
 	}
 }
 
-- (NSString *)stackStoreName
-{
+- (NSString *)stackStoreName {
 	if (!_stackStoreName.pathExtension)
-		return [_stackStoreName stringByAppendingPathExtension: @"sqlite"];
-	
+		return [_stackStoreName stringByAppendingPathExtension:@"sqlite"];
 	return _stackStoreName;
 }
 
-- (void) setStackStoreURL: (NSURL *) stackStoreURL
-{
-	@synchronized(self)
-	{
+- (void)setStackStoreURL:(NSURL *)stackStoreURL {
+	@synchronized(self) {
 		[self azcr_resetStack];
 		_stackStoreURL = [stackStoreURL copy];
 	}
 }
 
-- (void) setStackModelName: (NSString *) stackModelName
-{
-	@synchronized (self)
-	{
+- (void)setStackModelName:(NSString *)stackModelName {
+	@synchronized (self) {
 		[self azcr_resetStack];
 		_stackModelName = [stackModelName copy];
 	}
 }
 
-- (void) setStackModelURL: (NSURL *) stackModelURL
-{
-	@synchronized (self)
-	{
+- (void)setStackModelURL:(NSURL *)stackModelURL {
+	@synchronized (self) {
 		[self azcr_resetStack];
 		_stackModelURL = [stackModelURL copy];
 	}
 }
 
-- (void) configureWithManagedDocument: (id) managedDocument
-{
+- (void)configureWithManagedDocument: (id) managedDocument  {
 	Class documentClass = NULL;
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 	documentClass = NSClassFromString(@"UIManagedDocument");
 #else
 	documentClass = NSClassFromString(@"NSPersistentDocument");
 #endif
-	
 	NSAssert(documentClass, @"Not available on this OS.");
-	NSParameterAssert([managedDocument isKindOfClass: documentClass]);
+	NSParameterAssert([managedDocument isKindOfClass:documentClass]);
 	
-	@synchronized(self)
-	{
+	@synchronized(self) {
 		[self azcr_resetStack];
 		self.managedObjectModel = [managedDocument managedObjectModel];
 		self.persistentStoreCoordinator = [[managedDocument managedObjectContext] persistentStoreCoordinator];
@@ -265,20 +224,12 @@
 
 #pragma mark - Ubiquity Support
 
-+ (BOOL) supportsUbiquity
++ (BOOL)supportsUbiquity
 {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 1080
-	if ([NSFileManager instancesRespondToSelector: @selector(ubiquityIdentityToken)])
-	{
-		return [[NSFileManager defaultManager] ubiquityIdentityToken] != nil;
-	}
-#endif
-	
-	return [NSPersistentStore URLForUbiquitousContainer: nil] != nil;
+	return !![[NSFileManager new] URLForUbiquityContainerIdentifier: nil];
 }
 
-- (void) setUbiquitousContainer:  (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent
-{
+- (void)setUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent {
 	NSURL *cloudURL = [[NSFileManager new] URLForUbiquityContainerIdentifier: nil];
 	if (pathComponent) cloudURL = [cloudURL URLByAppendingPathComponent:pathComponent];
 	
@@ -287,15 +238,13 @@
 							 key, NSPersistentStoreUbiquitousContentNameKey,
 							 cloudURL, NSPersistentStoreUbiquitousContentURLKey, nil];
 	
-	@synchronized(self)
-	{
+	@synchronized(self) {
 		[self azcr_resetStack];
 		self.stackUbiquityOptions = options;
 	}
 }
 
-- (BOOL) isUbiquityEnabled
-{
+- (BOOL)isUbiquityEnabled {
 	if (![[self class] supportsUbiquity])
 		return NO;
 	
@@ -305,98 +254,99 @@
 	return _stackShouldUseUbiquity;
 }
 
-- (void) setUbiquityEnabled: (BOOL) enabled
-{
+- (void)setUbiquityEnabled:(BOOL)enabled {
 	if (_stackShouldUseUbiquity == enabled)
 		return;
 	
-	@synchronized(self)
-	{
+	@synchronized(self) {
 		if (enabled && !self.stackUbiquityOptions.count)
-			[self setUbiquitousContainer: nil contentNameKey: nil cloudStorePathComponent: nil];
+			[self setUbiquitousContainer:nil contentNameKey:nil cloudStorePathComponent:nil];
 		
 		if (!_persistentStoreCoordinator)
 			return;
 		
 		NSPersistentStoreCoordinator *psc = [NSPersistentStoreCoordinator defaultStoreCoordinator];
 		
-		if (_managedObjectContext)
-		{
+		if (_managedObjectContext) {
 			if (enabled)
-				[_managedObjectContext startObservingUbiquitousChangesInCoordinator: psc];
+				[_managedObjectContext startObservingUbiquitousChangesInCoordinator:psc];
 			else
-				[_managedObjectContext stopObservingUbiquitousChangesInCoordinator: psc];
+				[_managedObjectContext stopObservingUbiquitousChangesInCoordinator:psc];
 		}
 		
-		if ((([_persistentStore.options objectForKey:NSPersistentStoreUbiquitousContentURLKey]) != nil) == enabled)
-			return;
+		NSPersistentStore *storeToChange = nil;
+		
+		if (!enabled) {
+			NSUInteger cloudStoreIndex = [_persistentStoreCoordinator.persistentStores indexOfObjectPassingTest:^BOOL(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
+				return ([obj.options objectForKey: NSPersistentStoreUbiquitousContentURLKey] != nil);
+			}];
+			
+			if (cloudStoreIndex == NSNotFound)
+				return;
+			
+			storeToChange = [_persistentStoreCoordinator.persistentStores objectAtIndex: cloudStoreIndex];
+		} else if (_persistentStoreCoordinator.persistentStores.count == 1) {
+			storeToChange = _persistentStoreCoordinator.persistentStores.lastObject;
+		} else {
+			NSUInteger notCloudStoreIndex = [_persistentStoreCoordinator.persistentStores indexOfObjectPassingTest:^BOOL(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
+				return ![obj.options objectForKey: NSPersistentStoreUbiquitousContentURLKey] && [obj.type isEqualToString: NSSQLiteStoreType];
+			}];
+			
+			if (notCloudStoreIndex == NSNotFound)
+				return;
+			
+			storeToChange = [_persistentStoreCoordinator.persistentStores objectAtIndex: notCloudStoreIndex];
+		}
 		
 		NSError *err = nil;
-		[psc migratePersistentStore: _persistentStore toURL: _persistentStore.URL options: self.storeOptions withType: _persistentStore.type error: &err];
-		[AZCoreRecordManager handleError: err];
+		[psc migratePersistentStore: storeToChange toURL: storeToChange.URL options: self.storeOptions withType: storeToChange.type error: &err];
+		[AZCoreRecordManager handleError:err];
 	}
 }
 
 #pragma mark - Default stack settings
 
-+ (void) setDefaultStackShouldAutoMigrateStore: (BOOL) shouldMigrate
-{
++ (void)setDefaultStackShouldAutoMigrateStore: (BOOL) shouldMigrate {
 	[[self sharedManager] setStackShouldUseInMemoryStore: shouldMigrate];
 }
-+ (void) setDefaultStackShouldUseInMemoryStore: (BOOL) inMemory
-{
++ (void)setDefaultStackShouldUseInMemoryStore: (BOOL) inMemory {
 	[[self sharedManager] setStackShouldUseInMemoryStore: inMemory];
 }
-+ (void) setDefaultStackStoreName: (NSString *) name
-{
++ (void)setDefaultStackStoreName: (NSString *) name {
 	[[self sharedManager] setStackStoreName: name];
 }
-+ (void) setDefaultStackStoreURL: (NSURL *) name
-{
++ (void)setDefaultStackStoreURL: (NSURL *) name {
 	[[self sharedManager] setStackStoreURL: name];
 }
-+ (void) setDefaultStackModelName: (NSString *) name
-{
++ (void)setDefaultStackModelName: (NSString *) name {
 	[[self sharedManager] setStackModelName: name];
 }
-+ (void) setDefaultStackModelURL: (NSURL *) name
-{
++ (void)setDefaultStackModelURL: (NSURL *) name {
 	[[self sharedManager] setStackModelURL: name];
 }
 
-+ (void) setDefaultUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent
-{
++ (void)setDefaultUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent {
 	[[self sharedManager] setUbiquitousContainer: containerID contentNameKey: key cloudStorePathComponent: pathComponent];
 }
 
-+ (void) setUpDefaultStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0)
-{
++ (void)setUpDefaultStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0) {
 	[[self sharedManager] configureWithManagedDocument: managedObject];
 }
 
 #pragma mark - Stack cleanup
 
-- (void) azcr_resetStack
-{
+- (void)azcr_resetStack {
 	if (self.managedObjectContext)
-	{
 		self.managedObjectContext = nil;
-	}
 	
 	if (self.persistentStoreCoordinator)
-	{
-		[self azcr_setPersistentStore: nil];
-		[self azcr_setPersistentStoreCoordinator: nil];
-	}
+		self.persistentStoreCoordinator = nil;
 	
 	if (self.managedObjectModel)
-	{
-		[self azcr_setManagedObjectModel: nil];
-	}
+		self.managedObjectModel = nil;
 }
 
-- (void) azcr_resetStackOptions
-{
+- (void)azcr_resetStackOptions {
 	_stackShouldAutoMigrate = NO;
 	_stackShouldUseInMemoryStore = NO;
 	_stackShouldUseUbiquity = NO;
@@ -407,10 +357,8 @@
 	_stackUbiquityOptions = nil;
 }
 
-- (void) azcr_cleanUp
-{
-	@synchronized (self)
-	{
+- (void)azcr_cleanUp {
+	@synchronized (self) {
 		self.errorDelegate = nil;
 		self.errorHandler = NULL;
 		[self azcr_resetStackOptions];
@@ -426,7 +374,7 @@
 	
 	AZCoreRecordManager *shared = [self sharedManager];
 	
-	void (^block)(NSError *error) = shared.errorHandler;
+	void (^block)(NSError *) = shared.errorHandler;
 	if (block)
 	{
 		block(error);
@@ -440,20 +388,20 @@
 	}
 }
 
-+ (void (^)(NSError *error)) errorHandler
++ (void (^)(NSError *)) errorHandler
 {
 	return [[self sharedManager] errorHandler];
 }
-+ (void) setErrorHandler: (void (^)(NSError *error)) block
++ (void) setErrorHandler: (void (^)(NSError *)) block
 {
 	[[self sharedManager] setErrorHandler: block];
 }
 
-+ (id <AZCoreRecordErrorHandler>) errorDelegate
++ (id<AZCoreRecordErrorHandler>) errorDelegate
 {
 	return [[self sharedManager] errorDelegate];
 }
-+ (void) setErrorDelegate: (id <AZCoreRecordErrorHandler>) target
++ (void) setErrorDelegate: (id<AZCoreRecordErrorHandler>) target
 {
 	[[self sharedManager] setErrorDelegate: target];
 }
@@ -515,8 +463,7 @@
 			dispatch_async(callbackBlock, callback);
 	};
 	
-	if (!wantsMainThread && !wantsBackground && !wantsAsync)
-	{
+	if (!wantsMainThread && !wantsBackground && !wantsAsync) {
 		queueBlock();
 		return;
 	}

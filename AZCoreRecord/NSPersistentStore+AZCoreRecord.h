@@ -13,12 +13,6 @@
  a default persistent store and automatic store creation. */
 @interface NSPersistentStore (AZCoreRecord)
 
-/** The default persistent store.
- 
- @return A persistent store.
- */
-+ (NSPersistentStore *) defaultPersistentStore;
-
 /** Creates and returns a URL for a given store name.
  
  If a store name is not provided, the store name is either
