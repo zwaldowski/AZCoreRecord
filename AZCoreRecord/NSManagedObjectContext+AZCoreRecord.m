@@ -122,4 +122,42 @@
 	}];
 }
 
+#pragma mark - Data saving
+
+- (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *)) block {
+	NSParameterAssert(block);
+	NSManagedObjectContext *localContext = [self newChildContext];
+	NSMergePolicy *backupMergePolicy = self.mergePolicy;
+	self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+	localContext.mergePolicy = NSOverwriteMergePolicy;
+	[localContext performBlockAndWait:^{
+		block(localContext);
+	}];
+	[localContext save];
+	self.mergePolicy = backupMergePolicy;
+}
+
+- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block {
+	[self saveDataInBackgroundWithBlock: block completion: NULL];
+}
+
+- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block completion: (void (^)(void)) callback {
+	NSParameterAssert(block);
+	NSManagedObjectContext *localContext = [self newChildContext];
+	NSMergePolicy *backupMergePolicy = self.mergePolicy;
+	self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+	localContext.mergePolicy = NSOverwriteMergePolicy;
+	[localContext performBlock:^{
+		block(localContext);
+		
+		[localContext save];
+		
+		self.mergePolicy = backupMergePolicy;
+		
+		if (callback)
+			dispatch_async(dispatch_get_main_queue(), callback);
+	}];
+}
+
+
 @end

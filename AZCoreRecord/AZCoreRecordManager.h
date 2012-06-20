@@ -9,13 +9,6 @@
 
 #import <CoreData/CoreData.h>
 
-typedef enum _AZCoreRecordSaveOptions {
-	AZCoreRecordSaveOptionsNone			= 0,
-	AZCoreRecordSaveOptionsBackground		= 1 << 0,
-	AZCoreRecordSaveOptionsMainThread		= 1 << 1,
-	AZCoreRecordSaveOptionsAsynchronous		= 1 << 2
-} AZCoreRecordSaveOptions;
-
 @protocol AZCoreRecordErrorHandler <NSObject>
 @required
 
@@ -95,8 +88,5 @@ typedef enum _AZCoreRecordSaveOptions {
 
 + (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block;
 + (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block completion: (void (^)(void)) callback;
-
-+ (void) saveDataWithOptions: (AZCoreRecordSaveOptions) options block: (void (^)(NSManagedObjectContext *)) block;
-+ (void) saveDataWithOptions: (AZCoreRecordSaveOptions) options block: (void (^)(NSManagedObjectContext *)) block success: (void (^)(void)) callback failure: (void (^)(NSError *)) errorCallback;
 
 @end

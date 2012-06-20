@@ -408,79 +408,16 @@
 
 #pragma mark - Data Commit
 
-+ (void) saveDataWithBlock: (void (^)(NSManagedObjectContext *)) block
-{   
-    [self saveDataWithOptions: AZCoreRecordSaveOptionsNone block: block success: NULL failure: NULL];
++ (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *)) block {
+	[[NSManagedObjectContext contextForCurrentThread] saveDataWithBlock: block];
 }
 
-+ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block
-{
-    [self saveDataWithOptions: AZCoreRecordSaveOptionsBackground block: block success: NULL failure: NULL];
-}
-+ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block completion: (void (^)(void)) callback
-{
-    [self saveDataWithOptions: AZCoreRecordSaveOptionsBackground block: block success: callback failure: NULL];
++ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block {
+	[[NSManagedObjectContext contextForCurrentThread] saveDataInBackgroundWithBlock: block completion: NULL];
 }
 
-+ (void) saveDataWithOptions: (AZCoreRecordSaveOptions) options block: (void (^)(NSManagedObjectContext *)) block
-{
-    [self saveDataWithOptions: options block: block success: NULL failure: NULL];
-}
-+ (void) saveDataWithOptions: (AZCoreRecordSaveOptions) options block: (void (^)(NSManagedObjectContext *)) block success: (void (^)(void)) callback failure: (void (^)(NSError *)) errorCallback
-{
-	BOOL wantsBackground = (options & AZCoreRecordSaveOptionsBackground);
-	BOOL wantsMainThread = (options & AZCoreRecordSaveOptionsMainThread);
-	
-	NSParameterAssert(block);
-	NSParameterAssert(!(wantsBackground && wantsMainThread));
-	
-	BOOL wantsAsync		 = (options & AZCoreRecordSaveOptionsAsynchronous);
-	BOOL usesNewContext	 = wantsBackground || (![NSThread isMainThread] && !wantsBackground && !wantsMainThread);
-	
-	dispatch_queue_t callbackBlock = wantsMainThread ? dispatch_get_main_queue() : dispatch_get_current_queue();
-	
-	dispatch_block_t queueBlock = ^{
-		NSManagedObjectContext *defaultContext  = [NSManagedObjectContext defaultContext];
-		NSManagedObjectContext *localContext = defaultContext;
-		
-		id backupMergePolicy = defaultContext.mergePolicy;
-		
-		if (usesNewContext)
-		{
-			localContext = [defaultContext newChildContext];
-			defaultContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
-			localContext.mergePolicy = NSOverwriteMergePolicy;
-		}
-		
-		block(localContext);
-		
-		if (localContext.hasChanges)
-			[localContext saveWithErrorHandler:errorCallback];
-		
-		defaultContext.mergePolicy = backupMergePolicy;
-		
-		if (callback)
-			dispatch_async(callbackBlock, callback);
-	};
-	
-	if (!wantsMainThread && !wantsBackground && !wantsAsync) {
-		queueBlock();
-		return;
-	}
-	
-	dispatch_queue_t queue = NULL;
-	
-	if (wantsBackground)
-		queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-	else if (wantsMainThread)
-		queue = dispatch_get_main_queue();
-	else
-		queue = dispatch_get_current_queue();
-	
-	if (wantsAsync)
-		dispatch_async(queue, queueBlock);
-	else
-		dispatch_sync(queue, queueBlock);
++ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block completion: (void (^)(void)) callback {
+	[[NSManagedObjectContext contextForCurrentThread] saveDataInBackgroundWithBlock: block completion: callback];
 }
 
 @end
