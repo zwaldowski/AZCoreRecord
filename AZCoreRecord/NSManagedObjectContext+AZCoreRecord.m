@@ -47,7 +47,7 @@
 	
 	NSManagedObjectContext *context = nil;
 	
-	static dispatch_semaphore_t semaphore = NULL;
+	static dispatch_semaphore_t semaphore;
 	static dispatch_once_t token;
 	dispatch_once(&token, ^{
 		semaphore = dispatch_semaphore_create(0);
