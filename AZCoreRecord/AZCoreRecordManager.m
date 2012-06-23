@@ -53,17 +53,6 @@
 @synthesize stackModelURL = _stackModelURL;
 @synthesize stackUbiquityOptions = _stackUbiquityOptions;
 
-+ (AZCoreRecordManager *) sharedManager
-{
-	static dispatch_once_t onceToken;
-	static AZCoreRecordManager *sharedManager = nil;
-	dispatch_once(&onceToken, ^{
-		sharedManager = [self new];
-	});
-	
-	return sharedManager;
-}
-
 - (id) init
 {
 	if ((self = [super init]))
@@ -379,6 +368,17 @@
 }
 
 #pragma mark - Default stack settings
+
++ (AZCoreRecordManager *) sharedManager
+{
+	static dispatch_once_t onceToken;
+	static AZCoreRecordManager *sharedManager = nil;
+	dispatch_once(&onceToken, ^{
+		sharedManager = [self new];
+	});
+	
+	return sharedManager;
+}
 
 + (void) setDefaultStackShouldAutoMigrateStore: (BOOL) shouldMigrate
 {

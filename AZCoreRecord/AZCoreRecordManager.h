@@ -37,11 +37,11 @@
 	NSPersistentStoreCoordinator *_persistentStoreCoordinator;
 }
 
-+ (AZCoreRecordManager *)sharedManager;
-
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readonly) NSManagedObjectModel *managedObjectModel;
 @property (nonatomic, strong, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+
+#pragma mark - Options
 
 @property (nonatomic) BOOL stackShouldAutoMigrateStore;
 @property (nonatomic) BOOL stackShouldUseInMemoryStore;
@@ -65,6 +65,8 @@
 + (BOOL) supportsUbiquity;
 
 #pragma mark - Default stack settings
+
++ (AZCoreRecordManager *)sharedManager;
 
 + (void) setDefaultStackShouldAutoMigrateStore: (BOOL) shouldMigrate;
 + (void) setDefaultStackShouldUseInMemoryStore: (BOOL) inMemory;
