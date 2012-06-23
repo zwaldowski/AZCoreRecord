@@ -15,8 +15,8 @@ extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
 
 #pragma mark - Instance Methods
 
-- (BOOL) save;
-- (BOOL) saveWithErrorHandler: (void (^)(NSError *)) errorCallback;
+- (void) save;
+- (void) saveWithErrorHandler: (void (^)(NSError *)) errorCallback;
 
 #pragma mark - Default Contexts
 
