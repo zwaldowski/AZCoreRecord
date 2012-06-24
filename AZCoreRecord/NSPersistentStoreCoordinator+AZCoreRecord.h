@@ -25,8 +25,6 @@
 
 #pragma mark - In-Memory Store
 
-+ (NSPersistentStoreCoordinator *) coordinatorWithInMemoryStore;
-
 - (NSPersistentStore *) addInMemoryStore;
 
 @end

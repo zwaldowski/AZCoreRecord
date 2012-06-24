@@ -11,10 +11,6 @@
 
 @interface NSManagedObjectModel (AZCoreRecord)
 
-#pragma mark - Default Model
-
-+ (NSManagedObjectModel *) defaultModel;
-
 #pragma mark - Model Factory Methods
 
 + (NSManagedObjectModel *) model;

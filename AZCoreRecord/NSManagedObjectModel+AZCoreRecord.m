@@ -12,13 +12,6 @@
 
 @implementation NSManagedObjectModel (AZCoreRecord)
 
-#pragma mark - Default Model
-
-+ (NSManagedObjectModel *) defaultModel
-{
-	return [[AZCoreRecordManager sharedManager] managedObjectModel];
-}
-
 #pragma mark - Model Factory Methods
 
 + (NSManagedObjectModel *) model

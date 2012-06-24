@@ -33,12 +33,10 @@
 	NSDictionary *_stackUbiquityOptions;
 	
 	NSManagedObjectContext *_managedObjectContext;
-	NSManagedObjectModel *_managedObjectModel;
 	NSPersistentStoreCoordinator *_persistentStoreCoordinator;
 }
 
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, strong, readonly) NSManagedObjectModel *managedObjectModel;
 @property (nonatomic, strong, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
 #pragma mark - Options

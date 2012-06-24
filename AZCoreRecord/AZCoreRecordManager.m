@@ -30,7 +30,6 @@
 @property (nonatomic) dispatch_semaphore_t semaphore;
 
 @property (nonatomic, strong, readwrite, setter = azcr_setManagedObjectContext:) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, strong, readwrite, setter = azcr_setManagedObjectModel:) NSManagedObjectModel *managedObjectModel;
 @property (nonatomic, strong, readwrite, setter = azcr_setPersistentStoreCoordinator:) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, strong, readwrite, setter = azcr_setStackUbiquityOptions:) NSDictionary *stackUbiquityOptions;
 @property (nonatomic, readonly, getter = azcr_storeOptions) NSDictionary *storeOptions;
@@ -42,7 +41,6 @@
 @synthesize errorDelegate = _errorDelegate;
 @synthesize errorHandler = _errorHandler;
 @synthesize managedObjectContext = _managedObjectContext;
-@synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 @synthesize semaphore = _semaphore;
 @synthesize stackShouldAutoMigrateStore = _stackShouldAutoMigrate;
@@ -108,28 +106,21 @@
 		[[NSNotificationCenter defaultCenter] addObserver: _managedObjectContext selector: @selector(save) name: key object: nil];
 }
 
-- (NSManagedObjectModel *) managedObjectModel
-{
-	if (!_managedObjectModel)
-	{
-		NSURL *storeURL = self.stackModelURL;
-		NSString *storeName = self.stackModelName;
-		
-		if (!storeURL && storeName)
-			_managedObjectModel = [NSManagedObjectModel modelNamed:storeName];
-		else if (storeURL) 
-			_managedObjectModel = [NSManagedObjectModel modelAtURL:storeURL];
-		else
-			_managedObjectModel = [NSManagedObjectModel model];
-	}
-	
-	return _managedObjectModel;
-}
-
 - (NSPersistentStoreCoordinator *) persistentStoreCoordinator
 {
 	if (!_persistentStoreCoordinator)
 	{
+		NSManagedObjectModel *model = nil;
+		NSURL *modelURL = self.stackModelURL;
+		NSString *modelName = self.stackModelName;
+			
+		if (!modelURL && modelName)
+			model = [NSManagedObjectModel modelNamed: modelName];
+		else if (modelURL)
+			model = [NSManagedObjectModel modelAtURL: modelURL];
+		else
+			model = [NSManagedObjectModel model];
+		
 		NSURL *storeURL = self.stackStoreURL ?: [NSPersistentStore URLForStoreName: nil];
 		NSString *storeType = self.stackShouldUseInMemoryStore ? NSInMemoryStoreType : NSSQLiteStoreType;
 		_persistentStoreCoordinator = [NSPersistentStoreCoordinator coordinatorWithStoreAtURL: storeURL ofType: storeType options: [self azcr_storeOptions]];
@@ -192,7 +183,6 @@
 	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
 	
 	[self azcr_resetStack];
-	self.managedObjectModel = [managedDocument managedObjectModel];
 	self.persistentStoreCoordinator = [[managedDocument managedObjectContext] persistentStoreCoordinator];
 	self.managedObjectContext = [managedDocument managedObjectContext];
 	
@@ -415,9 +405,6 @@
 	
 	if (self.persistentStoreCoordinator)
 		self.persistentStoreCoordinator = nil;
-	
-	if (self.managedObjectModel)
-		self.managedObjectModel = nil;
 }
 
 - (void) azcr_resetStackOptions

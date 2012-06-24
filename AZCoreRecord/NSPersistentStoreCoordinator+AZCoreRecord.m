@@ -39,8 +39,17 @@
 }
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreAtURL: (NSURL *) storeURL ofType: (NSString *) storeType options: (NSDictionary *) options
 {
-	NSManagedObjectModel *model = [NSManagedObjectModel defaultModel];
+	NSManagedObjectModel *model = nil;
+	NSURL *modelURL = [[AZCoreRecordManager sharedManager] stackModelURL];
+	NSString *modelName = [[AZCoreRecordManager sharedManager] stackModelName];
 	
+	if (!modelURL && modelName)
+		model = [NSManagedObjectModel modelNamed:modelName];
+	else if (modelURL) 
+		model = [NSManagedObjectModel modelAtURL:modelURL];
+	else
+		model = [NSManagedObjectModel model];
+		
 	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
 	
 	// Create path to store (if necessary)
@@ -75,14 +84,6 @@
 }
 
 #pragma mark - In-Memory Store
-
-+ (NSPersistentStoreCoordinator *) coordinatorWithInMemoryStore
-{
-	NSManagedObjectModel *model = [NSManagedObjectModel defaultModel];
-	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
-	[psc addInMemoryStore];
-	return psc;
-}
 
 - (NSPersistentStore *) addInMemoryStore
 {
