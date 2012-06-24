@@ -13,6 +13,5 @@
 #import "NSManagedObjectContext+AZCoreRecord.h"
 #import "NSPersistentStoreCoordinator+AZCoreRecord.h"
 #import "NSManagedObjectModel+AZCoreRecord.h"
-#import "NSPersistentStore+AZCoreRecord.h"
 #import "NSManagedObject+AZCoreRecord.h"
 #import "NSFetchedResultsController+AZCoreRecord.h"

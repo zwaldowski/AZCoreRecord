@@ -9,8 +9,8 @@
 
 #import "NSPersistentStoreCoordinator+AZCoreRecord.h"
 #import "AZCoreRecordManager.h"
-#import "NSPersistentStore+AZCoreRecord.h"
 #import "NSManagedObjectModel+AZCoreRecord.h"
+#import "NSManagedObjectContext+AZCoreRecord.h"
 
 @implementation NSPersistentStoreCoordinator (AZCoreRecord)
 
@@ -29,7 +29,8 @@
 }
 + (NSPersistentStoreCoordinator *) coordinatorWithStoreNamed: (NSString *) storeName ofType: (NSString *) storeType options: (NSDictionary *) options
 {
-	NSURL *storeURL = [NSPersistentStore URLForStoreName: storeName];
+	//NSURL *storeURL = [NSPersistentStore URLForStoreName: storeName];
+	NSURL *storeURL = nil;
 	return [self coordinatorWithStoreAtURL: storeURL ofType: storeType options: options];
 }
 
@@ -86,12 +87,46 @@
 
 #pragma mark - In-Memory Store
 
-- (NSPersistentStore *) addInMemoryStore
+- (NSPersistentStore *) addInMemoryStoreWithConfiguration: (NSString *)configuration options: (NSDictionary *)options
 {
 	NSError *error = nil;
-	NSPersistentStore *store = [self addPersistentStoreWithType: NSInMemoryStoreType configuration: nil URL: nil options: nil error: &error];
+	NSPersistentStore *store = [self addPersistentStoreWithType: NSInMemoryStoreType configuration: configuration URL: nil options: options error: &error];
     [AZCoreRecordManager handleError: error];
 	return store;
+}
+
+- (NSPersistentStore *) addInMemoryStore
+{
+	return [self addInMemoryStoreWithConfiguration: nil options: nil];
+}
+
+- (NSPersistentStore *) addStoreAtURL: (NSURL *)URL configuration: (NSString *)configuration options: (NSDictionary *)options
+{
+	NSError *error = nil;
+	NSPersistentStore *store = [self addPersistentStoreWithType: NSSQLiteStoreType configuration: configuration URL: URL options: options error: &error];
+    [AZCoreRecordManager handleError: error];
+	return store;
+}
+
+#pragma mark - Seeding stores
+
+- (void) seedWithPersistentStoreAtURL: (NSURL *) oldStoreURL usingBlock:(void(^)(NSManagedObjectContext *oldMOC, NSManagedObjectContext *newMOC))block {
+	NSParameterAssert(block);
+    NSPersistentStoreCoordinator *oldPSC = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: self.managedObjectModel];
+	NSDictionary *oldPSOption = [NSDictionary dictionaryWithObject: [NSNumber numberWithBool: YES] forKey: NSReadOnlyPersistentStoreOption];
+#warning - TODO get configuration
+	if ([oldPSC addStoreAtURL: oldStoreURL configuration: nil options: oldPSOption]) {
+		NSManagedObjectContext *oldMOC = [[NSManagedObjectContext alloc] init];
+        [oldMOC setPersistentStoreCoordinator: oldPSC];
+        
+        NSManagedObjectContext *newMOC = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        [newMOC setPersistentStoreCoordinator: self];
+		
+		block(oldMOC, newMOC);
+        
+        if ([newMOC hasChanges] && [newMOC save])
+			[newMOC reset];
+	}
 }
 
 @end
