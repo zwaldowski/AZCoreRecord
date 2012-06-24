@@ -153,10 +153,7 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 		}
 		
 		_persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
-
-		/*NSURL *storeURL = nil;
-		NSString *storeType = self.stackShouldUseInMemoryStore ? NSInMemoryStoreType : NSSQLiteStoreType;
-		_persistentStoreCoordinator = [NSPersistentStoreCoordinator coordinatorWithStoreAtURL: storeURL ofType: storeType options: [self azcr_storeOptions]];*/
+		[self azcr_loadPersistentStores];
 	}
 	
 	return _persistentStoreCoordinator;
@@ -244,14 +241,11 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 #pragma mark - Utilities
 
 - (void)azcr_didChangeUbiquityIdentityNotification:(NSNotification *)note {
-	//tell the UI to clean up while we re-add the store
-    //[self dropStores];
+	[self azcr_dropStores];
     
-    // update the current ubiquity token
 	self.ubiquityToken = [[AZCoreRecordUbiquitySentinel sharedSentinel] ubiquityIdentityToken];
-    
-    //reload persistent store
-	//[self loadPersistentStores];
+	
+	[self azcr_loadPersistentStores];
 }
 
 - (NSURL *)azcr_stackStoreURL {
