@@ -16,6 +16,7 @@
 #endif
 
 #import "AZCoreRecordManager.h"
+#import "AZCoreRecordUbiquitySentinel.h"
 #import "NSPersistentStore+AZCoreRecord.h"
 #import "NSPersistentStoreCoordinator+AZCoreRecord.h"
 #import "NSManagedObjectContext+AZCoreRecord.h"
@@ -263,18 +264,8 @@
 
 #pragma mark - Ubiquity Support
 
-+ (BOOL) supportsUbiquity
-{
-	NSFileManager *fileManager = [NSFileManager new];
-	
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000 || __MAC_OS_X_VERSION_MAX_ALLOWED >= 1080
-	if ([fileManager respondsToSelector: @selector(ubiquityIdentityToken)])
-	{
-		return !![fileManager ubiquityIdentityToken];
-	}
-#endif
-	
-	return !![fileManager URLForUbiquityContainerIdentifier: nil];
++ (BOOL) supportsUbiquity {
+	return [[AZCoreRecordUbiquitySentinel sharedSentinel] isUbiquityAvailable];
 }
 
 - (void) setUbiquitousContainer: (NSString *) containerID contentNameKey: (NSString *) key cloudStorePathComponent: (NSString *) pathComponent
