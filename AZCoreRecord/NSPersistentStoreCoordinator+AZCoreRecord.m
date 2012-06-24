@@ -43,12 +43,13 @@
 	NSURL *modelURL = [[AZCoreRecordManager sharedManager] stackModelURL];
 	NSString *modelName = [[AZCoreRecordManager sharedManager] stackModelName];
 	
-	if (!modelURL && modelName)
-		model = [NSManagedObjectModel modelNamed:modelName];
-	else if (modelURL) 
-		model = [NSManagedObjectModel modelAtURL:modelURL];
-	else
-		model = [NSManagedObjectModel model];
+	if (!modelURL && modelName) {
+		model = [NSManagedObjectModel modelWithName: modelName];
+	} else if (modelURL) {
+		model = [[NSManagedObjectModel alloc] initWithContentsOfURL: modelURL];
+	} else {
+		model = [NSManagedObjectModel mergedModelFromBundles: nil];
+	}
 		
 	NSPersistentStoreCoordinator *psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
 	

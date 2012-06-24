@@ -13,15 +13,7 @@
 
 #pragma mark - Model Factory Methods
 
-+ (NSManagedObjectModel *) model;
-+ (NSManagedObjectModel *) modelAtURL: (NSURL *) modelURL;
-+ (NSManagedObjectModel *) modelNamed: (NSString *) modelName;
-+ (NSManagedObjectModel *) modelNamed: (NSString *) modelName inBundle: (NSBundle *) bundle;
-+ (NSManagedObjectModel *) modelNamed: (NSString *) modelName inBundleNamed: (NSString *) bundleName;
-
-#pragma mark - URL Methods
-
-+ (NSURL *)URLForModelNamed: (NSString *) modelName inBundle: (NSBundle *) bundle;
-+ (NSURL *)URLForModelNamed: (NSString *) modelName inBundleNamed: (NSString *) bundleName;
++ (NSManagedObjectModel *) modelWithName: (NSString *) name;
++ (NSManagedObjectModel *) modelWithName: (NSString *) name inBundle: (NSBundle *) bundle;
 
 @end

@@ -14,55 +14,21 @@
 
 #pragma mark - Model Factory Methods
 
-+ (NSManagedObjectModel *) model
++ (NSManagedObjectModel *) modelWithName: (NSString *) modelName
 {
-	return [self mergedModelFromBundles: nil];
+	return [self modelWithName: modelName inBundle: [NSBundle mainBundle]];
 }
-+ (NSManagedObjectModel *) modelAtURL: (NSURL *) modelURL
-{
-	return [[self alloc] initWithContentsOfURL: modelURL];
-}
-+ (NSManagedObjectModel *) modelNamed: (NSString *) modelName
-{
-	return [self modelNamed: modelName inBundle: [NSBundle mainBundle]];
-}
-+ (NSManagedObjectModel *) modelNamed: (NSString *) modelName inBundle: (NSBundle *) bundle
-{
-	NSURL *URL = [self URLForModelNamed:modelName inBundle:bundle];
-	return [NSManagedObjectModel modelAtURL:URL];
-}
-+ (NSManagedObjectModel *) modelNamed: (NSString *) modelName inBundleNamed: (NSString *) bundleName
-{
-	NSURL *URL = [self URLForModelNamed:modelName inBundleNamed:bundleName];
-	return [NSManagedObjectModel modelAtURL:URL];
-}
-
-#pragma mark URL Methods
-
-+ (NSURL *)URLForModelNamed: (NSString *) modelName inBundle: (NSBundle *) bundle
++ (NSManagedObjectModel *) modelWithName: (NSString *) modelName inBundle: (NSBundle *) bundle
 {
 	NSString *resource = [modelName stringByDeletingPathExtension];
 	NSString *pathExtension = [modelName pathExtension];
 	
-	NSURL *modelURL = [bundle URLForResource: resource withExtension: pathExtension];
-	if (!modelURL) modelURL = [bundle URLForResource: resource withExtension: @"momd"];
-	if (!modelURL) modelURL = [bundle URLForResource: resource withExtension: @"mom"];
-	NSAssert2(modelURL, @"Could not find model named %@ in bundle %@", modelName, bundle);
+	NSURL *URL = [bundle URLForResource: resource withExtension: pathExtension];
+	if (!URL) URL = [bundle URLForResource: resource withExtension: @"momd"];
+	if (!URL) URL = [bundle URLForResource: resource withExtension: @"mom"];
+	NSAssert2(URL, @"Could not find model named %@ in bundle %@", modelName, bundle);
 	
-	return modelURL;
-}
-+ (NSURL *)URLForModelNamed: (NSString *) modelName inBundleNamed: (NSString *) bundleName
-{
-	NSString *resource = [modelName stringByDeletingPathExtension];
-	NSString *pathExtension = [modelName pathExtension];
-	
-	NSBundle *bundle = [NSBundle mainBundle];
-	NSURL *modelURL = [bundle URLForResource: resource withExtension: pathExtension subdirectory: bundleName];
-	if (!modelURL) modelURL = [bundle URLForResource: resource withExtension: @"momd" subdirectory: bundleName];
-	if (!modelURL) modelURL = [bundle URLForResource: resource withExtension: @"mom" subdirectory: bundleName];
-	NSAssert2(modelURL, @"Could not find model named %@ in bundle named %@", modelName, bundleName);
-	
-	return modelURL;
+	return [[NSManagedObjectModel alloc] initWithContentsOfURL: URL];
 }
 
 @end
