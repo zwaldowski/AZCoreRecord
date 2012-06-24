@@ -103,14 +103,14 @@
 	}];
 }
 
-- (void) startObservingUbiquitousChangesInCoordinator: (NSPersistentStoreCoordinator *) coordinator
+- (void) startObservingUbiquitousChanges
 {
-	[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(azcr_mergeUbiquitousChanges:) name: NSPersistentStoreDidImportUbiquitousContentChangesNotification object: coordinator];
+	[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(azcr_mergeUbiquitousChanges:) name: NSPersistentStoreDidImportUbiquitousContentChangesNotification object: self.persistentStoreCoordinator];
 }
 
-- (void) stopObservingUbiquitousChangesInCoordinator: (NSPersistentStoreCoordinator *) coordinator
+- (void) stopObservingUbiquitousChanges
 {
-	[[NSNotificationCenter defaultCenter] removeObserver: self name: NSPersistentStoreDidImportUbiquitousContentChangesNotification object: coordinator];
+	[[NSNotificationCenter defaultCenter] removeObserver: self name: NSPersistentStoreDidImportUbiquitousContentChangesNotification object: self.persistentStoreCoordinator];
 }
 
 #pragma mark - Reset Context

@@ -33,8 +33,8 @@ extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
 
 #pragma mark - Ubiquity Support
 
-- (void) startObservingUbiquitousChangesInCoordinator: (NSPersistentStoreCoordinator *) coordinator;
-- (void) stopObservingUbiquitousChangesInCoordinator: (NSPersistentStoreCoordinator *) coordinator;
+- (void) startObservingUbiquitousChanges;
+- (void) stopObservingUbiquitousChanges;
 
 #pragma mark - Reset Context
 
