@@ -16,21 +16,24 @@
 
 #pragma mark - Instance Methods
 
-- (void) save
+- (BOOL) save
 {
-	[self saveWithErrorHandler: NULL];
+	return [self saveWithErrorHandler: NULL];
 }
-- (void) saveWithErrorHandler: (void (^)(NSError *)) errorCallback
+- (BOOL) saveWithErrorHandler: (void (^)(NSError *)) errorCallback
 {
-	[self performBlock:^{
+	__block BOOL success = YES;
+	[self performBlockAndWait: ^{
 		NSError *error = nil;
-		if (![self save: &error]) {
+		success = [self save: &error];
+		if (!success) {
 			if (errorCallback)
 				errorCallback(error);
 			else
 				[AZCoreRecordManager handleError: error];
 		}
 	}];
+	return success;
 }
 
 #pragma mark - Default Contexts
