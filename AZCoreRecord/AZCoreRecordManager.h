@@ -13,6 +13,9 @@ extern NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification;
 extern NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification;
 extern NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification;
 
+extern NSString *const AZCoreRecordLocalStoreConfigurationNameKey;
+extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
+
 @protocol AZCoreRecordErrorHandler <NSObject>
 @required
 
@@ -34,6 +37,7 @@ extern NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification;
 	NSString *_stackName;
 	NSString *_stackModelName;
 	NSURL *_stackModelURL;
+	NSDictionary *_stackModelConfigurations;
 	
 	NSManagedObjectContext *_managedObjectContext;
 	NSPersistentStoreCoordinator *_persistentStoreCoordinator;
@@ -60,6 +64,7 @@ extern NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification;
 @property (nonatomic) BOOL stackShouldUseUbiquity;
 @property (nonatomic, copy) NSString *stackModelName;
 @property (nonatomic, copy) NSURL *stackModelURL;
+@property (nonatomic, copy) NSDictionary *stackModelConfigurations;
 
 - (void) configureWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
 
@@ -79,6 +84,7 @@ extern NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification;
 + (void) setDefaultStackShouldUseInMemoryStore: (BOOL) inMemory;
 + (void) setDefaultStackModelName: (NSString *) name;
 + (void) setDefaultStackModelURL: (NSURL *) name;
++ (void) setDefaultStackModelConfigurations: (NSDictionary *) dictionary;
 
 + (void) setUpDefaultStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
 

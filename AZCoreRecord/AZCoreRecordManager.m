@@ -25,6 +25,9 @@ NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification = @"AZCore
 NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification = @"AZCoreRecordManagerDidAddUbiquitousStoreNotification";
 NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRecordManagerDidAddFallbackStoreNotification";
 
+NSString *const AZCoreRecordLocalStoreConfigurationNameKey = @"LocalStore";
+NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousStore";
+
 @interface AZCoreRecordManager ()
 
 @property (nonatomic, weak) id <AZCoreRecordErrorHandler> errorDelegate;
@@ -60,6 +63,7 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 @synthesize stackName = _stackName;
 @synthesize stackModelName = _stackModelName;
 @synthesize stackModelURL = _stackModelURL;
+@synthesize stackModelConfigurations = _stackModelConfigurations;
 @synthesize ubiquityToken = _ubiquityToken;
 
 #pragma mark - Setup and teardown
@@ -193,10 +197,12 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 }
 
 - (BOOL)azcr_loadLocalPersistentStore {
+	NSString *configuration = [self.stackModelConfigurations objectForKey: AZCoreRecordLocalStoreConfigurationNameKey];
+	if (!configuration.length)
+		return NO;
+    	
     NSFileManager *fm = [[NSFileManager alloc] init];
-    
     NSURL *storeURL = self.localStoreURL;
-    
     if (![fm fileExistsAtPath: storeURL.path]) {
         NSURL *bundleURL = [[NSBundle mainBundle] URLForResource: storeURL.lastPathComponent.stringByDeletingPathExtension withExtension: storeURL.pathExtension];
         if (bundleURL) {
@@ -213,11 +219,12 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 	if (self.stackShouldAutoMigrateStore || self.stackShouldUseUbiquity)
 		options = [self azcr_lightweightMigrationOptions];
 	    
-	return !![self.persistentStoreCoordinator addStoreAtURL: storeURL configuration: @"LocalConfig" options: options];
+	return !![self.persistentStoreCoordinator addStoreAtURL: storeURL configuration: configuration options: options];
 }
 
 - (BOOL)azcr_loadFallbackStore {
-    return !![self.persistentStoreCoordinator addStoreAtURL: self.fallbackStoreURL configuration: @"CloudConfig" options: [self azcr_lightweightMigrationOptions]];
+	NSString *configuration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
+    return !![self.persistentStoreCoordinator addStoreAtURL: self.fallbackStoreURL configuration: configuration options: [self azcr_lightweightMigrationOptions]];
 }
 
 - (BOOL)azcr_loadUbiquitousStore {
@@ -237,10 +244,12 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 	if (self.stackShouldUseUbiquity || self.stackShouldAutoMigrateStore)
 		[options addEntriesFromDictionary: [self azcr_lightweightMigrationOptions]];
 	
+	NSString *configuration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
+	
 	if (self.stackShouldUseInMemoryStore && !self.stackShouldUseUbiquity)
-		return !![self.persistentStoreCoordinator addInMemoryStoreWithConfiguration: @"CloudConfig" options: options];
+		return !![self.persistentStoreCoordinator addInMemoryStoreWithConfiguration: configuration options: options];
 	else
-		return !![self.persistentStoreCoordinator addStoreAtURL: self.ubiquitousStoreURL configuration: @"CloudConfig" options: options];
+		return !![self.persistentStoreCoordinator addStoreAtURL: self.ubiquitousStoreURL configuration: configuration options: options];
 }
 
 - (void)azcr_dropStores {
@@ -353,6 +362,15 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 	
 	[self azcr_resetStack];
 	_stackModelURL = [stackModelURL copy];
+	
+	dispatch_semaphore_signal(self.semaphore);
+}
+- (void) setStackModelConfigurations:(NSDictionary *)stackModelConfigurations
+{
+	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+	
+	[self azcr_resetStack];
+	_stackModelConfigurations = [stackModelConfigurations copy];
 	
 	dispatch_semaphore_signal(self.semaphore);
 }
@@ -489,6 +507,10 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 {
 	[[self sharedManager] setStackModelURL: name];
 }
++ (void) setDefaultStackModelConfigurations: (NSDictionary *) dictionary
+{
+	[[self sharedManager] setStackModelConfigurations: dictionary];
+}
 
 + (void) setUpDefaultStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0)
 {
@@ -513,6 +535,7 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 	_stackShouldUseUbiquity = NO;
 	_stackModelName = nil;
 	_stackModelURL = nil;
+	_stackModelConfigurations = nil;
 }
 
 - (void) azcr_cleanUp
