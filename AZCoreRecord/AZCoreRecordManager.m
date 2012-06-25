@@ -36,10 +36,10 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 @property (nonatomic) dispatch_semaphore_t loadSemaphore;
 @property (nonatomic) dispatch_semaphore_t semaphore;
 
-@property (nonatomic, strong, readwrite, setter = azcr_setManagedObjectContext:) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, strong, readwrite, setter = azcr_setPersistentStoreCoordinator:) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (nonatomic, strong, readwrite, setter = azcr_setUbiquityToken:) NSString *ubiquityToken;
-@property (nonatomic, readonly, getter = azcr_stackStoreURL) NSURL *stackStoreURL;
+@property (nonatomic, strong, readwrite) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong, readwrite) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic, strong, readwrite) NSString *ubiquityToken;
+@property (nonatomic, readonly) NSURL *stackStoreURL;
 
 - (void)azcr_loadPersistentStores;
 - (BOOL)azcr_loadLocalPersistentStore;
@@ -115,7 +115,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	return _managedObjectContext;
 }
 
-- (void) azcr_setManagedObjectContext: (NSManagedObjectContext *) managedObjectContext
+- (void) setManagedObjectContext: (NSManagedObjectContext *) managedObjectContext
 {
 	BOOL isUbiquitous = self.ubiquityEnabled;
 	
@@ -267,7 +267,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	[self azcr_loadPersistentStores];
 }
 
-- (NSURL *)azcr_stackStoreURL {
+- (NSURL *)stackStoreURL {
 	static dispatch_once_t onceToken;
 	static NSURL *appSupportURL = nil;
 	dispatch_once(&onceToken, ^{
