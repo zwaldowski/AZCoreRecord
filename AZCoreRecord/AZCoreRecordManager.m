@@ -253,6 +253,12 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 #pragma mark - Utilities
 
+- (BOOL)isReadOnly {
+	if (!self.stackShouldUseUbiquity)
+		return NO;
+	return self.ubiquityToken.length && !![[NSFileManager defaultManager] URLForUbiquityContainerIdentifier: nil];
+}
+
 - (void)azcr_didChangeUbiquityIdentityNotification:(NSNotification *)note {
 	[self azcr_resetStack];
     

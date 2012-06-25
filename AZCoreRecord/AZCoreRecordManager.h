@@ -48,7 +48,6 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 
 @property (nonatomic, readonly) NSString *stackName;
 
-@property (nonatomic, readonly, getter = isReadOnly) BOOL readOnly;
 @property (nonatomic, readonly) NSURL *ubiquitousStoreURL;
 @property (nonatomic, readonly) NSURL *fallbackStoreURL;
 @property (nonatomic, readonly) NSURL *localStoreURL;
@@ -56,6 +55,8 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, strong, readonly) NSString *ubiquityToken;
+
+@property (nonatomic, readonly, getter = isReadOnly) BOOL readOnly;
 
 #pragma mark - Options
 
@@ -73,8 +74,6 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 @property (nonatomic, getter = isUbiquityEnabled) BOOL ubiquityEnabled;
 
 + (BOOL) supportsUbiquity;
-
-#pragma mark - 
 
 #pragma mark - Default stack settings
 
