@@ -112,10 +112,19 @@
 
 - (void) seedWithPersistentStoreAtURL: (NSURL *) oldStoreURL usingBlock:(void(^)(NSManagedObjectContext *oldMOC, NSManagedObjectContext *newMOC))block {
 	NSParameterAssert(block);
+	
     NSPersistentStoreCoordinator *oldPSC = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: self.managedObjectModel];
 	NSDictionary *oldPSOption = [NSDictionary dictionaryWithObject: [NSNumber numberWithBool: YES] forKey: NSReadOnlyPersistentStoreOption];
-#warning - TODO get configuration
-	if ([oldPSC addStoreAtURL: oldStoreURL configuration: nil options: oldPSOption]) {
+	
+	__block NSString *configuration = nil;
+	[self.persistentStores enumerateObjectsUsingBlock:^(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
+		if ([obj.options objectForKey: NSPersistentStoreUbiquitousContentNameKey]) {
+			configuration = obj.configurationName;
+			*stop = YES;
+		}
+	}];
+	
+	if ([oldPSC addStoreAtURL: oldStoreURL configuration: configuration options: oldPSOption]) {
 		NSManagedObjectContext *oldMOC = [[NSManagedObjectContext alloc] init];
         [oldMOC setPersistentStoreCoordinator: oldPSC];
         
