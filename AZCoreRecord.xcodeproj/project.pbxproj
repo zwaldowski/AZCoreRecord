@@ -19,8 +19,6 @@
 		6C93DA52149522350074327E /* NSManagedObjectContext+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA46149522350074327E /* NSManagedObjectContext+AZCoreRecord.m */; };
 		6C93DA53149522350074327E /* NSManagedObjectModel+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA48149522350074327E /* NSManagedObjectModel+AZCoreRecord.m */; };
 		6C93DA54149522350074327E /* NSManagedObjectModel+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA48149522350074327E /* NSManagedObjectModel+AZCoreRecord.m */; };
-		6C93DA55149522350074327E /* NSPersistentStore+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA4A149522350074327E /* NSPersistentStore+AZCoreRecord.m */; };
-		6C93DA56149522350074327E /* NSPersistentStore+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA4A149522350074327E /* NSPersistentStore+AZCoreRecord.m */; };
 		6C93DA57149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA4C149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.m */; };
 		6C93DA58149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA4C149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.m */; };
 		6C968EA51498265A00AC03B0 /* OCMock.framework in Copy Unit Test Frameworks into App Bundle */ = {isa = PBXBuildFile; fileRef = C721C84313D0C6460097AB6F /* OCMock.framework */; };
@@ -32,7 +30,6 @@
 		6CAF8D9C15918A0100B9169B /* NSManagedObject+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA44149522350074327E /* NSManagedObject+AZCoreRecord.m */; };
 		6CAF8D9E15918A0100B9169B /* NSManagedObjectContext+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA46149522350074327E /* NSManagedObjectContext+AZCoreRecord.m */; };
 		6CAF8DA015918A0100B9169B /* NSManagedObjectModel+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA48149522350074327E /* NSManagedObjectModel+AZCoreRecord.m */; };
-		6CAF8DA215918A0100B9169B /* NSPersistentStore+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA4A149522350074327E /* NSPersistentStore+AZCoreRecord.m */; };
 		6CAF8DA415918A0100B9169B /* NSPersistentStoreCoordinator+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA4C149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.m */; };
 		6CAF8DA615918A0100B9169B /* NSFetchedResultsController+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CD8677314FBF4730080D92B /* NSFetchedResultsController+AZCoreRecord.m */; };
 		6CAF8DA715918A3700B9169B /* AZCoreRecordManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C721C86613D0C7030097AB6F /* AZCoreRecordManager.h */; };
@@ -40,7 +37,6 @@
 		6CAF8DA915918A3700B9169B /* NSManagedObject+AZCoreRecord.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6C93DA43149522350074327E /* NSManagedObject+AZCoreRecord.h */; };
 		6CAF8DAA15918A3700B9169B /* NSManagedObjectContext+AZCoreRecord.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6C93DA45149522350074327E /* NSManagedObjectContext+AZCoreRecord.h */; };
 		6CAF8DAB15918A3700B9169B /* NSManagedObjectModel+AZCoreRecord.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6C93DA47149522350074327E /* NSManagedObjectModel+AZCoreRecord.h */; };
-		6CAF8DAC15918A3700B9169B /* NSPersistentStore+AZCoreRecord.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6C93DA49149522350074327E /* NSPersistentStore+AZCoreRecord.h */; };
 		6CAF8DAD15918A3700B9169B /* NSPersistentStoreCoordinator+AZCoreRecord.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6C93DA4B149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.h */; };
 		6CAF8DAE15918A3700B9169B /* NSFetchedResultsController+AZCoreRecord.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6CD8677214FBF4730080D92B /* NSFetchedResultsController+AZCoreRecord.h */; };
 		6CD8677414FBF4730080D92B /* NSFetchedResultsController+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CD8677314FBF4730080D92B /* NSFetchedResultsController+AZCoreRecord.m */; };
@@ -155,7 +151,6 @@
 				6CAF8DA915918A3700B9169B /* NSManagedObject+AZCoreRecord.h in CopyFiles */,
 				6CAF8DAA15918A3700B9169B /* NSManagedObjectContext+AZCoreRecord.h in CopyFiles */,
 				6CAF8DAB15918A3700B9169B /* NSManagedObjectModel+AZCoreRecord.h in CopyFiles */,
-				6CAF8DAC15918A3700B9169B /* NSPersistentStore+AZCoreRecord.h in CopyFiles */,
 				6CAF8DAD15918A3700B9169B /* NSPersistentStoreCoordinator+AZCoreRecord.h in CopyFiles */,
 				6CAF8DAE15918A3700B9169B /* NSFetchedResultsController+AZCoreRecord.h in CopyFiles */,
 			);
@@ -194,8 +189,6 @@
 		6C93DA46149522350074327E /* NSManagedObjectContext+AZCoreRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+AZCoreRecord.m"; sourceTree = "<group>"; };
 		6C93DA47149522350074327E /* NSManagedObjectModel+AZCoreRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectModel+AZCoreRecord.h"; sourceTree = "<group>"; };
 		6C93DA48149522350074327E /* NSManagedObjectModel+AZCoreRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectModel+AZCoreRecord.m"; sourceTree = "<group>"; };
-		6C93DA49149522350074327E /* NSPersistentStore+AZCoreRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSPersistentStore+AZCoreRecord.h"; sourceTree = "<group>"; };
-		6C93DA4A149522350074327E /* NSPersistentStore+AZCoreRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSPersistentStore+AZCoreRecord.m"; sourceTree = "<group>"; };
 		6C93DA4B149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSPersistentStoreCoordinator+AZCoreRecord.h"; sourceTree = "<group>"; };
 		6C93DA4C149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSPersistentStoreCoordinator+AZCoreRecord.m"; sourceTree = "<group>"; };
 		6CAF8D811591892A00B9169B /* TestModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TestModel.xcdatamodel; sourceTree = "<group>"; };
@@ -550,8 +543,6 @@
 				6C93DA46149522350074327E /* NSManagedObjectContext+AZCoreRecord.m */,
 				6C93DA47149522350074327E /* NSManagedObjectModel+AZCoreRecord.h */,
 				6C93DA48149522350074327E /* NSManagedObjectModel+AZCoreRecord.m */,
-				6C93DA49149522350074327E /* NSPersistentStore+AZCoreRecord.h */,
-				6C93DA4A149522350074327E /* NSPersistentStore+AZCoreRecord.m */,
 				6C93DA4B149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.h */,
 				6C93DA4C149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.m */,
 				6CD8677214FBF4730080D92B /* NSFetchedResultsController+AZCoreRecord.h */,
@@ -900,7 +891,6 @@
 				6CAF8D9C15918A0100B9169B /* NSManagedObject+AZCoreRecord.m in Sources */,
 				6CAF8D9E15918A0100B9169B /* NSManagedObjectContext+AZCoreRecord.m in Sources */,
 				6CAF8DA015918A0100B9169B /* NSManagedObjectModel+AZCoreRecord.m in Sources */,
-				6CAF8DA215918A0100B9169B /* NSPersistentStore+AZCoreRecord.m in Sources */,
 				6CAF8DA415918A0100B9169B /* NSPersistentStoreCoordinator+AZCoreRecord.m in Sources */,
 				6CAF8DA615918A0100B9169B /* NSFetchedResultsController+AZCoreRecord.m in Sources */,
 			);
@@ -935,7 +925,6 @@
 				6C93DA4F149522350074327E /* NSManagedObject+AZCoreRecord.m in Sources */,
 				6C93DA51149522350074327E /* NSManagedObjectContext+AZCoreRecord.m in Sources */,
 				6C93DA53149522350074327E /* NSManagedObjectModel+AZCoreRecord.m in Sources */,
-				6C93DA55149522350074327E /* NSPersistentStore+AZCoreRecord.m in Sources */,
 				6C93DA57149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.m in Sources */,
 				6CAF8D821591892A00B9169B /* TestModel.xcdatamodeld in Sources */,
 			);
@@ -989,7 +978,6 @@
 				6C93DA50149522350074327E /* NSManagedObject+AZCoreRecord.m in Sources */,
 				6C93DA52149522350074327E /* NSManagedObjectContext+AZCoreRecord.m in Sources */,
 				6C93DA54149522350074327E /* NSManagedObjectModel+AZCoreRecord.m in Sources */,
-				6C93DA56149522350074327E /* NSPersistentStore+AZCoreRecord.m in Sources */,
 				6C93DA58149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.m in Sources */,
 				6CD8677414FBF4730080D92B /* NSFetchedResultsController+AZCoreRecord.m in Sources */,
 			);
