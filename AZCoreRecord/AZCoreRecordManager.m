@@ -45,7 +45,6 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 - (BOOL)azcr_loadLocalPersistentStore;
 - (BOOL)azcr_loadFallbackStore;
 - (BOOL)azcr_loadUbiquitousStore;
-- (void)azcr_dropStores;
 - (NSDictionary *) azcr_lightweightMigrationOptions;
 
 @end
@@ -252,19 +251,10 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 		return !![self.persistentStoreCoordinator addStoreAtURL: self.ubiquitousStoreURL configuration: configuration options: options];
 }
 
-- (void)azcr_dropStores {
-	__block NSError *error = nil;
-	NSPersistentStoreCoordinator *coordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
-	[coordinator.persistentStores enumerateObjectsUsingBlock:^(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
-		[coordinator removePersistentStore: store error: &error];
-	}];
-    [AZCoreRecordManager handleError: error];
-}
-
 #pragma mark - Utilities
 
 - (void)azcr_didChangeUbiquityIdentityNotification:(NSNotification *)note {
-	[self azcr_dropStores];
+	[self azcr_resetStack];
     
 	self.ubiquityToken = [[AZCoreRecordUbiquitySentinel sharedSentinel] ubiquityIdentityToken];
 	
@@ -521,11 +511,16 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 - (void) azcr_resetStack
 {
-	if (self.managedObjectContext)
-		self.managedObjectContext = nil;
+	if (_managedObjectContext)
+		[self.managedObjectContext reset];
 	
-	if (self.persistentStoreCoordinator)
-		self.persistentStoreCoordinator = nil;
+	if (_persistentStoreCoordinator) {
+		__block NSError *error = nil;
+		[self.persistentStoreCoordinator.persistentStores enumerateObjectsUsingBlock:^(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
+			[self.persistentStoreCoordinator removePersistentStore: store error: &error];
+		}];
+		[AZCoreRecordManager handleError: error];
+	}
 }
 
 - (void) azcr_resetStackOptions
@@ -542,10 +537,10 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 {
 	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
 
-	self.errorDelegate = nil;
-	self.errorHandler = NULL;
 	[self azcr_resetStackOptions];
 	[self azcr_resetStack];
+	self.errorDelegate = nil;
+	self.errorHandler = NULL;
 	
 	dispatch_semaphore_signal(self.semaphore);
 }
