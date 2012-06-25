@@ -35,7 +35,6 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 
 @property (nonatomic, strong, readwrite, setter = azcr_setManagedObjectContext:) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readwrite, setter = azcr_setPersistentStoreCoordinator:) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (nonatomic, readonly, getter = azcr_storeOptions) NSDictionary *storeOptions;
 @property (nonatomic, strong, readwrite, setter = azcr_setUbiquityToken:) NSString *ubiquityToken;
 @property (nonatomic, readonly, getter = azcr_stackStoreURL) NSURL *stackStoreURL;
 
@@ -44,6 +43,7 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 - (BOOL)azcr_loadFallbackStore;
 - (BOOL)azcr_loadUbiquitousStore;
 - (void)azcr_dropStores;
+- (NSDictionary *) azcr_lightweightMigrationOptions;
 
 @end
 
@@ -207,26 +207,40 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 			}
 		}
     }
-    
-	return !![self.persistentStoreCoordinator addStoreAtURL: storeURL configuration: @"LocalConfig" options: nil];
+	
+	NSDictionary *options = nil;
+	
+	if (self.stackShouldAutoMigrateStore || self.stackShouldUseUbiquity)
+		options = [self azcr_lightweightMigrationOptions];
+	    
+	return !![self.persistentStoreCoordinator addStoreAtURL: storeURL configuration: @"LocalConfig" options: options];
 }
 
 - (BOOL)azcr_loadFallbackStore {
-    return !![self.persistentStoreCoordinator addStoreAtURL: self.fallbackStoreURL configuration: @"CloudConfig" options: nil];
+    return !![self.persistentStoreCoordinator addStoreAtURL: self.fallbackStoreURL configuration: @"CloudConfig" options: [self azcr_lightweightMigrationOptions]];
 }
 
 - (BOOL)azcr_loadUbiquitousStore {
-    NSFileManager *fm = [[NSFileManager alloc] init];
-    NSURL *ubiquityURL = [fm URLForUbiquityContainerIdentifier:nil];
+    NSURL *ubiquityURL = [[NSFileManager new] URLForUbiquityContainerIdentifier:nil];
+	NSMutableDictionary *options = [NSMutableDictionary dictionary];
 	
-	NSDictionary *cloudOptions = [NSDictionary dictionaryWithObjectsAndKeys:
-								  @"UbiquitousStore", NSPersistentStoreUbiquitousContentNameKey,
-								  [ubiquityURL URLByAppendingPathComponent:@"UbiquitousData"], NSPersistentStoreUbiquitousContentURLKey,
-								  (__bridge id) kCFBooleanTrue, NSMigratePersistentStoresAutomaticallyOption,
-								  (__bridge id) kCFBooleanTrue, NSInferMappingModelAutomaticallyOption,
-								  nil];
+	if (self.stackShouldUseUbiquity) {
+		if (ubiquityURL) {
+			[options setObject: @"UbiquitousStore" forKey: NSPersistentStoreUbiquitousContentNameKey];
+			[options setObject: [ubiquityURL URLByAppendingPathComponent:@"UbiquitousData"] forKey: NSPersistentStoreUbiquitousContentURLKey];
+
+		} else {
+			[options setObject: [NSNumber numberWithBool: YES] forKey: NSReadOnlyPersistentStoreOption];
+		}
+	}
 	
-	return !![self.persistentStoreCoordinator addStoreAtURL: self.ubiquitousStoreURL configuration: @"CloudConfig" options: cloudOptions];
+	if (self.stackShouldUseUbiquity || self.stackShouldAutoMigrateStore)
+		[options addEntriesFromDictionary: [self azcr_lightweightMigrationOptions]];
+	
+	if (self.stackShouldUseInMemoryStore && !self.stackShouldUseUbiquity)
+		return !![self.persistentStoreCoordinator addInMemoryStoreWithConfiguration: @"CloudConfig" options: options];
+	else
+		return !![self.persistentStoreCoordinator addStoreAtURL: self.ubiquitousStoreURL configuration: @"CloudConfig" options: options];
 }
 
 - (void)azcr_dropStores {
@@ -290,31 +304,16 @@ NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRec
 	return [self.stackStoreURL URLByAppendingPathComponent: storeName];
 }
 
-- (NSDictionary *) azcr_storeOptions
+- (NSDictionary *) azcr_lightweightMigrationOptions
 {
-	BOOL shouldAutoMigrate = self.stackShouldAutoMigrateStore;
-	BOOL shouldUseCloud = YES;
-	NSMutableDictionary *options = shouldAutoMigrate || shouldUseCloud ? [NSMutableDictionary dictionary] : nil;
-	
-	if (shouldAutoMigrate)
-	{
-		static NSDictionary *lightweightMigrationOptions = nil;
-		static dispatch_once_t once;
-		dispatch_once(&once, ^{
-			lightweightMigrationOptions = [NSDictionary dictionaryWithObjectsAndKeys:
-					   (__bridge id) kCFBooleanTrue, NSMigratePersistentStoresAutomaticallyOption,
-					   (__bridge id) kCFBooleanTrue, NSInferMappingModelAutomaticallyOption, nil];
-		});
-		
-		[options addEntriesFromDictionary: lightweightMigrationOptions];
-	}
-	
-	if (shouldUseCloud)
-	{
-		[options addEntriesFromDictionary: nil];
-	}
-	
-	return options;
+	static NSDictionary *lightweightMigrationOptions = nil;
+	static dispatch_once_t once;
+	dispatch_once(&once, ^{
+		lightweightMigrationOptions = [NSDictionary dictionaryWithObjectsAndKeys:
+									   (__bridge id) kCFBooleanTrue, NSMigratePersistentStoresAutomaticallyOption,
+									   (__bridge id) kCFBooleanTrue, NSInferMappingModelAutomaticallyOption, nil];
+	});
+	return lightweightMigrationOptions;
 }
 
 #pragma mark - Stack Settings
