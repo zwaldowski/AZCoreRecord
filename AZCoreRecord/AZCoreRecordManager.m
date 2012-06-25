@@ -409,66 +409,22 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	if (![[self class] supportsUbiquity])
 		return NO;
 	
+#warning - TODO - fix this part specifically
 	return _stackShouldUseUbiquity;
 }
 - (void) setUbiquityEnabled: (BOOL) enabled
 {
+#warning - TODO - fix this part specifically
 	if (_stackShouldUseUbiquity == enabled)
 		return;
 	
 	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-
-	/*do
-	{
-		if (enabled && !self.stackUbiquityOptions.count)
-			[self setUbiquitousContainer:nil contentNameKey:nil cloudStorePathComponent:nil];
-		
-		if (!_persistentStoreCoordinator)
-			break;
-		
-		NSPersistentStoreCoordinator *psc = [NSPersistentStoreCoordinator defaultStoreCoordinator];
-		
-		if (_managedObjectContext)
-		{
-			if (enabled)
-				[_managedObjectContext startObservingUbiquitousChanges];
-			else
-				[_managedObjectContext stopObservingUbiquitousChanges];
-		}
-		
-		NSPersistentStore *storeToChange = nil;
-		
-		if (!enabled)
-		{
-			NSUInteger cloudStoreIndex = [_persistentStoreCoordinator.persistentStores indexOfObjectPassingTest: ^BOOL(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
-				return ([obj.options objectForKey: NSPersistentStoreUbiquitousContentURLKey] != nil);
-			}];
-			
-			if (cloudStoreIndex == NSNotFound)
-				break;
-			
-			storeToChange = [_persistentStoreCoordinator.persistentStores objectAtIndex: cloudStoreIndex];
-		}
-		else if (_persistentStoreCoordinator.persistentStores.count == 1)
-		{
-			storeToChange = _persistentStoreCoordinator.persistentStores.lastObject;
-		}
-		else
-		{
-			NSUInteger notCloudStoreIndex = [_persistentStoreCoordinator.persistentStores indexOfObjectPassingTest: ^BOOL(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
-				return ![obj.options objectForKey: NSPersistentStoreUbiquitousContentURLKey] && [obj.type isEqualToString: NSSQLiteStoreType];
-			}];
-			
-			if (notCloudStoreIndex == NSNotFound)
-				break;
-			
-			storeToChange = [_persistentStoreCoordinator.persistentStores objectAtIndex: notCloudStoreIndex];
-		}
-		
-		NSError *err = nil;
-		[psc migratePersistentStore: storeToChange toURL: storeToChange.URL options: self.storeOptions withType: storeToChange.type error: &err];
-		[AZCoreRecordManager handleError: err];
-	} while (0);*/
+	
+	[self setStackShouldUseUbiquity: enabled];
+    
+	self.ubiquityToken = enabled ? [[AZCoreRecordUbiquitySentinel sharedSentinel] ubiquityIdentityToken] : nil;
+	
+	[self azcr_loadPersistentStores];
 	
 	dispatch_semaphore_signal(self.semaphore);
 }
