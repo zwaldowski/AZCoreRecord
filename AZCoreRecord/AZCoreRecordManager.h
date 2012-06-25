@@ -82,6 +82,7 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 
 + (void) setDefaultStackShouldAutoMigrateStore: (BOOL) shouldMigrate;
 + (void) setDefaultStackShouldUseInMemoryStore: (BOOL) inMemory;
++ (void) setDefaultStackShouldUseUbiquity: (BOOL) usesUbiquity;
 + (void) setDefaultStackModelName: (NSString *) name;
 + (void) setDefaultStackModelURL: (NSURL *) name;
 + (void) setDefaultStackModelConfigurations: (NSDictionary *) dictionary;

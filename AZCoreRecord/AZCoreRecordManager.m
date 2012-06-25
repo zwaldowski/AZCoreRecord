@@ -489,6 +489,10 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 {
 	[[self sharedManager] setStackShouldUseInMemoryStore: inMemory];
 }
++ (void) setDefaultStackShouldUseUbiquity: (BOOL) usesUbiquity
+{
+	[[self sharedManager] setStackShouldUseUbiquity: usesUbiquity];
+}
 + (void) setDefaultStackModelName: (NSString *) name
 {
 	[[self sharedManager] setStackModelName: name];
