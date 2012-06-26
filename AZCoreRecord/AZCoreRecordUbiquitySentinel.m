@@ -201,6 +201,9 @@ NSString *const AZUbiquityIdentityDidChangeNotification = NSUbiquityIdentityDidC
 
 -(void)updateDevicesList
 {
+	if (!self.ubiquityAvailable)
+		return;
+	
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
 		[self syncURLWithCloud: self.presentedItemURL completion: ^(BOOL success, NSError *error) {
             if ( !success ) return;
