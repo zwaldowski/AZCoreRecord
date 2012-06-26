@@ -23,7 +23,7 @@
 - (BOOL) saveWithErrorHandler: (void (^)(NSError *)) errorCallback
 {
 	__block BOOL success = YES;
-	[self performBlockAndWait: ^{
+	void (^block)(void) = ^{
 		NSError *error = nil;
 		success = [self save: &error];
 		if (!success) {
@@ -32,7 +32,14 @@
 			else
 				[AZCoreRecordManager handleError: error];
 		}
-	}];
+	};
+	
+	if (self.concurrencyType == NSConfinementConcurrencyType) {
+		block();
+	} else {
+		[self performBlockAndWait: block];
+	}
+	
 	return success;
 }
 
@@ -124,10 +131,7 @@
 }
 + (void) resetContextForCurrentThread 
 {
-	NSManagedObjectContext *context = [NSManagedObjectContext contextForCurrentThread];
-	[context performBlockAndWait: ^{
-		[context reset];
-	}];
+	[[NSManagedObjectContext contextForCurrentThread] reset];
 }
 
 #pragma mark - Data saving
@@ -142,9 +146,8 @@
 	self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
 	localContext.mergePolicy = NSOverwriteMergePolicy;
 	
-	[localContext performBlockAndWait: ^{
-		block(localContext);
-	}];
+	block(localContext);
+	
 	[localContext save];
 	
 	self.mergePolicy = backupMergePolicy;
