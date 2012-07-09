@@ -24,7 +24,7 @@
 
 - (void) setupTestData
 {
-	NSManagedObjectContext *context = [NSManagedObjectContext defaultContext];
+	NSManagedObjectContext *context = self.localManager.managedObjectContext;
 
 	MappedEntity *related = nil;
 	for (int i = 0; i < 10; i++) 
@@ -45,7 +45,7 @@
 - (void) testDataImport
 {
 	SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity = [[self testEntityClass] importFromDictionary:self.testEntityData];
-	[[NSManagedObjectContext defaultContext] save];
+	[self.localManager.managedObjectContext save];
 	
 	assertThat(testEntity.mappedEntities, hasCountOf(4));
 	for (MappedEntity *relatedEntity in testEntity.mappedEntities)
@@ -60,7 +60,7 @@
 - (void) testDataUpdateWithLookupInfoInDataSet
 {
 	SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity = [[self testEntityClass] updateFromDictionary:self.testEntityData];
-	[[NSManagedObjectContext defaultContext] save];
+	[self.localManager.managedObjectContext save];
 
 	assertThatInteger([SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey countOfEntities], is(equalToInteger(1)));
 	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(10)));

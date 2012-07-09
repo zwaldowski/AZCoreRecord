@@ -10,36 +10,33 @@
 #import "AZCoreRecordTests.h"
 #import "AZCoreRecordManager.h"
 
-@interface AZCoreRecordManager ()
-- (void)azcr_cleanUp;
-@end
-
-@implementation AZCoreRecordTests
-
-- (void) setUp
-{
-	[AZCoreRecordManager setDefaultStackModelName:@"TestModel.momd"];
+@implementation AZCoreRecordTests {
+    AZCoreRecordManager *_localManager;
 }
 
-- (void) tearDown {
-	[[AZCoreRecordManager sharedManager] azcr_cleanUp];
+- (void)setUp {
+    _localManager = [[AZCoreRecordManager alloc] initWithStackName: @"TestStore.storefile"];
+    _localManager.stackModelName = @"TestModel.momd";
+}
+
+- (void)tearDown {
+    NSURL *URLToRemove = [_localManager.fallbackStoreURL URLByDeletingLastPathComponent];
+    _localManager = nil;
+	[[NSFileManager defaultManager] removeItemAtPath:[URLToRemove path] error:nil];
 }
 
 - (void) assertDefaultStack
 {
-	NSLog(@"%@", [NSManagedObjectContext defaultContext]);
-	NSLog(@"%@", [NSPersistentStoreCoordinator defaultStoreCoordinator]);
+	NSLog(@"%@", _localManager.persistentStoreCoordinator);
+	NSLog(@"%@", _localManager.managedObjectContext);
 		
-	assertThat([NSManagedObjectContext defaultContext], is(notNilValue()));
-	assertThat([NSPersistentStoreCoordinator defaultStoreCoordinator], is(notNilValue()));
-	assertThat([[NSPersistentStoreCoordinator defaultStoreCoordinator] persistentStores], isNot(empty()));
+	assertThat(_localManager.persistentStoreCoordinator, is(notNilValue()));
+	assertThat(_localManager.persistentStoreCoordinator.persistentStores, isNot(empty()));
+	assertThat(_localManager.managedObjectContext, is(notNilValue()));
 }
 
 - (void) testCreateDefaultCoreDataStack
-{
-    NSURL *testStoreURL = [[[AZCoreRecordManager sharedManager] fallbackStoreURL] URLByDeletingLastPathComponent];
-	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
-	
+{	
 	[self assertDefaultStack];
 	
 	NSUInteger storeIndex = [[[NSPersistentStoreCoordinator defaultStoreCoordinator] persistentStores] indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {

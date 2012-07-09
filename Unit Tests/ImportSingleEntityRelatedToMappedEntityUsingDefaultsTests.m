@@ -24,7 +24,7 @@
 
 - (void) setupTestData
 {
-	NSManagedObjectContext *context = [NSManagedObjectContext defaultContext];
+	NSManagedObjectContext *context = self.localManager.managedObjectContext;
 	
 	MappedEntity *testMappedEntity = [MappedEntity createInContext:context];
 	testMappedEntity.mappedEntityIDValue = 42;
@@ -40,7 +40,7 @@
 {
 	SingleEntityRelatedToMappedEntityUsingDefaults *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
 	
-	[[NSManagedObjectContext defaultContext] save];
+	[self.localManager.managedObjectContext save];
 
 	id testRelatedEntity = entity.mappedEntity;
 	

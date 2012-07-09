@@ -11,27 +11,24 @@
 #import "SingleRelatedEntity.h"
 #import "AZCoreRecord.h"
 
-@interface AZCoreRecordManager ()
-- (void)azcr_cleanUp;
-@end
-
-@implementation NSManagedObjectHelperTests
-
-- (void) setUp
-{
-	[AZCoreRecordManager setDefaultStackModelName:@"TestModel.momd"];
-	[AZCoreRecordManager setDefaultStackShouldUseInMemoryStore:YES];
+@implementation NSManagedObjectHelperTests {
+    AZCoreRecordManager *_localManager;
 }
 
-- (void) tearDown
-{
-	[[AZCoreRecordManager sharedManager] azcr_cleanUp];
+- (void)setUpClass {
+    _localManager = [[AZCoreRecordManager alloc] initWithStackName: @"TestStore.storefile"];
+    _localManager.stackShouldUseInMemoryStore = YES;
+}
+
+- (void)tearDownClass {
+    _localManager = nil;
 }
 
 -(BOOL)shouldRunOnMainThread
 {
 	return YES;
 }
+
 //Test Request Creation
 
 - (void) testCreateFetchRequestForEntity

@@ -10,19 +10,16 @@
 #import "AZCoreRecordImportTestCase.h"
 #import "AZCoreRecordManager.h"
 
-@interface AZCoreRecordManager ()
-- (void)azcr_cleanUp;
-@end
-
 @implementation AZCoreRecordImportTestCase
 
+@synthesize localManager = _localManager;
 @synthesize testEntityData = _testEntityData;
 @synthesize testEntity = _testEntity;
 
-- (void) setUp
-{
-	[AZCoreRecordManager setDefaultStackModelName:@"TestModel.momd"];
-	[AZCoreRecordManager setDefaultStackShouldUseInMemoryStore:YES];
+- (void)setUp {
+    self.localManager = [[AZCoreRecordManager alloc] initWithStackName: @"TestStore.storefile"];
+    self.localManager.stackModelName = @"TestModel.momd";
+    self.localManager.stackShouldUseInMemoryStore = YES;
 	
 	if ([self respondsToSelector:@selector(setupTestData)])
 	{
@@ -33,7 +30,7 @@
 }
 
 - (void)tearDown {
-	[[AZCoreRecordManager sharedManager] azcr_cleanUp];
+    self.localManager = nil;
 }
 
 - (Class) testEntityClass

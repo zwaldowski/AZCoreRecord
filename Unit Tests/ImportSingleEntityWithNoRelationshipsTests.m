@@ -11,35 +11,29 @@
 #import "NSManagedObject+AZCoreRecordImport.h"
 #import "AZCoreRecordManager.h"
 
-@interface AZCoreRecordManager ()
-- (void)azcr_cleanUp;
-@end
-
 @interface ImportSingleEntityWithNoRelationshipsTests : GHTestCase
 
 @property (nonatomic, retain) SingleEntityWithNoRelationships *testEntity;
 
 @end
 
-@implementation ImportSingleEntityWithNoRelationshipsTests
+@implementation ImportSingleEntityWithNoRelationshipsTests {
+    AZCoreRecordManager *_localManager;
+}
 
 @synthesize testEntity;
 
-- (void) setUpClass
-{
-	[AZCoreRecordManager setDefaultStackModelName:@"TestModel.momd"];
-	[AZCoreRecordManager setDefaultStackShouldUseInMemoryStore:YES];
-    
+- (void)setUpClass {
+    _localManager = [[AZCoreRecordManager alloc] initWithStackName: @"TestStore.storefile"];
+    _localManager.stackModelName = @"TestModel.momd";
+    _localManager.stackShouldUseInMemoryStore = YES;
+
 	id singleEntity = [self dataFromJSONFixture];
-	
-	
-	
 	testEntity = [SingleEntityWithNoRelationships importFromDictionary:singleEntity];
 }
 
-- (void) tearDownClass
-{
-	[[AZCoreRecordManager sharedManager] azcr_cleanUp];
+- (void)tearDownClass {
+    _localManager = nil;
 }
 
 - (void) testImportASingleEntity

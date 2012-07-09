@@ -17,6 +17,7 @@
 
 @interface AZCoreRecordImportTestCase : GHTestCase
 
+@property (nonatomic, retain) AZCoreRecordManager *localManager;
 @property (nonatomic, retain) id testEntityData;
 @property (nonatomic, retain) id testEntity;
 
