@@ -28,19 +28,16 @@
 - (void) assertDefaultStack
 {
 	NSLog(@"%@", [NSManagedObjectContext defaultContext]);
-	NSLog(@"%@", [NSManagedObjectModel defaultModel]);
 	NSLog(@"%@", [NSPersistentStoreCoordinator defaultStoreCoordinator]);
-	
-	
+		
 	assertThat([NSManagedObjectContext defaultContext], is(notNilValue()));
-	assertThat([NSManagedObjectModel defaultModel], is(notNilValue()));
 	assertThat([NSPersistentStoreCoordinator defaultStoreCoordinator], is(notNilValue()));
 	assertThat([[NSPersistentStoreCoordinator defaultStoreCoordinator] persistentStores], isNot(empty()));
 }
 
 - (void) testCreateDefaultCoreDataStack
 {
-	NSURL *testStoreURL = [NSPersistentStore URLForStoreName: nil];
+    NSURL *testStoreURL = [[[AZCoreRecordManager sharedManager] fallbackStoreURL] URLByDeletingLastPathComponent];
 	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
 	
 	[self assertDefaultStack];
@@ -63,23 +60,6 @@
 	}];
 	
 	assertThatUnsignedInteger(storeIndex, isNot(equalToInteger(NSNotFound)));
-}
-
-- (void) testCreateSqliteStackWithCustomName
-{
-	NSString *testStoreName = @"MyTestDataStore.sqlite";
-	[AZCoreRecordManager setDefaultStackStoreName:testStoreName];
-	
-	[self assertDefaultStack];
-	
-	NSUInteger storeIndex = [[[NSPersistentStoreCoordinator defaultStoreCoordinator] persistentStores] indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
-		return [store.type isEqualToString: NSSQLiteStoreType] && [store.URL.absoluteString hasSuffix: testStoreName];
-	}];
-	
-	assertThatUnsignedInteger(storeIndex, isNot(equalToInteger(NSNotFound)));
-	
-	NSPersistentStore *defaultStore = [[[NSPersistentStoreCoordinator defaultStoreCoordinator] persistentStores] objectAtIndex: storeIndex];
-	[[NSFileManager defaultManager] removeItemAtURL: defaultStore.URL error:NULL];
 }
 
 - (void) testCanSetAUserSpecifiedErrorHandler

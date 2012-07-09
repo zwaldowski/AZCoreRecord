@@ -10,41 +10,33 @@
 #import "NSPersistentStoreCoordinatorHelperTests.h"
 #import "AZCoreRecordManager.h"
 
-@interface AZCoreRecordManager ()
-- (void)azcr_cleanUp;
-@end
-
-@implementation NSPersistentStoreCoordinatorHelperTests
-
-- (void)tearDown {
-	[[AZCoreRecordManager sharedManager] azcr_cleanUp];
-	NSURL *testStoreURL = [NSPersistentStore URLForStoreName:@"TestStore.sqlite"];
-	[[NSFileManager defaultManager] removeItemAtPath:[testStoreURL path] error:nil];
+@implementation NSPersistentStoreCoordinatorHelperTests {
+    AZCoreRecordManager *_localManager;
 }
 
-- (void) testCreateCoodinatorWithSqlitePersistentStore
+- (void)setUp {
+    _localManager = [[AZCoreRecordManager alloc] initWithStackName: @"TestStore.storefile"];
+}
+
+- (void)tearDown {
+    NSURL *URLToRemove = [_localManager.fallbackStoreURL URLByDeletingLastPathComponent];
+    _localManager = nil;
+	[[NSFileManager defaultManager] removeItemAtPath:[URLToRemove path] error:nil];
+}
+
+- (void) testDefaultCoodinatorWithSqlitePersistentStore
 {
-	NSPersistentStoreCoordinator *testCoordinator = [NSPersistentStoreCoordinator coordinatorWithStoreNamed: @"TestStore.sqlite" ofType: NSSQLiteStoreType];
+	NSPersistentStoreCoordinator *testCoordinator = [_localManager persistentStoreCoordinator];
 	
-	assertThatUnsignedInteger([[testCoordinator persistentStores] count], is(equalToUnsignedInteger(1)));
+	assertThatUnsignedInteger(testCoordinator.persistentStores.count, is(equalToUnsignedInteger(1)));
 
 	NSPersistentStore *store = [[testCoordinator persistentStores] objectAtIndex:0];
 	assertThat([store type], is(equalTo(NSSQLiteStoreType)));
 }
 
-- (void) testCreateCoordinatorWithInMemoryStore
-{
-	NSPersistentStoreCoordinator *testCoordinator = [NSPersistentStoreCoordinator coordinatorWithInMemoryStore];
-
-	assertThatUnsignedInteger([[testCoordinator persistentStores] count], is(equalToUnsignedInteger(1)));
-	
-	NSPersistentStore *store = [[testCoordinator persistentStores] objectAtIndex:0];
-	assertThat([store type], is(equalTo(NSInMemoryStoreType)));
-}
-
 - (void) testCanAddAnInMemoryStoreToAnExistingCoordinator
 {
-	NSPersistentStoreCoordinator *testCoordinator = [NSPersistentStoreCoordinator coordinatorWithStoreNamed: @"TestStore.sqlite" ofType: NSSQLiteStoreType];
+	NSPersistentStoreCoordinator *testCoordinator = [_localManager persistentStoreCoordinator];
 	
 	assertThatUnsignedInteger([[testCoordinator persistentStores] count], is(equalToUnsignedInteger(1)));
 	

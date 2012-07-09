@@ -15,97 +15,39 @@
 - (NSString *) applicationStorageDirectory
 {
 	NSString *appSupportDirectory = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) lastObject];
-	appSupportDirectory = [appSupportDirectory stringByAppendingPathComponent:@"iOS App Unit Tests"];
+    NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
+	appSupportDirectory = [appSupportDirectory stringByAppendingPathComponent: applicationName];
 	return appSupportDirectory;
 }
 
-#if TARGET_OS_IPHONE
-
-- (void)testDefaultStoreFolderForiOSDevicesIsTheApplicationSupportFolder
+- (void)testDefaultStoreIsTheApplicationSupportSlashApplicationFolder
 {
 	NSString *applicationLibraryDirectory = [self applicationStorageDirectory];
-	NSString *defaultStoreName = @"iOS App Unit Tests.sqlite";
+	NSString *defaultStoreName = @"FallbackStore.sqlite";
 	
 	NSURL *expectedStoreUrl = [NSURL fileURLWithPath:[applicationLibraryDirectory stringByAppendingPathComponent:defaultStoreName]];
 	
-	NSURL *defaultStoreUrl = [NSPersistentStore URLForStoreName: nil];
-	
+	NSURL *defaultStoreUrl = [[AZCoreRecordManager sharedManager] fallbackStoreURL];
 	assertThat(defaultStoreUrl, is(equalTo(expectedStoreUrl)));
 }
 
-
-- (void) testCanFindAURLInTheLibraryForiOSForASpecifiedStoreName
+- (void) testCanFindAURLInTheLibraryForASpecifiedStoreName
 {
-	NSString *storeFileName = @"NotTheDefaultStoreName.storefile";
 	NSString *applicationLibraryDirectory = [self applicationStorageDirectory];
-	NSString *testStorePath = [applicationLibraryDirectory stringByAppendingPathComponent:storeFileName];
+    NSString *customStackName = @"CustomStoreName.storefile";
+	NSString *defaultStoreName = @"FallbackStore.sqlite";
+    NSString *testStorePath = [NSString stringWithFormat: @"%@/%@/%@", applicationLibraryDirectory, customStackName, defaultStoreName];
 	
-	BOOL fileWasCreated = [[NSFileManager defaultManager] createFileAtPath:testStorePath contents:[storeFileName dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
+	BOOL fileWasCreated = [[NSFileManager defaultManager] createFileAtPath:testStorePath contents:[customStackName dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
 	
 	assertThatBool(fileWasCreated, is(equalToBool(YES)));
 	
 	NSURL *expectedFoundStoreUrl = [NSURL fileURLWithPath:testStorePath];
-	NSURL *foundStoreUrl = [NSPersistentStore URLForStoreName:storeFileName];
+	NSURL *foundStoreUrl = [[[AZCoreRecordManager alloc] initWithStackName: customStackName] fallbackStoreURL];
 	
 	assertThat(foundStoreUrl, is(equalTo(expectedFoundStoreUrl)));
 	
 	[[NSFileManager defaultManager] removeItemAtPath:testStorePath error:nil];
 }
-
-- (void) testCanFindAURLInDocumentsFolderForiOSForASpecifiedStoreName
-{
-	NSString *storeFileName = @"NotTheDefaultStoreName.storefile";
-	NSString *documentDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-	NSString *testStorePath = [documentDirectory stringByAppendingPathComponent:storeFileName];
-	
-	BOOL fileWasCreated = [[NSFileManager defaultManager] createFileAtPath:testStorePath contents:[storeFileName dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
-	
-	assertThatBool(fileWasCreated, is(equalToBool(YES)));
-	
-	NSURL *expectedFoundStoreUrl = [NSURL fileURLWithPath:testStorePath];
-	NSURL *foundStoreUrl = [NSPersistentStore URLForStoreName:storeFileName];
-	
-	assertThat(foundStoreUrl, is(equalTo(expectedFoundStoreUrl)));
-	
-	[[NSFileManager defaultManager] removeItemAtPath:testStorePath error:nil];
-}
-
-#else
-
-- (void) testDefaultStoreFolderForMacIsTheApplicationSupportSlashApplicationFolder
-{
-	NSString *applictionSupportDirectory = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) lastObject];
-	NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
-	NSString *defaultStoreName = @"Mac App Unit Tests.sqlite";
-	
-	NSURL *expectedStoreUrl = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@/%@", applictionSupportDirectory, applicationName, defaultStoreName]];
-	
-	NSURL *defaultStoreUrl = [NSPersistentStore URLForStoreName: nil];
-	assertThat(defaultStoreUrl, is(equalTo(expectedStoreUrl)));
-}
-
-
-- (void) testCanFindAURLInTheApplicationSupportLibraryForMacForASpecifiedStoreName
-{
-	NSString *storeFileName = @"NotTheDefaultStoreName.storefile";
-	NSString *applicationSupportDirectory = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) lastObject];
-	NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
-	NSString *testStorePath = [applicationSupportDirectory stringByAppendingPathComponent:storeFileName];
-	
-	BOOL fileWasCreated = [[NSFileManager defaultManager] createFileAtPath:testStorePath contents:[storeFileName dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
-	
-	assertThatBool(fileWasCreated, is(equalToBool(YES)));
-	
-	NSURL *expectedStoreUrl = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@/%@", applicationSupportDirectory, applicationName, storeFileName]];
-	
-	NSURL *foundStoreUrl = [NSPersistentStore URLForStoreName:storeFileName];
-	
-	assertThat(foundStoreUrl, is(equalTo(expectedStoreUrl)));
-	
-	[[NSFileManager defaultManager] removeItemAtPath:testStorePath error:nil];
-}
-
-#endif
-
 
 @end
