@@ -223,7 +223,16 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 - (BOOL)azcr_loadFallbackStore {
 	NSString *configuration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
-    return !![self.persistentStoreCoordinator addStoreAtURL: self.fallbackStoreURL configuration: configuration options: [self azcr_lightweightMigrationOptions]];
+	
+	NSMutableDictionary *options = [NSMutableDictionary dictionary];
+
+	if (self.stackShouldUseUbiquity || self.stackShouldAutoMigrateStore)
+		[options addEntriesFromDictionary: [self azcr_lightweightMigrationOptions]];
+	
+	if (self.stackShouldUseInMemoryStore)
+		return !![self.persistentStoreCoordinator addInMemoryStoreWithConfiguration: configuration options: options];
+	else
+		return !![self.persistentStoreCoordinator addStoreAtURL: self.fallbackStoreURL configuration: configuration options: options];
 }
 
 - (BOOL)azcr_loadUbiquitousStore {
@@ -244,11 +253,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 		[options addEntriesFromDictionary: [self azcr_lightweightMigrationOptions]];
 	
 	NSString *configuration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
-	
-	if (self.stackShouldUseInMemoryStore && !self.stackShouldUseUbiquity)
-		return !![self.persistentStoreCoordinator addInMemoryStoreWithConfiguration: configuration options: options];
-	else
-		return !![self.persistentStoreCoordinator addStoreAtURL: self.ubiquitousStoreURL configuration: configuration options: options];
+	return !![self.persistentStoreCoordinator addStoreAtURL: self.ubiquitousStoreURL configuration: configuration options: options];
 }
 
 #pragma mark - Utilities
