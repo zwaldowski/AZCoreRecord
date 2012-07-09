@@ -504,18 +504,6 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	_stackModelConfigurations = nil;
 }
 
-- (void) azcr_cleanUp
-{
-	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-
-	[self azcr_resetStackOptions];
-	[self azcr_resetStack];
-	self.errorDelegate = nil;
-	self.errorHandler = NULL;
-	
-	dispatch_semaphore_signal(self.semaphore);
-}
-
 #pragma mark - Error Handling
 
 + (void) handleError: (NSError *) error
