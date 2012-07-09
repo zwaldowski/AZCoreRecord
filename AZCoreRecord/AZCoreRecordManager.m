@@ -175,7 +175,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 		NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 		AZCoreRecordManager *manager = [AZCoreRecordManager sharedManager];
 		
-		if ([[AZCoreRecordUbiquitySentinel sharedSentinel] isUbiquityAvailable]) {
+		if ([[self class] supportsUbiquity] && self.stackShouldUseUbiquity) {
 			[nc postNotificationName: AZCoreRecordManagerWillAddUbiquitousStoreNotification object: manager];
 			if ([self azcr_loadUbiquitousStore]) {
 				[nc postNotificationName: AZCoreRecordManagerDidAddUbiquitousStoreNotification object: manager];
