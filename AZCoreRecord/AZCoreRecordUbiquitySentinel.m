@@ -8,15 +8,12 @@
 //
 
 #import "AZCoreRecordUbiquitySentinel.h"
+#import <CoreData/CoreData.h>
 
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <UIKit/UIApplication.h>
 #elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 #import <AppKit/NSApplication.h>
-#endif
-
-#ifdef NSUbiquityIdentityDidChangeNotification
-#error here
 #endif
 
 #if (__IPHONE_OS_VERSION_MAX_ALLOWED < 60000) || (__MAC_OS_X_VERSION_MAX_ALLOWED < 1080)
