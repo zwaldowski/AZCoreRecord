@@ -41,11 +41,10 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 @property (nonatomic, strong, readwrite) NSString *ubiquityToken;
 @property (nonatomic, readonly) NSURL *stackStoreURL;
 
-- (void)azcr_loadPersistentStores;
-- (BOOL)azcr_loadLocalPersistentStore;
-- (BOOL)azcr_loadFallbackStore;
-- (BOOL)azcr_loadUbiquitousStore;
 - (NSDictionary *) azcr_lightweightMigrationOptions;
+- (void) azcr_loadPersistentStores;
+- (void) azcr_resetStack;
+- (void) azcr_didChangeUbiquityIdentityNotification:(NSNotification *)note;
 
 @end
 
@@ -64,6 +63,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 @synthesize stackModelURL = _stackModelURL;
 @synthesize stackModelConfigurations = _stackModelConfigurations;
 @synthesize ubiquityToken = _ubiquityToken;
+@synthesize ubiquityEnabled = _ubiquityEnabled;
 
 #pragma mark - Setup and teardown
 
@@ -164,96 +164,120 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 #pragma mark - Persistent stores
 
+- (NSDictionary *) azcr_lightweightMigrationOptions
+{
+	static NSDictionary *lightweightMigrationOptions = nil;
+	static dispatch_once_t once;
+	dispatch_once(&once, ^{
+		lightweightMigrationOptions = [NSDictionary dictionaryWithObjectsAndKeys:
+									   (__bridge id) kCFBooleanTrue, NSMigratePersistentStoresAutomaticallyOption,
+									   (__bridge id) kCFBooleanTrue, NSInferMappingModelAutomaticallyOption, nil];
+	});
+	return lightweightMigrationOptions;
+}
+
 - (void)azcr_loadPersistentStores {
     dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     dispatch_async(globalQueue, ^{
 		dispatch_semaphore_wait(self.loadSemaphore, DISPATCH_TIME_FOREVER);
-		
-		[self azcr_loadLocalPersistentStore];
+        
+        NSFileManager *fm = [[NSFileManager alloc] init];
+
+        NSString *localConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordLocalStoreConfigurationNameKey];
+        NSString *ubiquitousConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
+        NSURL *localURL = self.localStoreURL;
+        NSURL *fallbackURL = self.fallbackStoreURL;
+        NSURL *ubiquityURL = self.ubiquitousStoreURL;
+        NSURL *ubiquityContainer = [fm URLForUbiquityContainerIdentifier:nil];
+        
+        NSDictionary *options = (self.stackShouldUseUbiquity || self.stackShouldAutoMigrateStore) ? [self azcr_lightweightMigrationOptions] : [NSDictionary dictionary];
+        
+        if (localConfiguration.length) {
+            if (![fm fileExistsAtPath: localURL.path]) {
+                NSURL *bundleURL = [[NSBundle mainBundle] URLForResource: localURL.lastPathComponent.stringByDeletingPathExtension withExtension: localURL.pathExtension];
+                if (bundleURL) {
+                    NSError *error = nil;
+                    if (![fm copyItemAtURL: bundleURL toURL: localURL error: &error]) {
+                        [AZCoreRecordManager handleError: error];
+                        return;
+                    }
+                }
+            }
+            
+            [self.persistentStoreCoordinator addStoreAtURL: localURL configuration: localConfiguration options: options];
+        }
 		
 		BOOL fallback = NO;
 		NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-		AZCoreRecordManager *manager = [AZCoreRecordManager sharedManager];
 		
 		if ([[self class] supportsUbiquity] && self.stackShouldUseUbiquity) {
-			[nc postNotificationName: AZCoreRecordManagerWillAddUbiquitousStoreNotification object: manager];
-			if ([self azcr_loadUbiquitousStore]) {
-				[nc postNotificationName: AZCoreRecordManagerDidAddUbiquitousStoreNotification object: manager];
-			} else {
+			[nc postNotificationName: AZCoreRecordManagerWillAddUbiquitousStoreNotification object: self];
+            
+            NSMutableDictionary *storeOptions = [options mutableCopy];
+            
+            if (ubiquityContainer) {
+                [storeOptions setObject: @"UbiquitousStore" forKey: NSPersistentStoreUbiquitousContentNameKey];
+                [storeOptions setObject: [ubiquityContainer URLByAppendingPathComponent:@"UbiquitousData"] forKey: NSPersistentStoreUbiquitousContentURLKey];
+            } else {
+                [storeOptions setObject: [NSNumber numberWithBool: YES] forKey: NSReadOnlyPersistentStoreOption];
+                fallback = YES;
+            }
+            
+            if ([self.persistentStoreCoordinator addStoreAtURL: ubiquityURL configuration: ubiquitousConfiguration options: storeOptions]) {
+				[nc postNotificationName: AZCoreRecordManagerDidAddUbiquitousStoreNotification object: self];
+                _ubiquityEnabled = YES;
+            } else {
 				fallback = YES;
-			}
+            }
 		} else {
 			fallback = YES;
 		}
 		
 		if (fallback) {
-			[self azcr_loadFallbackStore];
-			[nc postNotificationName: AZCoreRecordManagerDidAddFallbackStoreNotification object: manager];
+            NSMutableDictionary *storeOptions = [options mutableCopy];
+            
+            if (self.stackShouldUseInMemoryStore)
+                [self.persistentStoreCoordinator addInMemoryStoreWithConfiguration: ubiquitousConfiguration options: storeOptions];
+            else
+                [self.persistentStoreCoordinator addStoreAtURL: fallbackURL configuration: ubiquitousConfiguration options: storeOptions];
+            
+			[nc postNotificationName: AZCoreRecordManagerDidAddFallbackStoreNotification object: self];
+            _ubiquityEnabled = NO;
 		}
 		
 		dispatch_semaphore_signal(self.loadSemaphore);
     });
 }
 
-- (BOOL)azcr_loadLocalPersistentStore {
-	NSString *configuration = [self.stackModelConfigurations objectForKey: AZCoreRecordLocalStoreConfigurationNameKey];
-	if (!configuration.length)
-		return NO;
-    	
-    NSFileManager *fm = [[NSFileManager alloc] init];
-    NSURL *storeURL = self.localStoreURL;
-    if (![fm fileExistsAtPath: storeURL.path]) {
-        NSURL *bundleURL = [[NSBundle mainBundle] URLForResource: storeURL.lastPathComponent.stringByDeletingPathExtension withExtension: storeURL.pathExtension];
-        if (bundleURL) {
-			NSError *error = nil;
-			if (![fm copyItemAtURL: bundleURL toURL: storeURL error: &error]) {
-				[AZCoreRecordManager handleError: error];
-				return NO;
-			}
-		}
-    }
+- (void) azcr_resetStack
+{
+	if (_managedObjectContext)
+		[self.managedObjectContext reset];
 	
-	NSDictionary *options = nil;
-	
-	if (self.stackShouldAutoMigrateStore || self.stackShouldUseUbiquity)
-		options = [self azcr_lightweightMigrationOptions];
-	    
-	return !![self.persistentStoreCoordinator addStoreAtURL: storeURL configuration: configuration options: options];
-}
-
-- (BOOL)azcr_loadFallbackStore {
-	NSString *configuration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
-	
-	NSMutableDictionary *options = [NSMutableDictionary dictionary];
-
-	if (self.stackShouldUseUbiquity || self.stackShouldAutoMigrateStore)
-		[options addEntriesFromDictionary: [self azcr_lightweightMigrationOptions]];
-	
-	if (self.stackShouldUseInMemoryStore)
-		return !![self.persistentStoreCoordinator addInMemoryStoreWithConfiguration: configuration options: options];
-	else
-		return !![self.persistentStoreCoordinator addStoreAtURL: self.fallbackStoreURL configuration: configuration options: options];
-}
-
-- (BOOL)azcr_loadUbiquitousStore {
-    NSURL *ubiquityURL = [[NSFileManager new] URLForUbiquityContainerIdentifier:nil];
-	NSMutableDictionary *options = [NSMutableDictionary dictionary];
-	
-	if (self.stackShouldUseUbiquity) {
-		if (ubiquityURL) {
-			[options setObject: @"UbiquitousStore" forKey: NSPersistentStoreUbiquitousContentNameKey];
-			[options setObject: [ubiquityURL URLByAppendingPathComponent:@"UbiquitousData"] forKey: NSPersistentStoreUbiquitousContentURLKey];
-
-		} else {
-			[options setObject: [NSNumber numberWithBool: YES] forKey: NSReadOnlyPersistentStoreOption];
-		}
+	if (_persistentStoreCoordinator) {
+		__block NSError *error = nil;
+		[self.persistentStoreCoordinator.persistentStores enumerateObjectsUsingBlock:^(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
+			[self.persistentStoreCoordinator removePersistentStore: store error: &error];
+		}];
+		[AZCoreRecordManager handleError: error];
 	}
-	
-	if (self.stackShouldUseUbiquity || self.stackShouldAutoMigrateStore)
-		[options addEntriesFromDictionary: [self azcr_lightweightMigrationOptions]];
-	
-	NSString *configuration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
-	return !![self.persistentStoreCoordinator addStoreAtURL: self.ubiquitousStoreURL configuration: configuration options: options];
+}
+
+- (void)azcr_didChangeUbiquityIdentityNotification:(NSNotification *)note
+{
+    dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_async(globalQueue, ^{
+		dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+        
+        [self azcr_resetStack];
+        
+        self.ubiquityToken = [[AZCoreRecordUbiquitySentinel sharedSentinel] ubiquityIdentityToken];
+        
+        [self azcr_loadPersistentStores];
+        
+        dispatch_semaphore_signal(self.semaphore);
+    });
+	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
 }
 
 #pragma mark - Utilities
@@ -262,14 +286,6 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	if (!self.stackShouldUseUbiquity)
 		return NO;
 	return self.ubiquityToken.length && !![[NSFileManager defaultManager] URLForUbiquityContainerIdentifier: nil];
-}
-
-- (void)azcr_didChangeUbiquityIdentityNotification:(NSNotification *)note {
-	[self azcr_resetStack];
-    
-	self.ubiquityToken = [[AZCoreRecordUbiquitySentinel sharedSentinel] ubiquityIdentityToken];
-	
-	[self azcr_loadPersistentStores];
 }
 
 - (NSURL *)stackStoreURL {
@@ -298,32 +314,17 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
         [fm createDirectoryAtURL:iCloudStoreURL withIntermediateDirectories:YES attributes:nil error:&error];
         [[self class] handleError: error];
     }
-	static NSString *storeName = @"UbiquitousStore.sqlite";
-    return [iCloudStoreURL URLByAppendingPathComponent: storeName];
+    return [iCloudStoreURL URLByAppendingPathComponent: @"UbiquitousStore.sqlite"];
 }
 
 - (NSURL *)fallbackStoreURL
 {
-	static NSString *storeName = @"FallbackStore.sqlite";
-	return [self.stackStoreURL URLByAppendingPathComponent: storeName];
+	return [self.stackStoreURL URLByAppendingPathComponent: @"FallbackStore.sqlite"];
 }
 
 - (NSURL *)localStoreURL
 {
-	static NSString *storeName = @"LocalStore.sqlite";
-	return [self.stackStoreURL URLByAppendingPathComponent: storeName];
-}
-
-- (NSDictionary *) azcr_lightweightMigrationOptions
-{
-	static NSDictionary *lightweightMigrationOptions = nil;
-	static dispatch_once_t once;
-	dispatch_once(&once, ^{
-		lightweightMigrationOptions = [NSDictionary dictionaryWithObjectsAndKeys:
-									   (__bridge id) kCFBooleanTrue, NSMigratePersistentStoresAutomaticallyOption,
-									   (__bridge id) kCFBooleanTrue, NSInferMappingModelAutomaticallyOption, nil];
-	});
-	return lightweightMigrationOptions;
+	return [self.stackStoreURL URLByAppendingPathComponent: @"LocalStore.sqlite"];
 }
 
 #pragma mark - Stack Settings
@@ -409,29 +410,14 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	return [[AZCoreRecordUbiquitySentinel sharedSentinel] isUbiquityAvailable];
 }
 
-- (BOOL) isUbiquityEnabled
-{
-	if (![[self class] supportsUbiquity])
-		return NO;
-	
-#warning - TODO - fix this part specifically
-	return _stackShouldUseUbiquity;
-}
 - (void) setUbiquityEnabled: (BOOL) enabled
 {
-#warning - TODO - fix this part specifically
-	if (_stackShouldUseUbiquity == enabled)
+	if (_ubiquityEnabled == enabled)
 		return;
-	
-	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-	
-	[self setStackShouldUseUbiquity: enabled];
+	    
+    _stackShouldUseUbiquity = enabled;
     
-	self.ubiquityToken = enabled ? [[AZCoreRecordUbiquitySentinel sharedSentinel] ubiquityIdentityToken] : nil;
-	
-	[self azcr_loadPersistentStores];
-	
-	dispatch_semaphore_signal(self.semaphore);
+    [self azcr_didChangeUbiquityIdentityNotification: nil];
 }
 
 #pragma mark - Default stack settings
@@ -476,32 +462,6 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 + (void) setUpDefaultStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0)
 {
 	[[self sharedManager] configureWithManagedDocument: managedObject];
-}
-
-#pragma mark - Stack cleanup
-
-- (void) azcr_resetStack
-{
-	if (_managedObjectContext)
-		[self.managedObjectContext reset];
-	
-	if (_persistentStoreCoordinator) {
-		__block NSError *error = nil;
-		[self.persistentStoreCoordinator.persistentStores enumerateObjectsUsingBlock:^(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
-			[self.persistentStoreCoordinator removePersistentStore: store error: &error];
-		}];
-		[AZCoreRecordManager handleError: error];
-	}
-}
-
-- (void) azcr_resetStackOptions
-{
-	_stackShouldAutoMigrate = NO;
-	_stackShouldUseInMemoryStore = NO;
-	_stackShouldUseUbiquity = NO;
-	_stackModelName = nil;
-	_stackModelURL = nil;
-	_stackModelConfigurations = nil;
 }
 
 #pragma mark - Error Handling
