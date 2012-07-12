@@ -129,9 +129,22 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 	
 	if ([self respondsToSelector: @selector(entityInManagedObjectContext:)]) 
 		return [self performSelector: @selector(entityInManagedObjectContext:) withObject: context];
-
-	NSString *entityName = NSStringFromClass([self class]);
-	return [NSEntityDescription entityForName: entityName inManagedObjectContext: context];
+    
+    NSString *className = NSStringFromClass(self);
+    NSManagedObjectModel *model = [[context persistentStoreCoordinator] managedObjectModel];
+    NSEntityDescription *entity = [model.entitiesByName objectForKey: className];
+    if (!entity) {
+        NSArray *entities = model.entities;
+        NSUInteger index = [entities indexOfObjectPassingTest:^(NSEntityDescription *obj, NSUInteger idx, BOOL *stop) {
+            return [[obj managedObjectClassName] isEqualToString: className];
+        }];
+        
+        if (index == NSNotFound)
+            return nil;
+        
+        entity = [entities objectAtIndex: index];
+    }
+    return entity;
 }
 
 #pragma mark - Entity Creation
@@ -147,9 +160,9 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 	
 	if ([self respondsToSelector: @selector(insertInManagedObjectContext:)]) 
 		return [self insertInManagedObjectContext: context];
-
-	NSString *entityName = NSStringFromClass([self class]);
-	return [NSEntityDescription insertNewObjectForEntityForName: entityName inManagedObjectContext: context];
+    
+    NSEntityDescription *entity = [self entityDescriptionInContext: context];
+    return [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:context];
 }
 
 #pragma mark - Entity deletion
