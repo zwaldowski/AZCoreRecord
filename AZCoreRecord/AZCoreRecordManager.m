@@ -220,7 +220,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 		BOOL fallback = NO;
 		NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 		
-		if ([[self class] supportsUbiquity] && self.stackShouldUseUbiquity) {
+		if (self.stackShouldUseUbiquity && ubiquityURL) {
 			[nc postNotificationName: AZCoreRecordManagerWillAddUbiquitousStoreNotification object: self];
             
             NSMutableDictionary *storeOptions = [options mutableCopy];
@@ -322,15 +322,16 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 - (NSURL *)ubiquitousStoreURL
 {
-    NSURL *ubiquityContainer = [self.fileManager URLForUbiquityContainerIdentifier:nil];
-    if (!ubiquityContainer)
+    if (!self.ubiquityToken.length)
         return nil;
     NSURL *iCloudStoreURL = [self.stackStoreURL URLByAppendingPathComponent: self.ubiquityToken];
+    
     if (![self.fileManager fileExistsAtPath: iCloudStoreURL.path]) {
         NSError *error = nil;
         [self.fileManager createDirectoryAtURL:iCloudStoreURL withIntermediateDirectories:YES attributes:nil error:&error];
         [[self class] handleError: error];
     }
+    
     return [iCloudStoreURL URLByAppendingPathComponent: @"UbiquitousStore.sqlite"];
 }
 
