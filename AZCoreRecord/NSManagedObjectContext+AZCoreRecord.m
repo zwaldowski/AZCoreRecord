@@ -52,31 +52,7 @@
 
 + (NSManagedObjectContext *) contextForCurrentThread
 {
-	if ([NSThread isMainThread])
-		return [self defaultContext];
-	
-	NSManagedObjectContext *context = nil;
-	
-	static dispatch_semaphore_t semaphore;
-	static dispatch_once_t token;
-	dispatch_once(&token, ^{
-		semaphore = dispatch_semaphore_create(0);
-	});
-	
-	dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-
-	NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
-	static NSString const *AZCoreRecordManagedObjectContextKey = @"AZCoreRecordManagedObjectContext";
-	context = [dict objectForKey: AZCoreRecordManagedObjectContextKey];
-	if (!context)
-	{
-		context = [[self defaultContext] newChildContext];
-		[dict setObject: context forKey: AZCoreRecordManagedObjectContextKey];
-	}
-	
-	dispatch_semaphore_signal(semaphore);
-	
-	return context;
+	return [[AZCoreRecordManager sharedManager] contextForCurrentThread];
 }
 
 #pragma mark - Context Factory Methods
@@ -124,7 +100,7 @@
 
 + (void) resetDefaultContext
 {
-	NSManagedObjectContext *context = [self defaultContext];
+	NSManagedObjectContext *context = [[AZCoreRecordManager sharedManager] managedObjectContext];
 	[context performBlockAndWait: ^{
 		[context reset];
 	}];

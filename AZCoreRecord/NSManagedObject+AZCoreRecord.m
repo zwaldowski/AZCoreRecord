@@ -29,9 +29,7 @@ static NSUInteger defaultBatchSize = 20;
 {
 	NSParameterAssert(context);
 	
-	NSManagedObjectContext *myContext = self.managedObjectContext;
-	if (!myContext)
-		myContext = [NSManagedObjectContext defaultContext];
+	NSManagedObjectContext *myContext = self.managedObjectContext ?: [NSManagedObjectContext defaultContext];
 	
 	if ([self.objectID isTemporaryID])
 	{
@@ -171,10 +169,13 @@ static NSUInteger defaultBatchSize = 20;
 
 + (void) deleteAllMatchingPredicate: (NSPredicate *) predicate
 {
-	[self deleteAllMatchingPredicate: predicate inContext: [NSManagedObjectContext defaultContext]];
+	[self deleteAllMatchingPredicate: predicate inContext: nil];
 }
 + (void) deleteAllMatchingPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context
 {
+	if (!context)
+		context = [NSManagedObjectContext defaultContext];
+    
 	NSFetchRequest *request = [self requestAllWithPredicate: predicate inContext: context];
 	request.includesPropertyValues = NO;
 	

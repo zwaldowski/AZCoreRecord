@@ -51,13 +51,19 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 
 @property (nonatomic, readonly) NSString *stackName;
 
-@property (nonatomic, readonly) NSURL *ubiquitousStoreURL;
-@property (nonatomic, readonly) NSURL *fallbackStoreURL;
-@property (nonatomic, readonly) NSURL *localStoreURL;
+#pragma mark - Stack accessors
 
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, strong, readonly) NSString *ubiquityToken;
+
+- (NSManagedObjectContext *)contextForCurrentThread;
+
+#pragma mark - Helpers
+
+@property (nonatomic, readonly) NSURL *ubiquitousStoreURL;
+@property (nonatomic, readonly) NSURL *fallbackStoreURL;
+@property (nonatomic, readonly) NSURL *localStoreURL;
 
 @property (nonatomic, readonly, getter = isReadOnly) BOOL readOnly;
 
