@@ -40,6 +40,7 @@
 		6CAF8DAD15918A3700B9169B /* NSPersistentStoreCoordinator+AZCoreRecord.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6C93DA4B149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.h */; };
 		6CAF8DAE15918A3700B9169B /* NSFetchedResultsController+AZCoreRecord.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6CD8677214FBF4730080D92B /* NSFetchedResultsController+AZCoreRecord.h */; };
 		6CD8677414FBF4730080D92B /* NSFetchedResultsController+AZCoreRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CD8677314FBF4730080D92B /* NSFetchedResultsController+AZCoreRecord.m */; };
+		6CE2088C15AFDD57002A7068 /* TestModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6CAF8D831591893900B9169B /* TestModel.xcdatamodeld */; };
 		6CE5F08B15AB59DB00B24DB7 /* AZCoreRecordUbiquitySentinel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CE5F08A15AB59DB00B24DB7 /* AZCoreRecordUbiquitySentinel.m */; };
 		6CE5F08C15AB59DB00B24DB7 /* AZCoreRecordUbiquitySentinel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CE5F08A15AB59DB00B24DB7 /* AZCoreRecordUbiquitySentinel.m */; };
 		6CE5F08D15AB59DB00B24DB7 /* AZCoreRecordUbiquitySentinel.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CE5F08A15AB59DB00B24DB7 /* AZCoreRecordUbiquitySentinel.m */; };
@@ -982,6 +983,7 @@
 				6C93DA58149522350074327E /* NSPersistentStoreCoordinator+AZCoreRecord.m in Sources */,
 				6CD8677414FBF4730080D92B /* NSFetchedResultsController+AZCoreRecord.m in Sources */,
 				6CE5F08C15AB59DB00B24DB7 /* AZCoreRecordUbiquitySentinel.m in Sources */,
+				6CE2088C15AFDD57002A7068 /* TestModel.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

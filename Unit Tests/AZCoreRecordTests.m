@@ -25,38 +25,29 @@
 	[[NSFileManager defaultManager] removeItemAtPath:[URLToRemove path] error:nil];
 }
 
-- (void) assertStack
-{
-	NSLog(@"%@", _localManager.persistentStoreCoordinator);
-	NSLog(@"%@", _localManager.managedObjectContext);
-		
-	assertThat(_localManager.persistentStoreCoordinator, is(notNilValue()));
-	assertThat(_localManager.persistentStoreCoordinator.persistentStores, isNot(empty()));
-	assertThat(_localManager.managedObjectContext, is(notNilValue()));
-}
-
 - (void) testCreateDefaultCoreDataStack
-{	
-	[self assertStack];
-	
-	NSUInteger storeIndex = [_localManager.persistentStoreCoordinator.persistentStores indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
-		return [store.URL.lastPathComponent hasSuffix:@"sqlite"] && [store.type isEqualToString: NSSQLiteStoreType];
-	}];
-
-	assertThatUnsignedInteger(storeIndex, isNot(equalToInteger(NSNotFound)));
+{   
+    assertThat(_localManager.persistentStoreCoordinator, is(notNilValue()));
+	assertThat(_localManager.managedObjectContext, is(notNilValue()));
+    
+    NSUInteger storeIndex = [_localManager.persistentStoreCoordinator.persistentStores indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
+        return [store.URL.lastPathComponent hasSuffix:@"sqlite"] && [store.type isEqualToString: NSSQLiteStoreType];
+    }];
+    
+    assertThatUnsignedInteger(storeIndex, isNot(equalToInteger(NSNotFound)));
 }
 
 - (void) testCreateInMemoryCoreDataStack
 {
     _localManager.stackShouldUseInMemoryStore = YES;
-	
-	[self assertStack];
+    assertThat(_localManager.persistentStoreCoordinator, is(notNilValue()));
+	assertThat(_localManager.managedObjectContext, is(notNilValue()));
     
-	NSUInteger storeIndex = [_localManager.persistentStoreCoordinator.persistentStores indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
-		return [store.type isEqualToString: NSInMemoryStoreType];
-	}];
-	
-	assertThatUnsignedInteger(storeIndex, isNot(equalToInteger(NSNotFound)));
+    NSUInteger storeIndex = [_localManager.persistentStoreCoordinator.persistentStores indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
+        return [store.type isEqualToString: NSInMemoryStoreType];
+    }];
+    
+    assertThatUnsignedInteger(storeIndex, isNot(equalToInteger(NSNotFound)));
 }
 
 - (void) testCanSetAUserSpecifiedErrorHandler
@@ -107,19 +98,6 @@
 	[AZCoreRecordManager handleError:testError];
 	
 	assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
-}
-
-- (void) testLogsErrorsToLogger
-{
-	NSError *testError = [NSError errorWithDomain:@"Cocoa" code:1000 userInfo:nil];
-	id mockErrorHandler = [OCMockObject mockForProtocol:@protocol(AZCoreRecordErrorHandler)];
-	[[mockErrorHandler expect] handleError:testError];
-	
-	[AZCoreRecordManager setErrorDelegate: mockErrorHandler];
-	[AZCoreRecordManager setErrorHandler:NULL];
-	[AZCoreRecordManager handleError:testError];
-	
-	[mockErrorHandler verify];
 }
 
 @end

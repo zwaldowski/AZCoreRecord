@@ -26,29 +26,31 @@
 
 - (void) testDefaultCoodinatorWithSqlitePersistentStore
 {
-	NSPersistentStoreCoordinator *testCoordinator = [_localManager persistentStoreCoordinator];
-	
-	assertThatUnsignedInteger(testCoordinator.persistentStores.count, is(equalToUnsignedInteger(1)));
-
-	NSPersistentStore *store = [[testCoordinator persistentStores] objectAtIndex:0];
-	assertThat([store type], is(equalTo(NSSQLiteStoreType)));
+    NSPersistentStoreCoordinator *testCoordinator = _localManager.persistentStoreCoordinator;
+    
+    assertThat(testCoordinator.persistentStores, isNot(empty()));
+        
+    NSUInteger storeIndex = [_localManager.persistentStoreCoordinator.persistentStores indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
+        return [store.type isEqualToString: NSSQLiteStoreType];
+    }];
+    
+    assertThatUnsignedInteger(storeIndex, isNot(equalToInteger(NSNotFound)));
 }
 
 - (void) testCanAddAnInMemoryStoreToAnExistingCoordinator
 {
-	NSPersistentStoreCoordinator *testCoordinator = [_localManager persistentStoreCoordinator];
-	
-	assertThatUnsignedInteger([[testCoordinator persistentStores] count], is(equalToUnsignedInteger(1)));
-	
-	NSPersistentStore *firstStore = [[testCoordinator persistentStores] objectAtIndex:0];
-	assertThat([firstStore type], is(equalTo(NSSQLiteStoreType)));
-	
-	[testCoordinator addInMemoryStore];
-	
-	assertThatUnsignedInteger([[testCoordinator persistentStores] count], is(equalToUnsignedInteger(2)));
-	
-	NSPersistentStore *secondStore = [[testCoordinator persistentStores] objectAtIndex:1];
-	assertThat([secondStore type], is(equalTo(NSInMemoryStoreType)));
+    NSPersistentStoreCoordinator *testCoordinator = _localManager.persistentStoreCoordinator;
+    
+    assertThat(testCoordinator.persistentStores, isNot(empty()));
+    [testCoordinator addInMemoryStore];
+    
+    assertThatUnsignedInteger(testCoordinator.persistentStores.count, is(greaterThanOrEqualTo([NSNumber numberWithUnsignedInteger: 2])));
+    
+    NSUInteger storeIndex = [_localManager.persistentStoreCoordinator.persistentStores indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
+        return [store.type isEqualToString: NSInMemoryStoreType];
+    }];
+    
+    assertThatUnsignedInteger(storeIndex, isNot(equalToInteger(NSNotFound)));
 }
 
 @end
