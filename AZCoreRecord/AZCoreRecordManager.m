@@ -266,41 +266,59 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 }
 
 - (void)azcr_loadPersistentStores {
-    dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    dispatch_async(globalQueue, ^{
-		dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-        
-        NSString *localConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordLocalStoreConfigurationNameKey];
-        NSString *ubiquitousConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
-        NSURL *localURL = self.localStoreURL;
-        NSURL *fallbackURL = self.fallbackStoreURL;
-        NSURL *ubiquityURL = self.ubiquitousStoreURL;
-        NSURL *ubiquityContainer = [self.fileManager URLForUbiquityContainerIdentifier:nil];
-        
-        NSDictionary *options = (self.stackShouldUseUbiquity || self.stackShouldAutoMigrateStore) ? [self azcr_lightweightMigrationOptions] : [NSDictionary dictionary];
-        
-        if (localConfiguration.length) {
-            if (![self.fileManager fileExistsAtPath: localURL.path]) {
-                NSURL *bundleURL = [[NSBundle mainBundle] URLForResource: localURL.lastPathComponent.stringByDeletingPathExtension withExtension: localURL.pathExtension];
-                if (bundleURL) {
-                    NSError *error = nil;
-                    if (![self.fileManager copyItemAtURL: bundleURL toURL: localURL error: &error]) {
-                        [AZCoreRecordManager handleError: error];
-                        return;
-                    }
+    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+    
+    NSString *localConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordLocalStoreConfigurationNameKey];
+    NSString *ubiquitousConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
+    NSURL *localURL = self.localStoreURL;
+    NSURL *fallbackURL = self.fallbackStoreURL;
+    NSURL *ubiquityURL = self.ubiquitousStoreURL;
+    NSURL *ubiquityContainer = [self.fileManager URLForUbiquityContainerIdentifier:nil];
+    
+    NSDictionary *options = (self.stackShouldUseUbiquity || self.stackShouldAutoMigrateStore) ? [self azcr_lightweightMigrationOptions] : [NSDictionary dictionary];
+    
+    if (localConfiguration.length) {
+        if (![self.fileManager fileExistsAtPath: localURL.path]) {
+            NSURL *bundleURL = [[NSBundle mainBundle] URLForResource: localURL.lastPathComponent.stringByDeletingPathExtension withExtension: localURL.pathExtension];
+            if (bundleURL) {
+                NSError *error = nil;
+                if (![self.fileManager copyItemAtURL: bundleURL toURL: localURL error: &error]) {
+                    [AZCoreRecordManager handleError: error];
+                    return;
                 }
             }
-            
-            [self.persistentStoreCoordinator addStoreAtURL: localURL configuration: localConfiguration options: options];
         }
-		
-		BOOL fallback = NO;
-		NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-		
-		if (self.stackShouldUseUbiquity && ubiquityURL) {
-			[nc postNotificationName: AZCoreRecordManagerWillAddUbiquitousStoreNotification object: self];
-            
+        
+        [self.persistentStoreCoordinator addStoreAtURL: localURL configuration: localConfiguration options: options];
+    }
+    
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
+    void (^addFallback)(void) = ^{
+        
+        NSMutableDictionary *storeOptions = [options mutableCopy];
+        
+        if (self.stackShouldUseInMemoryStore)
+            [self.persistentStoreCoordinator addInMemoryStoreWithConfiguration: ubiquitousConfiguration options: storeOptions];
+        else
+            [self.persistentStoreCoordinator addStoreAtURL: fallbackURL configuration: ubiquitousConfiguration options: storeOptions];
+        
+        [nc postNotificationName: AZCoreRecordManagerDidAddFallbackStoreNotification object: self];
+        _ubiquityEnabled = NO;
+    };
+    
+    void (^finish)(void) = ^{
+        [nc postNotificationName: AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification object: self];
+        dispatch_semaphore_signal(self.semaphore);
+    };
+    
+    if (self.stackShouldUseUbiquity && ubiquityURL) {
+        [nc postNotificationName: AZCoreRecordManagerWillAddUbiquitousStoreNotification object: self];
+        
+        dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        dispatch_async(globalQueue, ^{
             NSMutableDictionary *storeOptions = [options mutableCopy];
+            BOOL fallback = NO;
             
             if (ubiquityContainer) {
                 [storeOptions setObject: @"UbiquitousStore" forKey: NSPersistentStoreUbiquitousContentNameKey];
@@ -311,31 +329,21 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
             }
             
             if ([self.persistentStoreCoordinator addStoreAtURL: ubiquityURL configuration: ubiquitousConfiguration options: storeOptions]) {
-				[nc postNotificationName: AZCoreRecordManagerDidAddUbiquitousStoreNotification object: self];
+                [nc postNotificationName: AZCoreRecordManagerDidAddUbiquitousStoreNotification object: self];
                 _ubiquityEnabled = YES;
             } else {
-				fallback = YES;
+                fallback = YES;
             }
-		} else {
-			fallback = YES;
-		}
-		
-		if (fallback) {
-            NSMutableDictionary *storeOptions = [options mutableCopy];
             
-            if (self.stackShouldUseInMemoryStore)
-                [self.persistentStoreCoordinator addInMemoryStoreWithConfiguration: ubiquitousConfiguration options: storeOptions];
-            else
-                [self.persistentStoreCoordinator addStoreAtURL: fallbackURL configuration: ubiquitousConfiguration options: storeOptions];
+            if (fallback)
+                addFallback();
             
-			[nc postNotificationName: AZCoreRecordManagerDidAddFallbackStoreNotification object: self];
-            _ubiquityEnabled = NO;
-		}
-        
-        [nc postNotificationName: AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification object: self];
-		
-		dispatch_semaphore_signal(self.semaphore);
-    });
+            finish();
+        });
+    } else {
+        addFallback();
+        finish();
+    }
 }
 
 - (void) azcr_resetStack
