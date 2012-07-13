@@ -15,12 +15,12 @@
     AZCoreRecordManager *_localManager;
 }
 
-- (void)setUpClass {
+- (void)setUp {
     _localManager = [[AZCoreRecordManager alloc] initWithStackName: @"TestStore.storefile"];
     _localManager.stackShouldUseInMemoryStore = YES;
 }
 
-- (void)tearDownClass {
+- (void)tearDown {
     _localManager = nil;
 }
 
@@ -33,7 +33,7 @@
 
 - (void) testCreateFetchRequestForEntity
 {
-	NSFetchRequest *testRequest = [SingleRelatedEntity requestAll];
+	NSFetchRequest *testRequest = [SingleRelatedEntity requestAllInContext: _localManager.managedObjectContext];
 	
 	assertThat([[testRequest entity] name], is(equalTo(NSStringFromClass([SingleRelatedEntity class]))));
 }
@@ -41,7 +41,7 @@
 - (void) testCanRequestFirstEntityWithPredicate
 {
 	NSPredicate *testPredicate = [NSPredicate predicateWithFormat:@"mappedStringAttribute = 'Test Predicate'"];
-	NSFetchRequest *testRequest = [SingleRelatedEntity requestFirstWithPredicate:testPredicate];
+	NSFetchRequest *testRequest = [SingleRelatedEntity requestFirstWithPredicate:testPredicate inContext: _localManager.managedObjectContext];
 
 	assertThatInteger([testRequest fetchLimit], is(equalToInteger(1)));
 	assertThat([testRequest predicate], is(equalTo([NSPredicate predicateWithFormat:@"mappedStringAttribute = 'Test Predicate'"])));
@@ -51,7 +51,7 @@
 
 - (void) testCreateRequestForFirstEntity
 {
-	NSFetchRequest *testRequest = [SingleRelatedEntity requestFirstWhere:@"mappedStringAttribute" equals:nil];
+	NSFetchRequest *testRequest = [SingleRelatedEntity requestFirstWhere:@"mappedStringAttribute" equals:nil inContext: _localManager.managedObjectContext];
 	
 	assertThat([[testRequest entity] name], is(equalTo(NSStringFromClass([SingleRelatedEntity class]))));
 	assertThatInteger([testRequest fetchLimit], is(equalToInteger(1)));
@@ -61,7 +61,7 @@
 
 - (void) testCanGetEntityDescriptionFromEntityClass
 {
-	NSEntityDescription *testDescription = [SingleRelatedEntity entityDescription];
+	NSEntityDescription *testDescription = [SingleRelatedEntity entityDescriptionInContext: _localManager.managedObjectContext];
 	assertThat(testDescription, is(notNilValue()));
 }
 
@@ -83,7 +83,7 @@
 	
 	assertThatBool([testEntity isDeleted], is(equalToBool(NO)));
 	
-	[testEntity delete];
+	[testEntity deleteInContext: _localManager.managedObjectContext];
 	
 	assertThat(testEntity, is(notNilValue()));
 	assertThatBool([testEntity isDeleted], is(equalToBool(YES)));
@@ -93,13 +93,15 @@
 
 - (void) createSampleData:(NSInteger)numberOfTestEntitiesToCreate
 {
+    NSManagedObjectContext *context = _localManager.managedObjectContext;
+    
 	for (int i = 0; i < numberOfTestEntitiesToCreate; i++)
 	{
-		SingleRelatedEntity *testEntity = [SingleRelatedEntity createInContext: _localManager.managedObjectContext];
+		SingleRelatedEntity *testEntity = [SingleRelatedEntity createInContext: context];
 		testEntity.mappedStringAttribute = [NSString stringWithFormat:@"%i", i / 5];
 	}
 	
-	[_localManager.managedObjectContext save];
+	[context save];
 }
 
 - (void) testCanSearchForNumberOfAllEntities
@@ -107,7 +109,7 @@
 	NSInteger numberOfTestEntitiesToCreate = 20;
 	[self createSampleData:numberOfTestEntitiesToCreate];
 	
-	assertThatInteger([SingleRelatedEntity countOfEntities], is(equalToInteger(numberOfTestEntitiesToCreate)));
+	assertThatInteger([SingleRelatedEntity countOfEntitiesInContext: _localManager.managedObjectContext], is(equalToInteger(numberOfTestEntitiesToCreate)));
 }
 
 - (void) testCanSearchForNumberOfEntitiesWithPredicate
@@ -116,7 +118,7 @@
 	[self createSampleData:numberOfTestEntitiesToCreate];
 
 	NSPredicate *searchFilter = [NSPredicate predicateWithFormat:@"mappedStringAttribute = '1'"];
-	assertThatInteger([SingleRelatedEntity countOfEntitiesWithPredicate:searchFilter], is(equalToInteger(5)));
+	assertThatInteger([SingleRelatedEntity countOfEntitiesWithPredicate:searchFilter inContext: _localManager.managedObjectContext], is(equalToInteger(5)));
 
 }
 
