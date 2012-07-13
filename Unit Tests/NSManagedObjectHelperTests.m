@@ -69,7 +69,7 @@
 
 - (void) testCanCreateEntityInstance
 {
-	id testEntity = [SingleRelatedEntity create];
+	id testEntity = [SingleRelatedEntity createInContext: _localManager.managedObjectContext];
 	
 	assertThat(testEntity, is(notNilValue()));
 }
@@ -78,8 +78,8 @@
 
 - (void) testCanDeleteEntityInstance
 {
-	id testEntity = [SingleRelatedEntity create];
-	[[NSManagedObjectContext defaultContext] save];
+	id testEntity = [SingleRelatedEntity createInContext: _localManager.managedObjectContext];
+	[_localManager.managedObjectContext save];
 	
 	assertThatBool([testEntity isDeleted], is(equalToBool(NO)));
 	
@@ -95,11 +95,11 @@
 {
 	for (int i = 0; i < numberOfTestEntitiesToCreate; i++)
 	{
-		SingleRelatedEntity *testEntity = [SingleRelatedEntity create];
+		SingleRelatedEntity *testEntity = [SingleRelatedEntity createInContext: _localManager.managedObjectContext];
 		testEntity.mappedStringAttribute = [NSString stringWithFormat:@"%i", i / 5];
 	}
 	
-	[[NSManagedObjectContext defaultContext] save];
+	[_localManager.managedObjectContext save];
 }
 
 - (void) testCanSearchForNumberOfAllEntities

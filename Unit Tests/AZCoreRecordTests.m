@@ -25,7 +25,7 @@
 	[[NSFileManager defaultManager] removeItemAtPath:[URLToRemove path] error:nil];
 }
 
-- (void) assertDefaultStack
+- (void) assertStack
 {
 	NSLog(@"%@", _localManager.persistentStoreCoordinator);
 	NSLog(@"%@", _localManager.managedObjectContext);
@@ -37,7 +37,7 @@
 
 - (void) testCreateDefaultCoreDataStack
 {	
-	[self assertDefaultStack];
+	[self assertStack];
 	
 	NSUInteger storeIndex = [[[NSPersistentStoreCoordinator defaultStoreCoordinator] persistentStores] indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
 		return [store.URL.lastPathComponent hasSuffix:@"sqlite"] && [store.type isEqualToString: NSSQLiteStoreType];
@@ -48,11 +48,11 @@
 
 - (void) testCreateInMemoryCoreDataStack
 {
-	[AZCoreRecordManager setDefaultStackShouldUseInMemoryStore:YES];
+    _localManager.stackShouldUseInMemoryStore = YES;
 	
-	[self assertDefaultStack];
-	
-	NSUInteger storeIndex = [[[NSPersistentStoreCoordinator defaultStoreCoordinator] persistentStores] indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
+	[self assertStack];
+    
+	NSUInteger storeIndex = [_localManager.persistentStoreCoordinator.persistentStores indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
 		return [store.type isEqualToString: NSInMemoryStoreType];
 	}];
 	

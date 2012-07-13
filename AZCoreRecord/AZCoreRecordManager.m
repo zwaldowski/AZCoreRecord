@@ -116,7 +116,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	if (!_managedObjectContext)
 	{
 		NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType: NSMainQueueConcurrencyType];
-		managedObjectContext.persistentStoreCoordinator = [NSPersistentStoreCoordinator defaultStoreCoordinator];
+		managedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
 		self.managedObjectContext = managedObjectContext;
 	}
 	
