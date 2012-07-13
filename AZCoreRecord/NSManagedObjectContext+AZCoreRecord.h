@@ -18,14 +18,13 @@ extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
 - (BOOL) save;
 - (BOOL) saveWithErrorHandler: (void (^)(NSError *)) errorCallback;
 
+- (id) existingObjectWithURI: (id) URI;
+- (id) existingObjectWithID: (NSManagedObjectID *) objectID;
+
 #pragma mark - Default Contexts
 
 + (NSManagedObjectContext *) defaultContext;
 + (NSManagedObjectContext *) contextForCurrentThread;
-
-#pragma mark - Context Factory Methods
-
-+ (NSManagedObjectContext *) contextWithStoreCoordinator: (NSPersistentStoreCoordinator *) coordinator;
 
 #pragma mark - Child Contexts
 

@@ -49,8 +49,7 @@ static NSUInteger defaultBatchSize = 20;
 }
 - (instancetype) inThreadContext 
 {
-	NSManagedObject *weakSelf = self;
-	return [weakSelf inContext: [NSManagedObjectContext contextForCurrentThread]];
+	return [self inContext: [NSManagedObjectContext contextForCurrentThread]];
 }
 
 - (void) reload
@@ -113,7 +112,7 @@ static NSUInteger defaultBatchSize = 20;
     NSEntityDescription *entity = [model.entitiesByName objectForKey: className];
     if (!entity) {
         NSArray *entities = model.entities;
-        NSUInteger index = [entities indexOfObjectPassingTest:^(NSEntityDescription *obj, NSUInteger idx, BOOL *stop) {
+        NSUInteger index = [entities indexOfObjectPassingTest:^(id obj, NSUInteger idx, BOOL *stop) {
             return [[obj managedObjectClassName] isEqualToString: className];
         }];
         
@@ -135,10 +134,6 @@ static NSUInteger defaultBatchSize = 20;
 {
 	if (!context)
 		context = [NSManagedObjectContext contextForCurrentThread];
-	
-	if ([self respondsToSelector: @selector(insertInManagedObjectContext:)]) 
-		return [self insertInManagedObjectContext: context];
-    
     NSEntityDescription *entity = [self entityDescriptionInContext: context];
     return [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:context];
 }
@@ -181,42 +176,6 @@ static NSUInteger defaultBatchSize = 20;
 	
 	NSArray *objects = [context executeFetchRequest: request error: NULL];
 	[objects makeObjectsPerformSelector:@selector(deleteInContext:) withObject:context];
-}
-
-#pragma mark - Specific Entity
-
-+ (id) existingObjectWithURI: (id) URI
-{
-	return [self existingObjectWithURI: URI inContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-
-+ (id) existingObjectWithURI: (id) URI inContext: (NSManagedObjectContext *) context
-{
-	NSParameterAssert(URI);
-	
-	if ([URI isKindOfClass:[NSString class]])
-		URI = [NSURL URLWithString:URI];
-	
-	if ([URI isKindOfClass:[NSURL class]])
-		URI = [context.persistentStoreCoordinator managedObjectIDForURIRepresentation:URI];
-	
-	if (!URI || ![URI isKindOfClass:[NSManagedObjectID class]])
-		return nil;
-	
-	return [self existingObjectWithID: URI inContext: context];
-}
-
-+ (id) existingObjectWithID: (NSManagedObjectID *)objectID
-{
-	return [self existingObjectWithID: objectID inContext: [NSManagedObjectContext contextForCurrentThread]];
-}
-
-+ (id) existingObjectWithID: (NSManagedObjectID *)objectID inContext: (NSManagedObjectContext *) context
-{
-	NSError *error = nil;
-	id ret = [context existingObjectWithID: objectID error: &error];
-	[AZCoreRecordManager handleError: error];
-	return ret;
 }
 
 #pragma mark - Entity Count
@@ -447,9 +406,7 @@ static NSUInteger defaultBatchSize = 20;
 	NSFetchRequest *request = [self requestFirstSortedBy: sortBy ascending: ascending predicate: searchTerm inContext: context];
 	request.propertiesToFetch = attributes;
 	NSArray *results = [context executeFetchRequest: request error: NULL];
-	if (!results.count)
-		return nil;
-	return [results lastObject];
+    return results.count ? results.lastObject : nil;
 }
 
 #pragma mark - Array-fetching Fetch Request Convenience Methods

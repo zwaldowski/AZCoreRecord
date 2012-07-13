@@ -43,6 +43,30 @@
 	return success;
 }
 
+- (id) existingObjectWithURI: (id) URI
+{
+    NSParameterAssert(URI);
+	
+	if ([URI isKindOfClass:[NSString class]])
+		URI = [NSURL URLWithString:URI];
+	
+	if ([URI isKindOfClass:[NSURL class]])
+		URI = [self.persistentStoreCoordinator managedObjectIDForURIRepresentation: URI];
+	
+	if (!URI || ![URI isKindOfClass:[NSManagedObjectID class]])
+		return nil;
+	
+	return [self existingObjectWithID: URI];
+}
+
+- (id) existingObjectWithID: (NSManagedObjectID *) objectID
+{
+	NSError *error = nil;
+	id ret = [self existingObjectWithID: objectID error: &error];
+	[AZCoreRecordManager handleError: error];
+	return ret;
+}
+
 #pragma mark - Default Contexts
 
 + (NSManagedObjectContext *) defaultContext
@@ -53,18 +77,6 @@
 + (NSManagedObjectContext *) contextForCurrentThread
 {
 	return [[AZCoreRecordManager sharedManager] contextForCurrentThread];
-}
-
-#pragma mark - Context Factory Methods
-
-+ (NSManagedObjectContext *) contextWithStoreCoordinator: (NSPersistentStoreCoordinator *) coordinator
-{
-	NSParameterAssert(coordinator != nil);
-	
-	NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType: NSConfinementConcurrencyType];
-	context.persistentStoreCoordinator = coordinator;
-	
-	return context;
 }
 
 #pragma mark - Child Contexts

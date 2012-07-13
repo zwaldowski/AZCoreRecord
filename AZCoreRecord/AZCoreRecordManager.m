@@ -338,8 +338,11 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 - (void) azcr_resetStack
 {
-	if (_managedObjectContext)
-		[self.managedObjectContext reset];
+	if (_managedObjectContext) {
+        [self.managedObjectContext performBlockAndWait:^{
+            [self.managedObjectContext reset];
+        }];
+    }
 	
 	if (_persistentStoreCoordinator) {
 		[self.persistentStoreCoordinator.persistentStores enumerateObjectsUsingBlock:^(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
