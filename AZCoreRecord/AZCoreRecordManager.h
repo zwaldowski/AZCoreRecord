@@ -27,7 +27,7 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 
 @interface AZCoreRecordManager : NSObject
 {
-@package
+@private
 	__weak id <AZCoreRecordErrorHandler> _errorDelegate;	
 	void (^_errorHandler)(NSError *);
 	
