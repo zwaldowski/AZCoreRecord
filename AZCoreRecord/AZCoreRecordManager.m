@@ -24,6 +24,7 @@
 NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification = @"AZCoreRecordManagerWillAddUbiquitousStoreNotification";
 NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification = @"AZCoreRecordManagerDidAddUbiquitousStoreNotification";
 NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRecordManagerDidAddFallbackStoreNotification";
+NSString *const AZCoreRecordManagerShouldRunDeduplicationNotification = @"AZCoreRecordManagerShouldRunDeduplicationNotification";
 NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification = @"AZCoreRecordDidFinishSeedingPersistentStoreNotification";
 
 NSString *const AZCoreRecordLocalStoreConfigurationNameKey = @"LocalStore";
@@ -48,6 +49,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 - (void) azcr_loadPersistentStores;
 - (void) azcr_resetStack;
 - (void) azcr_didChangeUbiquityIdentityNotification:(NSNotification *)note;
+- (void)azcr_didRecieveDeduplicationNotification:(NSNotification *)note;
 
 @end
 
@@ -161,6 +163,11 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 		}
 		
 		_persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
+        
+        NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+        [nc addObserver: self selector: @selector(azcr_didRecieveDeduplicationNotification:) name: AZCoreRecordDidFinishSeedingPersistentStoreNotification object: _persistentStoreCoordinator];
+        [nc addObserver: self selector: @selector(azcr_didRecieveDeduplicationNotification:) name: NSPersistentStoreDidImportUbiquitousContentChangesNotification object: _persistentStoreCoordinator];
+        
 		[self azcr_loadPersistentStores];
 	}
 	
@@ -281,6 +288,11 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
         dispatch_semaphore_signal(self.semaphore);
     });
 	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+}
+
+- (void)azcr_didRecieveDeduplicationNotification:(NSNotification *)note
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName: AZCoreRecordManagerShouldRunDeduplicationNotification object: self];
 }
 
 #pragma mark - Utilities
