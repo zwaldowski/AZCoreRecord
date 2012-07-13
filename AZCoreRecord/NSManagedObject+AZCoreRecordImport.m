@@ -19,7 +19,7 @@
 #import <Cocoa/Cocoa.h>
 #endif
 
-static id colorFromString(NSString *serializedColor)
+static id azcr_colorFromString(NSString *serializedColor)
 {
 	BOOL isRGB = [serializedColor hasPrefix: @"rgb"];
 	BOOL isHSB = [serializedColor hasPrefix: @"hsb"];
@@ -78,13 +78,14 @@ static id colorFromString(NSString *serializedColor)
 	return color;
 }
 
-static NSDate *dateAdjustForDST(NSDate *date)
+static NSDate *azcr_dateAdjustForDST(NSDate *date)
 {
 	NSTimeInterval dstOffset = [[NSTimeZone localTimeZone] daylightSavingTimeOffsetForDate: date];
 	NSDate *actualDate = [date dateByAddingTimeInterval: dstOffset];
 	return actualDate;
 }
-static NSDate *dateFromString(NSString *value, NSString *format)
+
+static NSDate *azcr_dateFromString(NSString *value, NSString *format)
 {
 	static dispatch_once_t onceToken;
 	static NSDateFormatter *helperFormatter;
@@ -99,14 +100,14 @@ static NSDate *dateFromString(NSString *value, NSString *format)
 	return [helperFormatter dateFromString: value];
 }
 
-static NSString *attributeNameFromString(NSString *value)
+static NSString *azcr_attributeNameFromString(NSString *value)
 {
 	NSString *firstCharacter = [[value substringToIndex: 1] capitalizedString];
 	value = [value stringByReplacingCharactersInRange: NSMakeRange(0, 1) withString: firstCharacter];
 	
 	return value;
 }
-static NSString *primaryKeyNameFromString(NSString *value)
+static NSString *azcr_primaryKeyNameFromString(NSString *value)
 {
 	NSString *firstCharacter = [[value substringToIndex: 1] lowercaseString];
 	value = [value stringByReplacingCharactersInRange: NSMakeRange(0, 1) withString: firstCharacter];
@@ -124,7 +125,7 @@ NSString *const AZCoreRecordImportClassNameKey = @"className";
 NSString *const AZCoreRecordImportPrimaryAttributeKey = @"primaryAttribute";
 NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 
-@implementation NSManagedObject (MagicalDataImport)
+@implementation NSManagedObject (AZCoreRecordImport)
 
 #pragma mark - Private Helper Methods
 
@@ -179,7 +180,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 		
 		NSEntityDescription *destinationEntity = relationshipInfo.destinationEntity;
 		NSString *primaryKeyName = [relationshipInfo.userInfo valueForKey: AZCoreRecordImportRelationshipPrimaryKey];
-		if (!primaryKeyName) primaryKeyName = primaryKeyNameFromString(relationshipInfo.destinationEntity.name);
+		if (!primaryKeyName) primaryKeyName = azcr_primaryKeyNameFromString(relationshipInfo.destinationEntity.name);
 		
 		NSAttributeDescription *primaryKeyAttribute = [destinationEntity.attributesByName valueForKey: primaryKeyName];
 		NSString *lookupKey = [primaryKeyAttribute.userInfo valueForKey: AZCoreRecordImportMapKey];
@@ -193,7 +194,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 
 	Class managedObjectClass = NSClassFromString([destination managedObjectClassName]);
 	NSString *primaryKeyName = [relationshipInfo.userInfo valueForKey: AZCoreRecordImportRelationshipPrimaryKey];
-	if (!primaryKeyName) primaryKeyName = primaryKeyNameFromString(relationshipInfo.destinationEntity.name);
+	if (!primaryKeyName) primaryKeyName = azcr_primaryKeyNameFromString(relationshipInfo.destinationEntity.name);
 	
 	id object = [managedObjectClass findFirstWhere: primaryKeyName equals: relatedValue inContext: self.managedObjectContext];
 	if ([singleRelatedObjectData isKindOfClass: [NSDictionary class]])
@@ -242,17 +243,17 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 
 		if (desiredAttributeType && [desiredAttributeType hasSuffix: @"Color"])
 		{
-			value = colorFromString(value);
+			value = azcr_colorFromString(value);
 		}
 		else if (attributeType == NSDateAttributeType)
 		{
 			if (![value isKindOfClass: [NSDate class]])
 			{
 				NSString *dateFormat = [attributeInfo.userInfo valueForKey: AZCoreRecordImportCustomDateFormat];
-				value = dateFromString([value description], dateFormat);
+				value = azcr_dateFromString([value description], dateFormat);
 			}
 
-			value = dateAdjustForDST(value);
+			value = azcr_dateAdjustForDST(value);
 		}
 
 		if (!value)	// If it just wasn't set, leave the default
@@ -349,7 +350,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 + (instancetype) updateFromDictionary: (id) objectData inContext: (NSManagedObjectContext *) context
 {
 	NSEntityDescription *entity = self.entityDescription;
-	NSString *attributeKey = [entity.userInfo valueForKey: AZCoreRecordImportPrimaryAttributeKey] ?: primaryKeyNameFromString(entity.name);
+	NSString *attributeKey = [entity.userInfo valueForKey: AZCoreRecordImportPrimaryAttributeKey] ?: azcr_primaryKeyNameFromString(entity.name);
 	
 	NSAttributeDescription *primaryAttribute = [entity.attributesByName valueForKey: attributeKey];
 	NSAssert3(primaryAttribute, @"Unable to determine primary attribute for %@. Specify either an attribute named %@ or the primary key in userInfo named '%@'", entity.name, attributeKey, AZCoreRecordImportPrimaryAttributeKey);

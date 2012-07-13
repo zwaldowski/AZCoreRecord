@@ -71,7 +71,7 @@ extern NSString *const AZCoreRecordImportClassNameKey;
 extern NSString *const AZCoreRecordImportPrimaryAttributeKey;
 extern NSString *const AZCoreRecordImportRelationshipPrimaryKey;
 
-@interface NSManagedObject (MagicalDataImport)
+@interface NSManagedObject (AZCoreRecordImport)
 
 /** Imports values into a managed object by using
  the contents of a dictionary, creating new model
