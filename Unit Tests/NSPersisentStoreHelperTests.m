@@ -38,8 +38,10 @@
 	NSString *defaultStoreName = @"FallbackStore.sqlite";
     NSString *testStorePath = [NSString stringWithFormat: @"%@/%@/%@", applicationLibraryDirectory, customStackName, defaultStoreName];
 	
+	BOOL folderWasCreated = [[NSFileManager defaultManager] createDirectoryAtPath: [testStorePath stringByDeletingLastPathComponent] withIntermediateDirectories: YES attributes: nil error: NULL];
 	BOOL fileWasCreated = [[NSFileManager defaultManager] createFileAtPath:testStorePath contents:[customStackName dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
 	
+	assertThatBool(folderWasCreated, is(equalToBool(YES)));
 	assertThatBool(fileWasCreated, is(equalToBool(YES)));
 	
 	NSURL *expectedFoundStoreUrl = [NSURL fileURLWithPath:testStorePath];
