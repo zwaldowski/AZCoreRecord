@@ -44,8 +44,10 @@
 
 - (void) testDataImport
 {
-	SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity = [[self testEntityClass] importFromDictionary:self.testEntityData];
-	[self.localManager.managedObjectContext save];
+    NSManagedObjectContext *context = self.localManager.managedObjectContext;
+    
+	SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity = [[self testEntityClass] importFromDictionary:self.testEntityData inContext:context];
+	[context save];
 	
 	assertThat(testEntity.mappedEntities, hasCountOf(4));
 	for (MappedEntity *relatedEntity in testEntity.mappedEntities)
@@ -53,17 +55,19 @@
 		assertThat(relatedEntity.sampleAttribute, containsString(@"test attribute"));
 	}
 	
-	assertThatInteger([SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey countOfEntities], is(equalToInteger(2)));
-	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(10)));
+	assertThatInteger([SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey countOfEntitiesInContext: context], is(equalToInteger(2)));
+	assertThatInteger([MappedEntity countOfEntitiesInContext: context], is(equalToInteger(10)));
 }
 
 - (void) testDataUpdateWithLookupInfoInDataSet
 {
-	SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity = [[self testEntityClass] updateFromDictionary:self.testEntityData];
-	[self.localManager.managedObjectContext save];
+    NSManagedObjectContext *context = self.localManager.managedObjectContext;
+    
+	SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity = [[self testEntityClass] updateFromDictionary:self.testEntityData inContext:context];
+	[context save];
 
-	assertThatInteger([SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey countOfEntities], is(equalToInteger(1)));
-	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(10)));
+	assertThatInteger([SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey countOfEntitiesInContext: context], is(equalToInteger(1)));
+	assertThatInteger([MappedEntity countOfEntitiesInContext: context], is(equalToInteger(10)));
 			   
 	assertThat(testEntity, is(notNilValue()));
 	assertThat(testEntity.testPrimaryKey, is(equalToInteger(84)));
@@ -72,8 +76,10 @@
 
 - (void) testDataUpdateWithoutLookupData
 {
+    NSManagedObjectContext *context = self.localManager.managedObjectContext;
+    
 	SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity =
-	[SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey findFirstWhere:@"testPrimaryKey" equals:[NSNumber numberWithInt:84]];
+	[SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey findFirstWhere:@"testPrimaryKey" equals:[NSNumber numberWithInt:84] inContext: context];
 	
 	assertThat(testEntity, is(notNilValue()));
 	

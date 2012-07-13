@@ -38,26 +38,30 @@
 
 - (void) testImportMappedEntityViaToOneRelationship
 {
-	SingleEntityRelatedToMappedEntityUsingDefaults *entity = [[self testEntityClass] importFromDictionary:self.testEntityData];
+    NSManagedObjectContext *context = self.localManager.managedObjectContext;
+    
+    SingleEntityRelatedToMappedEntityUsingDefaults *entity = [[self testEntityClass] importFromDictionary:self.testEntityData inContext: context];
 	
-	[self.localManager.managedObjectContext save];
+	[context save];
 
 	id testRelatedEntity = entity.mappedEntity;
 	
 	assertThat(testRelatedEntity, is(notNilValue()));
 	assertThat([testRelatedEntity sampleAttribute], containsString(@"sample json file"));
 	
-	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(2)));
+	assertThatInteger([MappedEntity countOfEntitiesInContext: context], is(equalToInteger(2)));
 }
 
 - (void) testUpdateMappedEntity
 {
-	SingleEntityRelatedToMappedEntityUsingDefaults *testEntity = 
-	[SingleEntityRelatedToMappedEntityUsingDefaults findFirstWhere:@"singleEntityRelatedToMappedEntityUsingDefaultsID" equals:[NSNumber numberWithInt:24]];
+    NSManagedObjectContext *context = self.localManager.managedObjectContext;
+    
+	SingleEntityRelatedToMappedEntityUsingDefaults *testEntity =
+	[SingleEntityRelatedToMappedEntityUsingDefaults findFirstWhere:@"singleEntityRelatedToMappedEntityUsingDefaultsID" equals:[NSNumber numberWithInt:24] inContext: context];
 	
 	[testEntity updateValuesFromDictionary:self.testEntityData];
 	
-	assertThatInteger([MappedEntity countOfEntities], is(equalToInteger(1)));
+	assertThatInteger([MappedEntity countOfEntitiesInContext: context], is(equalToInteger(1)));
 	
 	assertThat(testEntity, is(notNilValue()));
 	
