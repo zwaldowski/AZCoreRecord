@@ -526,27 +526,30 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 + (void) handleError: (NSError *) error
 {
-	if (!error) return;
-	
-	AZCoreRecordManager *shared = [self sharedManager];
-	
-	void (^block)(NSError *error) = shared.errorHandler;
-	if (block)
-	{
-		block(error);
-		return;
-	}
-	
-	id target = shared.errorDelegate;
-	if (target)
-	{
-		[target performSelector: @selector(handleError:) withObject: error];
-		return;
-	}
-	
+	if (!error)
+        return;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        AZCoreRecordManager *shared = [self sharedManager];
+        
+        void (^block)(NSError *error) = shared.errorHandler;
+        if (block)
+        {
+            block(error);
+            return;
+        }
+        
+        id target = shared.errorDelegate;
+        if (target)
+        {
+            [target performSelector: @selector(handleError:) withObject: error];
+            return;
+        }
+        
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
-	[[NSApplication sharedApplication] presentError: error];
-#endif
+        [[NSApplication sharedApplication] presentError: error];
+#endif  
+    });
 }
 
 + (void (^)(NSError *error)) errorHandler
