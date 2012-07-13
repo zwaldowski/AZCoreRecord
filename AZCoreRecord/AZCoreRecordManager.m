@@ -201,11 +201,13 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	static dispatch_once_t onceToken;
 	static NSURL *appSupportURL = nil;
 	dispatch_once(&onceToken, ^{
-		appSupportURL = [[self.fileManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] lastObject];
+		NSURL *appSupportRoot = [[self.fileManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] lastObject];
+        NSString *applicationName = [[[NSBundle mainBundle] infoDictionary] valueForKey:(NSString *)kCFBundleNameKey];
+        appSupportURL = [appSupportRoot URLByAppendingPathComponent: applicationName isDirectory: YES];
 	});
     
-	NSString *storeName = [self.stackName.lastPathComponent stringByDeletingPathExtension];
-	NSURL *storeDirectory = [appSupportURL URLByAppendingPathComponent: storeName isDirectory: YES];
+	NSString *storeName = self.stackName.lastPathComponent;
+	NSURL *storeDirectory = [storeName isEqualToString: appSupportURL.lastPathComponent] ? appSupportURL : [appSupportURL URLByAppendingPathComponent: storeName isDirectory: YES];
     
     if (![self.fileManager fileExistsAtPath: storeDirectory.path]) {
         NSError *error = nil;
