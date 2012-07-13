@@ -48,30 +48,34 @@
 
 - (void) seedWithPersistentStoreAtURL: (NSURL *) oldStoreURL usingBlock:(void(^)(NSManagedObjectContext *oldMOC, NSManagedObjectContext *newMOC))block {
 	NSParameterAssert(block);
-	
-    NSPersistentStoreCoordinator *oldPSC = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: self.managedObjectModel];
-	NSDictionary *oldPSOption = [NSDictionary dictionaryWithObject: [NSNumber numberWithBool: YES] forKey: NSReadOnlyPersistentStoreOption];
-	
-	__block NSString *configuration = nil;
-	[self.persistentStores enumerateObjectsUsingBlock:^(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
-		if ([obj.options objectForKey: NSPersistentStoreUbiquitousContentNameKey]) {
-			configuration = obj.configurationName;
-			*stop = YES;
-		}
-	}];
-	
-	if ([oldPSC addStoreAtURL: oldStoreURL configuration: configuration options: oldPSOption]) {
-		NSManagedObjectContext *oldMOC = [[NSManagedObjectContext alloc] init];
-        [oldMOC setPersistentStoreCoordinator: oldPSC];
+    
+    dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_async(globalQueue, ^{
         
-        NSManagedObjectContext *newMOC = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        [newMOC setPersistentStoreCoordinator: self];
-		
-		block(oldMOC, newMOC);
+        NSPersistentStoreCoordinator *oldPSC = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: self.managedObjectModel];
+        NSDictionary *oldPSOption = [NSDictionary dictionaryWithObject: [NSNumber numberWithBool: YES] forKey: NSReadOnlyPersistentStoreOption];
         
-        if ([newMOC hasChanges] && [newMOC save])
-			[newMOC reset];
-	}
+        __block NSString *configuration = nil;
+        [self.persistentStores enumerateObjectsUsingBlock:^(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
+            if ([obj.options objectForKey: NSPersistentStoreUbiquitousContentNameKey]) {
+                configuration = obj.configurationName;
+                *stop = YES;
+            }
+        }];
+        
+        if ([oldPSC addStoreAtURL: oldStoreURL configuration: configuration options: oldPSOption]) {
+            NSManagedObjectContext *oldMOC = [[NSManagedObjectContext alloc] init];
+            [oldMOC setPersistentStoreCoordinator: oldPSC];
+            
+            NSManagedObjectContext *newMOC = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+            [newMOC setPersistentStoreCoordinator: self];
+            
+            block(oldMOC, newMOC);
+            
+            if ([newMOC hasChanges] && [newMOC save])
+                [newMOC reset];
+        }
+    });
 }
 
 @end
