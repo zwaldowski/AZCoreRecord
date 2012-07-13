@@ -24,6 +24,7 @@
 NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification = @"AZCoreRecordManagerWillAddUbiquitousStoreNotification";
 NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification = @"AZCoreRecordManagerDidAddUbiquitousStoreNotification";
 NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRecordManagerDidAddFallbackStoreNotification";
+NSString *const AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification = @"AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification";
 NSString *const AZCoreRecordManagerShouldRunDeduplicationNotification = @"AZCoreRecordManagerShouldRunDeduplicationNotification";
 NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification = @"AZCoreRecordDidFinishSeedingPersistentStoreNotification";
 
@@ -138,12 +139,13 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 		[_managedObjectContext stopObservingUbiquitousChanges];
 	
 	_managedObjectContext = managedObjectContext;
-	
-	if (isUbiquitous && _managedObjectContext)
-		[_managedObjectContext startObservingUbiquitousChanges];
-	
-	if (_managedObjectContext)
+    
+    if (_managedObjectContext) {
+        if (isUbiquitous)
+            [_managedObjectContext startObservingUbiquitousChanges];
+        
 		[[NSNotificationCenter defaultCenter] addObserver: _managedObjectContext selector: @selector(save) name: key object: nil];
+    }
 }
 
 - (NSPersistentStoreCoordinator *) persistentStoreCoordinator
@@ -254,6 +256,8 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 			[nc postNotificationName: AZCoreRecordManagerDidAddFallbackStoreNotification object: self];
             _ubiquityEnabled = NO;
 		}
+        
+        [nc postNotificationName: AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification object: self];
 		
 		dispatch_semaphore_signal(self.loadSemaphore);
     });
@@ -265,11 +269,11 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 		[self.managedObjectContext reset];
 	
 	if (_persistentStoreCoordinator) {
-		__block NSError *error = nil;
 		[self.persistentStoreCoordinator.persistentStores enumerateObjectsUsingBlock:^(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
+            NSError *error = nil;
 			[self.persistentStoreCoordinator removePersistentStore: store error: &error];
+            [AZCoreRecordManager handleError: error];
 		}];
-		[AZCoreRecordManager handleError: error];
 	}
 }
 
@@ -310,13 +314,16 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	dispatch_once(&onceToken, ^{
 		appSupportURL = [[self.fileManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] lastObject];
 	});
+    
 	NSString *storeName = [self.stackName.lastPathComponent stringByDeletingPathExtension];
 	NSURL *storeDirectory = [appSupportURL URLByAppendingPathComponent: storeName isDirectory: YES];
+    
     if (![self.fileManager fileExistsAtPath: storeDirectory.path]) {
         NSError *error = nil;
         [self.fileManager createDirectoryAtURL: storeDirectory withIntermediateDirectories: YES attributes: nil error: &error];
-        [[self class] handleError: error];
+        [AZCoreRecordManager handleError: error];
     }
+    
 	return storeDirectory;
 }
 
@@ -324,12 +331,13 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 {
     if (!self.ubiquityToken.length)
         return nil;
+    
     NSURL *iCloudStoreURL = [self.stackStoreURL URLByAppendingPathComponent: self.ubiquityToken];
     
     if (![self.fileManager fileExistsAtPath: iCloudStoreURL.path]) {
         NSError *error = nil;
-        [self.fileManager createDirectoryAtURL:iCloudStoreURL withIntermediateDirectories:YES attributes:nil error:&error];
-        [[self class] handleError: error];
+        [self.fileManager createDirectoryAtURL: iCloudStoreURL withIntermediateDirectories: YES attributes: nil error: &error];
+        [AZCoreRecordManager handleError: error];
     }
     
     return [iCloudStoreURL URLByAppendingPathComponent: @"UbiquitousStore.sqlite"];

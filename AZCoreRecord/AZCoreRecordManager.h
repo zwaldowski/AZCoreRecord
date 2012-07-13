@@ -12,6 +12,7 @@
 extern NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification;
 extern NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification;
 extern NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification;
+extern NSString *const AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification;
 extern NSString *const AZCoreRecordManagerShouldRunDeduplicationNotification;
 extern NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification;
 
