@@ -24,6 +24,7 @@
 NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification = @"AZCoreRecordManagerWillAddUbiquitousStoreNotification";
 NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification = @"AZCoreRecordManagerDidAddUbiquitousStoreNotification";
 NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRecordManagerDidAddFallbackStoreNotification";
+NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification = @"AZCoreRecordDidFinishSeedingPersistentStoreNotification";
 
 NSString *const AZCoreRecordLocalStoreConfigurationNameKey = @"LocalStore";
 NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousStore";

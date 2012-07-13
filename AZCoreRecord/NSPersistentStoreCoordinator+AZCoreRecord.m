@@ -75,6 +75,8 @@
         
         if ([newMOC hasChanges] && [newMOC save])
             [newMOC reset];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName: AZCoreRecordDidFinishSeedingPersistentStoreNotification object: self];
     });
 }
 
