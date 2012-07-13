@@ -13,7 +13,6 @@
 #import "NSManagedObjectContext+AZCoreRecord.h"
 
 static NSUInteger defaultBatchSize = 20;
-static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 
 @interface NSManagedObject (AZCoreRecord_MOGenerator)
 
@@ -23,25 +22,6 @@ static NSString *const kURICodingKey = @"AZCoreRecordManagedObjectURI";
 @end
 
 @implementation NSManagedObject (AZCoreRecord)
-
-#pragma mark - NSCoding
-
-- (instancetype) initWithCoder: (NSCoder *) decoder
-{
-	NSPersistentStoreCoordinator *psc = [NSPersistentStoreCoordinator defaultStoreCoordinator];
-	NSURL *URI = [decoder decodeObjectForKey: kURICodingKey];
-	NSManagedObjectID *objectID = [psc managedObjectIDForURIRepresentation: URI];
-	
-	NSError *error = nil;
-	id ret = [[NSManagedObjectContext defaultContext] existingObjectWithID:objectID error:&error];
-	[AZCoreRecordManager handleError:error];
-	
-	return ret;
-}
-- (void) encodeWithCoder: (NSCoder *) coder
-{
-	[coder encodeObject: self.URI forKey: kURICodingKey];
-}
 
 #pragma mark - Instance Methods
 

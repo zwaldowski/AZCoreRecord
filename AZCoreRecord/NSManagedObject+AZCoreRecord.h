@@ -9,7 +9,7 @@
 
 #import <CoreData/CoreData.h>
 
-@interface NSManagedObject (AZCoreRecord) <NSCoding>
+@interface NSManagedObject (AZCoreRecord)
 
 #pragma mark - Instance Methods
 
