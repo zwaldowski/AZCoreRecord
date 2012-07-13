@@ -556,17 +556,17 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 #pragma mark - Data Commit
 
-+ (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *context)) block
+- (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *context)) block
 {
-	[[NSManagedObjectContext contextForCurrentThread] saveDataWithBlock: block];
+	[[self contextForCurrentThread] saveDataWithBlock: block];
 }
-+ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block
+- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block
 {
-	[[NSManagedObjectContext contextForCurrentThread] saveDataInBackgroundWithBlock: block completion: NULL];
+	[[self contextForCurrentThread] saveDataInBackgroundWithBlock: block completion: NULL];
 }
-+ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block completion: (void (^)(void)) callback
+- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block completion: (void (^)(void)) callback
 {
-	[[NSManagedObjectContext contextForCurrentThread] saveDataInBackgroundWithBlock: block completion: callback];
+	[[self contextForCurrentThread] saveDataInBackgroundWithBlock: block completion: callback];
 }
 
 @end

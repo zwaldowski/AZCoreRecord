@@ -25,8 +25,8 @@
 
 - (void) testCanCreateContextForCurrentThead
 {
-	NSManagedObjectContext *firstContext = [NSManagedObjectContext contextForCurrentThread];
-	NSManagedObjectContext *secondContext = [NSManagedObjectContext contextForCurrentThread];
+	NSManagedObjectContext *firstContext = [_localManager contextForCurrentThread];
+	NSManagedObjectContext *secondContext = [_localManager contextForCurrentThread];
 	
 	assertThat(firstContext, is(equalTo(secondContext)));
 }

@@ -109,9 +109,9 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 
 #pragma mark - Data Commit
 
-+ (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *context)) block;
+- (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *context)) block;
 
-+ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block;
-+ (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block completion: (void (^)(void)) callback;
+- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block;
+- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block completion: (void (^)(void)) callback;
 
 @end
