@@ -124,7 +124,7 @@
 
 + (void) resetDefaultContext
 {
-	NSManagedObjectContext *context = [NSManagedObjectContext defaultContext];
+	NSManagedObjectContext *context = [self defaultContext];
 	[context performBlockAndWait: ^{
 		[context reset];
 	}];

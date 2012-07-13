@@ -294,10 +294,13 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 
 + (instancetype) importFromDictionary: (id) objectData
 {
-	return [self importFromDictionary: objectData inContext: [NSManagedObjectContext defaultContext]];
+	return [self importFromDictionary: objectData inContext: nil];
 }
 + (instancetype) importFromDictionary: (id) objectData inContext: (NSManagedObjectContext *) context
 {
+	if (!context)
+		context = [NSManagedObjectContext defaultContext];
+    
 	NSManagedObject *managedObject = [self createInContext: context];
 	[managedObject importValuesFromDictionary: objectData];
 	return managedObject;
@@ -345,10 +348,13 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 
 + (instancetype) updateFromDictionary: (id) objectData
 {
-	return [self updateFromDictionary: objectData inContext: [NSManagedObjectContext defaultContext]];
+	return [self updateFromDictionary: objectData inContext: nil];
 }
 + (instancetype) updateFromDictionary: (id) objectData inContext: (NSManagedObjectContext *) context
 {
+	if (!context)
+		context = [NSManagedObjectContext defaultContext];
+    
 	NSEntityDescription *entity = self.entityDescription;
 	NSString *attributeKey = [entity.userInfo valueForKey: AZCoreRecordImportPrimaryAttributeKey] ?: azcr_primaryKeyNameFromString(entity.name);
 	
@@ -416,13 +422,16 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 
 + (NSArray *) importFromArray: (NSArray *) listOfObjectData
 {
-	return [self importFromArray: listOfObjectData inContext: [NSManagedObjectContext defaultContext]];
+	return [self importFromArray: listOfObjectData inContext: nil];
 }
 + (NSArray *) importFromArray: (NSArray *) listOfObjectData inContext: (NSManagedObjectContext *) context
 {
+	if (!context)
+		context = [NSManagedObjectContext defaultContext];
+    
 	__block NSArray *objectIDs = nil;
 	
-	[AZCoreRecordManager saveDataWithBlock: ^(NSManagedObjectContext *localContext) {
+	[context saveDataWithBlock: ^(NSManagedObjectContext *localContext) {
 		NSMutableArray *objects = [NSMutableArray array];
 		
 		[listOfObjectData enumerateObjectsUsingBlock: ^(NSDictionary *objectData, NSUInteger idx, BOOL *stop) {
@@ -440,13 +449,16 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 
 + (NSArray *) updateFromArray: (NSArray *) listOfObjectData
 {
-	return [self updateFromArray: listOfObjectData inContext: [NSManagedObjectContext defaultContext]];
+	return [self updateFromArray: listOfObjectData inContext: nil];
 }
 + (NSArray *) updateFromArray: (NSArray *) listOfObjectData inContext: (NSManagedObjectContext *) context
 {
+	if (!context)
+		context = [NSManagedObjectContext defaultContext];
+    
 	__block NSArray *objectIDs = nil;
 	
-	[AZCoreRecordManager saveDataWithBlock: ^(NSManagedObjectContext *localContext) {
+	[context saveDataWithBlock: ^(NSManagedObjectContext *localContext) {
 		NSMutableArray *objects = [NSMutableArray array];
 		
 		[listOfObjectData enumerateObjectsUsingBlock: ^(id objectData, NSUInteger idx, BOOL *stop) {

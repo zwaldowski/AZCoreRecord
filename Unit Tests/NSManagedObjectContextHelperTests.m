@@ -33,7 +33,7 @@
 
 - (void) testCanCreateChildContext
 {
-	NSManagedObjectContext *defaultContext = [NSManagedObjectContext defaultContext];
+	NSManagedObjectContext *defaultContext = _localManager.managedObjectContext;
 	NSManagedObjectContext *childContext = [defaultContext newChildContext];
 	
 	assertThat(childContext.parentContext, is(equalTo(defaultContext)));

@@ -39,7 +39,7 @@
 {	
 	[self assertStack];
 	
-	NSUInteger storeIndex = [[[NSPersistentStoreCoordinator defaultStoreCoordinator] persistentStores] indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
+	NSUInteger storeIndex = [_localManager.persistentStoreCoordinator.persistentStores indexOfObjectPassingTest:^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
 		return [store.URL.lastPathComponent hasSuffix:@"sqlite"] && [store.type isEqualToString: NSSQLiteStoreType];
 	}];
 
