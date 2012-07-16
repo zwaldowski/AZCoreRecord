@@ -7,6 +7,6 @@
 //  Copyright 2012 Alexsander Akers & Zachary Waldowski. All rights reserved.
 //
 
-@interface NSManagedObjectContextHelperTests : GHTestCase
+@interface NSManagedObjectContextHelperTests : GHAsyncTestCase
 
 @end

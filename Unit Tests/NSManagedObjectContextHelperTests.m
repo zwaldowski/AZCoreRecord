@@ -25,10 +25,18 @@
 
 - (void) testCanCreateContextForCurrentThead
 {
-	NSManagedObjectContext *firstContext = [_localManager contextForCurrentThread];
-	NSManagedObjectContext *secondContext = [_localManager contextForCurrentThread];
-	
-	assertThat(firstContext, is(equalTo(secondContext)));
+    [self prepare];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        NSManagedObjectContext *firstContext = [_localManager contextForCurrentThread];
+        NSManagedObjectContext *secondContext = [_localManager contextForCurrentThread];
+        
+        assertThat(firstContext, is(equalTo(secondContext)));
+        
+        [self notify:kGHUnitWaitStatusSuccess forSelector:@selector(testCanCreateContextForCurrentThead)];
+    });
+    
+    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:1.0];
 }
 
 - (void) testCanCreateChildContext
