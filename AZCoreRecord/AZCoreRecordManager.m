@@ -39,6 +39,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 @property (nonatomic, strong) NSFileManager *fileManager;
 
 @property (nonatomic) dispatch_semaphore_t semaphore;
+@property (nonatomic) dispatch_semaphore_t loadSemaphore;
 
 @property (nonatomic, strong, readwrite) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readwrite) NSPersistentStoreCoordinator *persistentStoreCoordinator;
@@ -49,7 +50,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 - (void) azcr_loadPersistentStores;
 - (void) azcr_resetStack;
 - (void) azcr_didChangeUbiquityIdentityNotification:(NSNotification *)note;
-- (void)azcr_didRecieveDeduplicationNotification:(NSNotification *)note;
+- (void) azcr_didRecieveDeduplicationNotification:(NSNotification *)note;
 
 @end
 
@@ -58,6 +59,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 @synthesize errorDelegate = _errorDelegate;
 @synthesize errorHandler = _errorHandler;
 @synthesize semaphore = _semaphore;
+@synthesize loadSemaphore = _loadSemaphore;
 @synthesize fileManager = _fileManager;
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
@@ -79,7 +81,8 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	if ((self = [super init]))
 	{
 		_stackName = [name copy];
-		self.semaphore = dispatch_semaphore_create(1);
+		_semaphore = dispatch_semaphore_create(1);
+        _loadSemaphore = dispatch_semaphore_create(1);
         self.fileManager = [NSFileManager new];
 		self.ubiquityToken = [[AZCoreRecordUbiquitySentinel sharedSentinel] ubiquityIdentityToken];
 		
@@ -103,7 +106,8 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 - (void) dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
-	dispatch_release(self.semaphore), self.semaphore = NULL;
+	dispatch_release(_semaphore);
+	dispatch_release(_loadSemaphore);
 }
 
 #pragma mark - Stack storage
@@ -181,13 +185,22 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	
 	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
     
-	NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+    NSThread *thread = [NSThread currentThread];
+	NSMutableDictionary *dict = [thread threadDictionary];
     NSString *key = self.stackName;
 	context = [dict objectForKey: self.stackName];
 	if (!context)
 	{
 		context = [self.managedObjectContext newChildContext];
 		[dict setObject: context forKey: key];
+        
+        __block id token = nil;
+        token = [[NSNotificationCenter defaultCenter] addObserverForName: NSThreadWillExitNotification object: thread queue: nil usingBlock:^(NSNotification *note) {
+            NSThread *thread = [note object];
+            NSManagedObjectContext *context = [thread.threadDictionary objectForKey: key];
+            [context reset];
+            [[NSNotificationCenter defaultCenter] removeObserver: token];
+        }];
 	}
 	
 	dispatch_semaphore_signal(self.semaphore);
@@ -266,7 +279,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 }
 
 - (void)azcr_loadPersistentStores {
-    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+    dispatch_semaphore_wait(self.loadSemaphore, DISPATCH_TIME_FOREVER);
     
     NSString *localConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordLocalStoreConfigurationNameKey];
     NSString *ubiquitousConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
@@ -309,7 +322,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
     
     void (^finish)(void) = ^{
         [nc postNotificationName: AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification object: self];
-        dispatch_semaphore_signal(self.semaphore);
+        dispatch_semaphore_signal(self.loadSemaphore);
     };
     
     if (self.stackShouldUseUbiquity && ubiquityURL) {
@@ -377,7 +390,6 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
         
         dispatch_semaphore_signal(self.semaphore);
     });
-	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
 }
 
 - (void)azcr_didRecieveDeduplicationNotification:(NSNotification *)note
