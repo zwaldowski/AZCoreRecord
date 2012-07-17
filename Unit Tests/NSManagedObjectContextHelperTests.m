@@ -23,18 +23,40 @@
     _localManager = nil;
 }
 
-- (void) testCanCreateContextForCurrentThead
+- (void) testCanCreateContextForCurrentThreadUsingGCD
 {
     [self prepare];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        NSManagedObjectContext *defaultContext = [_localManager managedObjectContext];
         NSManagedObjectContext *firstContext = [_localManager contextForCurrentThread];
         NSManagedObjectContext *secondContext = [_localManager contextForCurrentThread];
         
+        assertThat(firstContext, isNot(equalTo(defaultContext)));
         assertThat(firstContext, is(equalTo(secondContext)));
         
-        [self notify:kGHUnitWaitStatusSuccess forSelector:@selector(testCanCreateContextForCurrentThead)];
+        [self notify:kGHUnitWaitStatusSuccess forSelector:@selector(testCanCreateContextForCurrentThreadUsingGCD)];
     });
+    
+    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:3.0];
+}
+
+- (void) testCanCreateContextForCurrentThreadUsingQueues
+{
+    [self prepare];
+    
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    [queue addOperationWithBlock:^{
+        NSManagedObjectContext *defaultContext = [_localManager managedObjectContext];
+        NSManagedObjectContext *firstContext = [_localManager contextForCurrentThread];
+        NSManagedObjectContext *secondContext = [_localManager contextForCurrentThread];
+        
+        assertThat(firstContext, isNot(equalTo(defaultContext)));
+        assertThat(firstContext, is(notNilValue()));
+        assertThat(firstContext, is(equalTo(secondContext)));
+        
+        [self notify:kGHUnitWaitStatusSuccess forSelector:@selector(testCanCreateContextForCurrentThreadUsingQueues)];
+    }];
     
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:1.0];
 }

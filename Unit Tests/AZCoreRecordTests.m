@@ -83,7 +83,9 @@
 	NSError *testError = [NSError errorWithDomain:@"AZCoreRecordUnitTests" code:1000 userInfo:nil];
 	[AZCoreRecordManager handleError:testError];
 	
-	assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
+    dispatch_async(dispatch_get_main_queue(), ^{
+        assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
+    });
 }
 
 - (void) testUserSpecifiedErrorHandlerBlockIsTriggeredOnError
@@ -96,8 +98,10 @@
 	
 	NSError *testError = [NSError errorWithDomain:@"AZCoreRecordUnitTests" code:1000 userInfo:nil];
 	[AZCoreRecordManager handleError:testError];
-	
-	assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
+    });
 }
 
 @end
