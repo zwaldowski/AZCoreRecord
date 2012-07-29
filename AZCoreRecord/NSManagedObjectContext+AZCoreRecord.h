@@ -8,6 +8,7 @@
 //
 
 #import <CoreData/CoreData.h>
+#import "AZCoreRecordManager.h"
 
 extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
 
@@ -16,7 +17,7 @@ extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
 #pragma mark - Instance Methods
 
 - (BOOL) save;
-- (BOOL) saveWithErrorHandler: (void (^)(NSError *)) errorCallback;
+- (BOOL) saveWithErrorHandler: (AZCoreRecordErrorBlock) errorCallback;
 
 - (id) existingObjectWithURI: (id) URI;
 - (id) existingObjectWithID: (NSManagedObjectID *) objectID;
@@ -42,9 +43,9 @@ extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
 
 #pragma mark - Data saving
 
-- (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *context)) block;
+- (void) saveDataWithBlock: (AZCoreRecordContextBlock) block;
 
-- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block;
-- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block completion: (void (^)(void)) callback;
+- (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block;
+- (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block completion: (AZCoreRecordVoidBlock) callback;
 
 @end

@@ -124,7 +124,7 @@
 
 #pragma mark - Data saving
 
-- (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *context)) block
+- (void) saveDataWithBlock: (AZCoreRecordContextBlock) block
 {
 	NSParameterAssert(block != nil);
 	
@@ -141,12 +141,12 @@
 	self.mergePolicy = backupMergePolicy;
 }
 
-- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block
+- (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block
 {
 	[self saveDataInBackgroundWithBlock: block completion: NULL];
 }
 
-- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *)) block completion: (void (^)(void)) callback
+- (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block completion: (AZCoreRecordVoidBlock) callback
 {
 	NSParameterAssert(block != nil);
 	

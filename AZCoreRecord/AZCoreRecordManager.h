@@ -23,6 +23,7 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 typedef NSDictionary *(^AZCoreRecordDeduplicationHandlerBlock)(NSArray *conflictingManagedObjects, NSArray *identityAttributes);
 typedef void (^AZCoreRecordContextBlock)(NSManagedObjectContext *context);
 typedef void (^AZCoreRecordErrorBlock)(NSError *error);
+typedef void (^AZCoreRecordSeedBlock)(NSManagedObjectContext *oldMOC, NSManagedObjectContext *newMOC);
 typedef void (^AZCoreRecordVoidBlock)(void);
 
 @protocol AZCoreRecordErrorHandler <NSObject>

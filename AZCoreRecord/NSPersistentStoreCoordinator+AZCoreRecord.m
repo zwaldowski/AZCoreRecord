@@ -46,7 +46,8 @@
 
 #pragma mark - Seeding stores
 
-- (void) seedWithPersistentStoreAtURL: (NSURL *) oldStoreURL usingBlock:(void(^)(NSManagedObjectContext *oldMOC, NSManagedObjectContext *newMOC))block {
+- (void) seedWithPersistentStoreAtURL: (NSURL *) oldStoreURL usingBlock: (AZCoreRecordSeedBlock) block
+{
 	NSParameterAssert(block);
 	
 	dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);

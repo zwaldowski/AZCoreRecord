@@ -8,6 +8,7 @@
 //
 
 #import <CoreData/CoreData.h>
+#import "AZCoreRecordManager.h"
 
 @interface NSPersistentStoreCoordinator (AZCoreRecord)
 
@@ -24,6 +25,6 @@
 
 #pragma mark - Seeding stores
 
-- (void) seedWithPersistentStoreAtURL: (NSURL *) oldStoreURL usingBlock:(void(^)(NSManagedObjectContext *oldMOC, NSManagedObjectContext *newMOC))block;
+- (void) seedWithPersistentStoreAtURL: (NSURL *) oldStoreURL usingBlock: (AZCoreRecordSeedBlock) block;
 
 @end
