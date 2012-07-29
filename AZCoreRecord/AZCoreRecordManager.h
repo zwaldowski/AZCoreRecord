@@ -20,6 +20,11 @@ extern NSString *const AZCoreRecordDeduplicationIdentityAttributeKey;
 extern NSString *const AZCoreRecordLocalStoreConfigurationNameKey;
 extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 
+typedef NSDictionary *(^AZCoreRecordDeduplicationHandlerBlock)(NSArray *conflictingManagedObjects, NSArray *identityAttributes);
+typedef void (^AZCoreRecordContextBlock)(NSManagedObjectContext *context);
+typedef void (^AZCoreRecordErrorBlock)(NSError *error);
+typedef void (^AZCoreRecordVoidBlock)(void);
+
 @protocol AZCoreRecordErrorHandler <NSObject>
 @required
 
@@ -31,7 +36,7 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 {
 @private
 	__weak id <AZCoreRecordErrorHandler> _errorDelegate;	
-	void (^_errorHandler)(NSError *);
+	AZCoreRecordErrorBlock _errorHandler;
 	
 	dispatch_semaphore_t _semaphore;
 	
@@ -101,23 +106,23 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 
 #pragma mark - Deduplication
 
-- (void) registerConflictResolverForEntityName: (NSString *) entityName withHandler: (NSDictionary *(^)(NSArray *conflictingManagedObjects, NSArray *identityAttributes)) handler;
+- (void) registerDeduplicationHandler: (AZCoreRecordDeduplicationHandlerBlock) handler forEntityName: (NSString *) entityName includeSubentities: (BOOL) includeSubentities;
 
 #pragma mark - Error Handling
 
 + (void) handleError: (NSError *) error;
 
-+ (void (^)(NSError *error)) errorHandler;
-+ (void) setErrorHandler: (void (^)(NSError *error)) block;
++ (AZCoreRecordErrorBlock) errorHandler;
++ (void) setErrorHandler: (AZCoreRecordErrorBlock) block;
 
 + (id <AZCoreRecordErrorHandler>) errorDelegate;
 + (void) setErrorDelegate: (id <AZCoreRecordErrorHandler>) target;
 
 #pragma mark - Data Commit
 
-- (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *context)) block;
+- (void) saveDataWithBlock: (AZCoreRecordContextBlock) block;
 
-- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block;
-- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block completion: (void (^)(void)) callback;
+- (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block;
+- (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block completion: (AZCoreRecordVoidBlock) callback;
 
 @end

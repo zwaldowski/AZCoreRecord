@@ -288,11 +288,21 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName: AZCoreRecordManagerShouldRunDeduplicationNotification object: self];
 	
+	if (!self.conflictResolutionHandlers.count)
+		return;
+	
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 		dispatch_semaphore_wait(self.loadSemaphore, DISPATCH_TIME_FOREVER);
 		
 		[self saveDataInBackgroundWithBlock: ^(NSManagedObjectContext *context) {
-			[self.conflictResolutionHandlers enumerateKeysAndObjectsUsingBlock: ^(NSString *entityName, NSDictionary *(^handler)(NSArray *conflictingManagedObjects, NSArray *identityAttributes), BOOL *stop) {
+			[self.conflictResolutionHandlers enumerateKeysAndObjectsUsingBlock: ^(NSString *entityName, AZCoreRecordDeduplicationHandlerBlock handler, BOOL *stop) {
+				BOOL includesSubentities = NO;
+				if ([entityName hasPrefix: @"+"])
+				{
+					includesSubentities = YES;
+					entityName = [entityName substringFromIndex: 1];
+				}
+				
 				NSEntityDescription *entityDescription = [context.persistentStoreCoordinator.managedObjectModel.entitiesByName objectForKey: entityName];
 				NSArray *identityAttributes = [[entityDescription.userInfo objectForKey: AZCoreRecordDeduplicationIdentityAttributeKey] componentsSeparatedByString: @","];
 				
@@ -300,6 +310,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 				fetchRequest.entity = entityDescription;
 				fetchRequest.fetchBatchSize = [NSManagedObject defaultBatchSize];
 				fetchRequest.includesPendingChanges = NO;
+				fetchRequest.includesSubentities = includesSubentities;
 				fetchRequest.predicate = [NSPredicate predicateWithFormat: @"(SUBQUERY(%@, $x, count:($x) > 0).@count == %d)", identityAttributes, identityAttributes.count];
 				
 				NSError *error;
@@ -584,10 +595,12 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 #pragma mark - Deduplication
 
-- (void) registerConflictResolverForEntityName: (NSString *) entityName withHandler: (NSDictionary *(^)(NSArray *conflictingManagedObjects, NSArray *identityAttributes)) handler
+- (void) registerDeduplicationHandler: (AZCoreRecordDeduplicationHandlerBlock) handler forEntityName: (NSString *) entityName includeSubentities: (BOOL) includeSubentities
 {
 	NSParameterAssert(entityName != nil);
 	NSParameterAssert(handler != nil);
+	
+	if (includeSubentities) entityName = [@"+" stringByAppendingString: entityName];
 	[self.conflictResolutionHandlers setObject: [handler copy] forKey: entityName];
 }
 
@@ -621,11 +634,11 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	});
 }
 
-+ (void (^)(NSError *error)) errorHandler
++ (AZCoreRecordErrorBlock) errorHandler
 {
 	return [[self sharedManager] errorHandler];
 }
-+ (void) setErrorHandler: (void (^)(NSError *error)) block
++ (void) setErrorHandler: (AZCoreRecordErrorBlock) block
 {
 	[[self sharedManager] setErrorHandler: block];
 }
@@ -641,15 +654,15 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 #pragma mark - Data Commit
 
-- (void) saveDataWithBlock: (void(^)(NSManagedObjectContext *context)) block
+- (void) saveDataWithBlock: (AZCoreRecordContextBlock) block
 {
 	[[self contextForCurrentThread] saveDataWithBlock: block];
 }
-- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block
+- (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block
 {
 	[[self contextForCurrentThread] saveDataInBackgroundWithBlock: block completion: NULL];
 }
-- (void) saveDataInBackgroundWithBlock: (void (^)(NSManagedObjectContext *context)) block completion: (void (^)(void)) callback
+- (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block completion: (void (^)(void)) callback
 {
 	[[self contextForCurrentThread] saveDataInBackgroundWithBlock: block completion: callback];
 }

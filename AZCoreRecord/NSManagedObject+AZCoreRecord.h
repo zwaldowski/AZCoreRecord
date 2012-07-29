@@ -8,6 +8,7 @@
 //
 
 #import <CoreData/CoreData.h>
+#import "AZCoreRecordManager.h"
 
 @interface NSManagedObject (AZCoreRecord)
 
@@ -57,7 +58,7 @@
 
 #pragma mark - Deduplication
 
-+ (void) registerConflictResolverWithHandler: (NSDictionary *(^)(NSArray *conflictingManagedObjects, NSArray *identityAttributes)) handler;
++ (void) registerDeduplicationHandler: (AZCoreRecordDeduplicationHandlerBlock) handler includeSubentities: (BOOL) includeSubentities;
 
 #pragma mark - Singleton-returning Fetch Request Factory Methods
 

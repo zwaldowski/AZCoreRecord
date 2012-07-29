@@ -207,10 +207,10 @@ static NSUInteger defaultBatchSize = 20;
 
 #pragma mark - Deduplication
 
-+ (void) registerConflictResolverWithHandler: (NSDictionary *(^)(NSArray *conflictingManagedObjects, NSArray *identityAttributes)) handler
++ (void) registerDeduplicationHandler: (NSDictionary *(^)(NSArray *conflictingManagedObjects, NSArray *identityAttributes)) handler includeSubentities: (BOOL) includeSubentities
 {
 	AZCoreRecordManager *manager = [AZCoreRecordManager sharedManager];
-	[manager registerConflictResolverForEntityName: [self entityDescriptionInContext: manager.managedObjectContext].name withHandler: handler];
+	[manager registerDeduplicationHandler: handler forEntityName: [self entityDescriptionInContext: manager.managedObjectContext].name includeSubentities: includeSubentities];
 }
 
 #pragma mark - Singleton-returning Fetch Request Factory Methods
