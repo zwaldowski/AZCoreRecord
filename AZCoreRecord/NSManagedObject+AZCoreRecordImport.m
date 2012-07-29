@@ -39,7 +39,7 @@ static id azcr_colorFromString(NSString *serializedColor)
 	{
 		[colorScanner scanCharactersFromSet: delimiters intoString: NULL];
 #if CGFLOAT_IS_DOUBLE
-		[colorScanner scanDouble: componentValue];
+		[colorScanner scanDouble: component];
 #else
 		[colorScanner scanFloat: component];
 #endif
@@ -66,11 +66,11 @@ static id azcr_colorFromString(NSString *serializedColor)
 #else
 	if (isHSB || isHSV)
 	{
-		color = [NSColor colorWithDeviceHue: componentValues[0] saturation: componentValues[1] brightness: componentValues[2] alpha: componentValues[3]];
+		color = [NSColor colorWithDeviceHue: components[0] saturation: components[1] brightness: components[2] alpha: components[3]];
 	}
 	else
 	{
-		color = [NSColor colorWithDeviceRed: componentValues[0] green: componentValues[1] blue: componentValues[2] alpha: componentValues[3]];
+		color = [NSColor colorWithDeviceRed: components[0] green: components[1] blue: components[2] alpha: components[3]];
 	}
 #endif
 

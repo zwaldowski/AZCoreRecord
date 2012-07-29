@@ -156,7 +156,7 @@
 	self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
 	localContext.mergePolicy = NSOverwriteMergePolicy;
 	
-	[localContext performBlock: ^{
+	[self performBlock: ^{
 		block(localContext);
 		
 		[localContext save];

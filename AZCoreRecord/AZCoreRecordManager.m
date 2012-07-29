@@ -47,7 +47,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 @property (nonatomic, strong) NSMutableDictionary *conflictResolutionHandlers;
 @property (nonatomic, strong, readwrite) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readwrite) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (nonatomic, strong, readwrite) NSString *ubiquityToken;
+@property (nonatomic, strong, readwrite) id <NSObject, NSCopying, NSCoding> ubiquityToken;
 
 - (NSDictionary *) azcr_lightweightMigrationOptions;
 
@@ -203,7 +203,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	if (!self.stackShouldUseUbiquity)
 		return NO;
 	
-	return self.ubiquityToken.length && !![self.fileManager URLForUbiquityContainerIdentifier: nil];
+	return [(NSData *) self.ubiquityToken length] && !![self.fileManager URLForUbiquityContainerIdentifier: nil];
 }
 
 - (NSURL *) fallbackStoreURL
@@ -238,10 +238,32 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 }
 - (NSURL *) ubiquitousStoreURL
 {
-	if (!self.ubiquityToken.length)
+	if (![(NSData *) self.ubiquityToken length])
 		return nil;
 	
-	NSURL *iCloudStoreURL = [self.stackStoreURL URLByAppendingPathComponent: self.ubiquityToken];
+	NSURL *tokenURL = [self.stackStoreURL URLByAppendingPathComponent: @"TokenFoldersData.plist"];
+	NSData *tokenData = [NSData dataWithContentsOfURL: tokenURL];
+	
+	NSMutableDictionary *foldersByToken = nil;
+	
+	if (tokenData)
+		foldersByToken = [NSKeyedUnarchiver unarchiveObjectWithData: tokenData];
+	else
+		foldersByToken = [NSMutableDictionary dictionary];
+	
+	NSString *storeDirectoryUUID = [foldersByToken objectForKey: self.ubiquityToken];
+	if (!storeDirectoryUUID)
+	{
+		CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
+		storeDirectoryUUID = (__bridge_transfer NSString *) CFUUIDCreateString(kCFAllocatorDefault, uuid);
+		CFRelease(uuid);
+		
+		[foldersByToken setObject: storeDirectoryUUID forKey: self.ubiquityToken];
+		tokenData = [NSKeyedArchiver archivedDataWithRootObject: foldersByToken];
+		[tokenData writeToFile: tokenURL.path atomically: YES];
+	}
+	
+	NSURL *iCloudStoreURL = [self.stackStoreURL URLByAppendingPathComponent: storeDirectoryUUID];
 	
 	if (![self.fileManager fileExistsAtPath: iCloudStoreURL.path])
 	{
@@ -306,40 +328,79 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 				NSEntityDescription *entityDescription = [context.persistentStoreCoordinator.managedObjectModel.entitiesByName objectForKey: entityName];
 				NSArray *identityAttributes = [[entityDescription.userInfo objectForKey: AZCoreRecordDeduplicationIdentityAttributeKey] componentsSeparatedByString: @","];
 				
-				NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-				fetchRequest.entity = entityDescription;
-				fetchRequest.fetchBatchSize = [NSManagedObject defaultBatchSize];
-				fetchRequest.includesPendingChanges = NO;
-				fetchRequest.includesSubentities = includesSubentities;
-				fetchRequest.predicate = [NSPredicate predicateWithFormat: @"(SUBQUERY(%@, $x, count:($x) > 0).@count == %d)", identityAttributes, identityAttributes.count];
+				NSFetchRequest *masterFetchRequest = [[NSFetchRequest alloc] init];
+				masterFetchRequest.entity = entityDescription;
+				masterFetchRequest.fetchBatchSize = [NSManagedObject defaultBatchSize];
+				masterFetchRequest.includesPendingChanges = NO;
+				masterFetchRequest.includesSubentities = includesSubentities;
+				masterFetchRequest.resultType = NSDictionaryResultType;
+				
+				NSMutableArray *propertiesToFetch = [NSMutableArray arrayWithCapacity: identityAttributes.count * 2];
+				NSMutableArray *propertiesToGroupBy = [NSMutableArray arrayWithCapacity: identityAttributes.count];
+				
+				[identityAttributes enumerateObjectsUsingBlock: ^(NSString *identityAttribute, NSUInteger idx, BOOL *stop) {
+					NSAttributeDescription *attributeDescription = [entityDescription.propertiesByName objectForKey: identityAttribute];
+					[propertiesToFetch addObject: attributeDescription];
+					[propertiesToGroupBy addObject: attributeDescription];
+					
+					NSExpressionDescription *countExpressionDescription = [[NSExpressionDescription alloc] init];
+					countExpressionDescription.name = [NSString stringWithFormat: @"%@Count", identityAttribute];
+					countExpressionDescription.expression = [NSExpression expressionWithFormat: @"count:(%K)", identityAttribute];
+					countExpressionDescription.expressionResultType = NSInteger64AttributeType;
+					[propertiesToFetch addObject: countExpressionDescription];
+				}];
+				
+				masterFetchRequest.propertiesToFetch = propertiesToFetch;
+				masterFetchRequest.propertiesToGroupBy = propertiesToGroupBy;
 				
 				NSError *error;
-				NSMutableArray *duplicateManagedObjects = [[context executeFetchRequest: fetchRequest error: &error] mutableCopy];
+				NSMutableArray *dictionaryResults = [[context executeFetchRequest: masterFetchRequest error: &error] mutableCopy];
 				[AZCoreRecordManager handleError: error];
 				
-				while (duplicateManagedObjects.count)
-				{
-					NSManagedObject *managedObject = [duplicateManagedObjects objectAtIndex: 0];
+				NSFetchRequest *fetchRequestTemplate = [[NSFetchRequest alloc] init];
+				fetchRequestTemplate.entity = entityDescription;
+				fetchRequestTemplate.fetchBatchSize = [NSManagedObject defaultBatchSize];
+				fetchRequestTemplate.includesPendingChanges = NO;
+				fetchRequestTemplate.includesSubentities = includesSubentities;
+
+				[dictionaryResults enumerateObjectsUsingBlock: ^(NSDictionary *dictionaryResult, NSUInteger _idx, BOOL *stop) {
+					__block BOOL hasDuplicates = YES;
+					__block NSUInteger idx = 0;
+					[dictionaryResult enumerateKeysAndObjectsUsingBlock: ^(NSString *propertyDescriptionName, NSNumber *value, BOOL *stop) {
+						if (idx % 2 != 0 && [value integerValue] <= 1)
+						{
+							hasDuplicates = NO;
+							*stop = YES;
+						}
+						
+						++idx;
+					}];
+					
+					if (!hasDuplicates)
+						return;
 					
 					NSMutableArray *subpredicates = [NSMutableArray arrayWithCapacity: identityAttributes.count];
 					[identityAttributes enumerateObjectsUsingBlock: ^(NSString *identityAttribute, NSUInteger idx, BOOL *stop) {
-						NSPredicate *subpredicate = [NSPredicate predicateWithFormat: @"%K == %@", identityAttribute, [managedObject valueForKey: identityAttribute]];
+						NSPredicate *subpredicate = [NSPredicate predicateWithFormat: @"%K == %@", identityAttribute, [dictionaryResult valueForKey: identityAttribute]];
 						[subpredicates addObject: subpredicate];
 					}];
 					
-					NSPredicate *compoundPredicate = [NSCompoundPredicate andPredicateWithSubpredicates: subpredicates];;;
-					NSArray *duplicateGroup = [duplicateManagedObjects filteredArrayUsingPredicate: compoundPredicate];
+					NSFetchRequest *fetchRequest = [fetchRequestTemplate copy];
+					fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates: subpredicates];;
+					
+					NSError *error;
+					NSArray *duplicateGroup = [context executeFetchRequest: fetchRequest error: &error];
+					[AZCoreRecordManager handleError: error];
 					
 					NSDictionary *attributesDictionary = handler(duplicateGroup, identityAttributes);
 					if (attributesDictionary.count)
 					{
 						[duplicateGroup makeObjectsPerformSelector: @selector(deleteInContext:) withObject: context];
-						[duplicateManagedObjects removeObjectsInArray: duplicateGroup];
 						
 						NSManagedObject *resultingObject = [[NSManagedObject alloc] initWithEntity: entityDescription insertIntoManagedObjectContext: context];
 						[resultingObject updateValuesFromDictionary: attributesDictionary];
 					}
-				}
+				}];
 			}];
 		} completion: ^{
 			// LASTLY, signal the load semaphore
@@ -656,15 +717,15 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 - (void) saveDataWithBlock: (AZCoreRecordContextBlock) block
 {
-	[[self contextForCurrentThread] saveDataWithBlock: block];
+	[self.managedObjectContext saveDataWithBlock: block];
 }
 - (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block
 {
-	[[self contextForCurrentThread] saveDataInBackgroundWithBlock: block completion: NULL];
+	[self.managedObjectContext saveDataInBackgroundWithBlock: block completion: NULL];
 }
 - (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block completion: (void (^)(void)) callback
 {
-	[[self contextForCurrentThread] saveDataInBackgroundWithBlock: block completion: callback];
+	[self.managedObjectContext saveDataInBackgroundWithBlock: block completion: callback];
 }
 
 @end

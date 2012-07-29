@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		000C4315146F86FD006174F3 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C721C84313D0C6460097AB6F /* OCMock.framework */; };
 		000C4316146F8931006174F3 /* AZCoreRecordImportTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = C7913B9C13FAFC13007E09CC /* AZCoreRecordImportTestCase.m */; };
+		0073872715C5E27700F7DD56 /* Deduplication.json in Resources */ = {isa = PBXBuildFile; fileRef = 0073872615C5E27600F7DD56 /* Deduplication.json */; };
+		0073872815C5E27700F7DD56 /* Deduplication.json in Resources */ = {isa = PBXBuildFile; fileRef = 0073872615C5E27600F7DD56 /* Deduplication.json */; };
 		6C1CA768149835FF009EF494 /* SingleEntityWithNoRelationships.json in Resources */ = {isa = PBXBuildFile; fileRef = C7E736DE1402FE64005657C9 /* SingleEntityWithNoRelationships.json */; };
 		6C89C14C1498406800591F9C /* OCHamcrest.framework in Copy OCHamcrest Framework */ = {isa = PBXBuildFile; fileRef = C721C84213D0C6460097AB6F /* OCHamcrest.framework */; };
 		6C93DA4D149522350074327E /* NSManagedObject+AZCoreRecordImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C93DA42149522350074327E /* NSManagedObject+AZCoreRecordImport.m */; };
@@ -183,6 +185,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0073872615C5E27600F7DD56 /* Deduplication.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = Deduplication.json; path = "Unit Tests/Fixtures/Deduplication.json"; sourceTree = "<group>"; };
 		6C93DA41149522350074327E /* NSManagedObject+AZCoreRecordImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+AZCoreRecordImport.h"; sourceTree = "<group>"; };
 		6C93DA42149522350074327E /* NSManagedObject+AZCoreRecordImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+AZCoreRecordImport.m"; sourceTree = "<group>"; };
 		6C93DA43149522350074327E /* NSManagedObject+AZCoreRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+AZCoreRecord.h"; sourceTree = "<group>"; };
@@ -623,6 +626,7 @@
 				C7913BAE13FB1E11007E09CC /* SingleEntityRelatedToMappedEntityWithNestedMappedAttributes.json */,
 				C78F8FD213FDC2B600549DD8 /* SingleEntityRelatedToMappedEntityWithSecondaryMappings.json */,
 				C7381275141037E80054EEF0 /* SingleEntityRelatedToManyMappedEntitiesUsingListOfPrimaryKeys.json */,
+				0073872615C5E27600F7DD56 /* Deduplication.json */,
 			);
 			name = "Sample Data Files";
 			sourceTree = "<group>";
@@ -830,6 +834,7 @@
 				C76AF7ED13DBC09800CE2E05 /* SampleJSONDataForImport.json in Resources */,
 				6C1CA768149835FF009EF494 /* SingleEntityWithNoRelationships.json in Resources */,
 				C76AF82A13DBEE5A00CE2E05 /* SingleRelatedEntity.json in Resources */,
+				0073872715C5E27700F7DD56 /* Deduplication.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -847,6 +852,7 @@
 				C78F8FD313FDC2B600549DD8 /* SingleEntityRelatedToMappedEntityWithSecondaryMappings.json in Resources */,
 				C7E736DF1402FE64005657C9 /* SingleEntityWithNoRelationships.json in Resources */,
 				C738127B141039900054EEF0 /* SingleEntityRelatedToManyMappedEntitiesUsingListOfPrimaryKeys.json in Resources */,
+				0073872815C5E27700F7DD56 /* Deduplication.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

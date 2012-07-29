@@ -9,6 +9,8 @@
 
 #import "AZCoreRecordTests.h"
 #import "AZCoreRecordManager.h"
+#import "FixtureHelpers.h"
+#import "SingleEntityWithNoRelationships.h"
 
 @implementation AZCoreRecordTests {
     AZCoreRecordManager *_localManager;
@@ -102,6 +104,20 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         assertThatBool(errorHandlerWasCalled_, is(equalToBool(YES)));
     });
+}
+
+- (void) testDeduplication
+{
+	NSArray *data = [FixtureHelpers dataFromJSONFixtureNamed: @"Deduplication"];
+	[SingleEntityWithNoRelationships importFromArray: data inContext: _localManager.managedObjectContext];
+	[_localManager.managedObjectContext save];
+	
+	[_localManager registerDeduplicationHandler: ^NSDictionary *(NSArray *conflictingManagedObjects, NSArray *identityAttributes) {
+		NSLog(@"%@", conflictingManagedObjects);
+		return nil;
+	} forEntityName: @"SingleEntityWithNoRelationships"	includeSubentities: NO];
+	
+	[_localManager performSelector: @selector(azcr_didRecieveDeduplicationNotification:) withObject: nil];
 }
 
 @end

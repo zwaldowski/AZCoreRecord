@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1480" systemVersion="12A248" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1803" systemVersion="12A269" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="AbstractRelatedEntity" representedClassName="AbstractRelatedEntity" isAbstract="YES">
         <attribute name="sampleBaseAttribute" optional="YES" attributeType="String">
             <userInfo/>
@@ -63,7 +63,9 @@
         <attribute name="stringTestAttribute" optional="YES" attributeType="String">
             <userInfo/>
         </attribute>
-        <userInfo/>
+        <userInfo>
+            <entry key="identityAttribute" value="int64TestAttribute,booleanTestAttribute,decimalTestAttribute"/>
+        </userInfo>
     </entity>
     <entity name="SingleRelatedEntity" representedClassName="SingleRelatedEntity">
         <attribute name="mappedStringAttribute" optional="YES" attributeType="String" syncable="YES"/>

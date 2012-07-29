@@ -43,6 +43,7 @@ typedef void (^AZCoreRecordVoidBlock)(void);
 	BOOL _stackShouldAutoMigrate;
 	BOOL _stackShouldUseUbiquity;
 	BOOL _stackShouldUseInMemoryStore;
+	id _ubiquityToken;
 	NSString *_stackName;
 	NSString *_stackModelName;
 	NSURL *_stackModelURL;
@@ -51,7 +52,6 @@ typedef void (^AZCoreRecordVoidBlock)(void);
 	
 	NSManagedObjectContext *_managedObjectContext;
 	NSPersistentStoreCoordinator *_persistentStoreCoordinator;
-	NSString *_ubiquityToken;
 }
 
 - (id)initWithStackName: (NSString *) name;
@@ -62,7 +62,7 @@ typedef void (^AZCoreRecordVoidBlock)(void);
 
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (nonatomic, strong, readonly) NSString *ubiquityToken;
+@property (nonatomic, strong, readonly) id <NSObject, NSCopying, NSCoding> ubiquityToken;
 
 - (NSManagedObjectContext *)contextForCurrentThread;
 
