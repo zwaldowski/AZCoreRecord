@@ -106,22 +106,22 @@ static NSUInteger defaultBatchSize = 20;
 	
 	if ([self respondsToSelector: @selector(entityInManagedObjectContext:)]) 
 		return [self performSelector: @selector(entityInManagedObjectContext:) withObject: context];
-    
-    NSString *className = NSStringFromClass(self);
-    NSManagedObjectModel *model = [[context persistentStoreCoordinator] managedObjectModel];
-    NSEntityDescription *entity = [model.entitiesByName objectForKey: className];
-    if (!entity) {
-        NSArray *entities = model.entities;
-        NSUInteger index = [entities indexOfObjectPassingTest:^(id obj, NSUInteger idx, BOOL *stop) {
-            return [[obj managedObjectClassName] isEqualToString: className];
-        }];
-        
-        if (index == NSNotFound)
-            return nil;
-        
-        entity = [entities objectAtIndex: index];
-    }
-    return entity;
+	
+	NSString *className = NSStringFromClass(self);
+	NSManagedObjectModel *model = [[context persistentStoreCoordinator] managedObjectModel];
+	NSEntityDescription *entity = [model.entitiesByName objectForKey: className];
+	if (!entity) {
+		NSArray *entities = model.entities;
+		NSUInteger index = [entities indexOfObjectPassingTest:^(id obj, NSUInteger idx, BOOL *stop) {
+			return [[obj managedObjectClassName] isEqualToString: className];
+		}];
+		
+		if (index == NSNotFound)
+			return nil;
+		
+		entity = [entities objectAtIndex: index];
+	}
+	return entity;
 }
 
 #pragma mark - Entity Creation
@@ -134,8 +134,8 @@ static NSUInteger defaultBatchSize = 20;
 {
 	if (!context)
 		context = [NSManagedObjectContext contextForCurrentThread];
-    NSEntityDescription *entity = [self entityDescriptionInContext: context];
-    return [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:context];
+	NSEntityDescription *entity = [self entityDescriptionInContext: context];
+	return [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:context];
 }
 
 #pragma mark - Entity deletion
@@ -170,7 +170,7 @@ static NSUInteger defaultBatchSize = 20;
 {
 	if (!context)
 		context = [NSManagedObjectContext defaultContext];
-    
+	
 	NSFetchRequest *request = [self requestAllWithPredicate: predicate inContext: context];
 	request.includesPropertyValues = NO;
 	
@@ -414,7 +414,7 @@ static NSUInteger defaultBatchSize = 20;
 	NSFetchRequest *request = [self requestFirstSortedBy: sortBy ascending: ascending predicate: searchTerm inContext: context];
 	request.propertiesToFetch = attributes;
 	NSArray *results = [context executeFetchRequest: request error: NULL];
-    return results.count ? results.lastObject : nil;
+	return results.count ? results.lastObject : nil;
 }
 
 #pragma mark - Array-fetching Fetch Request Convenience Methods

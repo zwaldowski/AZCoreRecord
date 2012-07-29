@@ -19,8 +19,8 @@
 - (BOOL) performFetch
 {
 	NSError *error = nil;
-    BOOL saved = [self performFetch: &error];
-    [AZCoreRecordManager handleError: error];
+	BOOL saved = [self performFetch: &error];
+	[AZCoreRecordManager handleError: error];
 	return saved;
 }
 
@@ -39,9 +39,9 @@
 }
 + (NSFetchedResultsController *) fetchedResultsControllerForRequest: (NSFetchRequest *) request groupedBy: (NSString *) group inContext: (NSManagedObjectContext *) context
 {
-    if (!context)
-        context = [NSManagedObjectContext contextForCurrentThread];
-    
+	if (!context)
+		context = [NSManagedObjectContext contextForCurrentThread];
+	
 	NSString *cacheName = nil;
 #if !TARGET_IPHONE_SIMULATOR
 	cacheName = [NSString stringWithFormat: @"AZCoreRecordCache-%@", [request entityName]];

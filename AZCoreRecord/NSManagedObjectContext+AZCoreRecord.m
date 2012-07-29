@@ -45,7 +45,7 @@
 
 - (id) existingObjectWithURI: (id) URI
 {
-    NSParameterAssert(URI);
+	NSParameterAssert(URI);
 	
 	if ([URI isKindOfClass:[NSString class]])
 		URI = [NSURL URLWithString:URI];
@@ -71,7 +71,7 @@
 
 + (NSManagedObjectContext *) defaultContext
 {
-    return [[AZCoreRecordManager sharedManager] managedObjectContext];
+	return [[AZCoreRecordManager sharedManager] managedObjectContext];
 }
 
 + (NSManagedObjectContext *) contextForCurrentThread

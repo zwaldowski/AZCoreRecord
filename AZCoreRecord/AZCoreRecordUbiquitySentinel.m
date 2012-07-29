@@ -8,6 +8,7 @@
 //
 
 #import "AZCoreRecordUbiquitySentinel.h"
+#import <CommonCrypto/CommonCrypto.h>
 #import <CoreData/CoreData.h>
 
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
@@ -31,6 +32,8 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 @property (nonatomic, copy) NSURL *ubiquityURL;
 @property (nonatomic, strong) NSMetadataQuery *devicesListMetadataQuery;
 @property (nonatomic, strong) NSFileManager *fileManager;
+
+- (BOOL) nativelySupportsUbiquityIdentityToken;
 
 - (void) devicesListDidUpdate: (NSNotification *) note;
 - (void) startMonitoringDevicesList;
@@ -66,12 +69,16 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 
 - (void) dealloc
 {
-    [self stopMonitoringDevicesList];
+	[self stopMonitoringDevicesList];
 }
 + (void) load
 {
 	@autoreleasepool
 	{
+		AZCoreRecordUbiquitySentinel *sentinel = [AZCoreRecordUbiquitySentinel sharedSentinel];
+		if ([sentinel nativelySupportsUbiquityIdentityToken])
+			return;
+		
 		NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 		[nc addObserver: [self sharedSentinel] selector: @selector(updateFromPersistentStoreCoordinatorNotification:) name: NSPersistentStoreCoordinatorStoresDidChangeNotification object: nil];
 		
@@ -83,8 +90,8 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 		id resume = NSApplicationDidBecomeActiveNotification;
 #endif
 		
-		[nc addObserver: [self sharedSentinel] selector: @selector(stopMonitoringDevicesList) name: termination object: nil];
-		[nc addObserver: [self sharedSentinel] selector: @selector(updateDevicesList) name: resume object: nil];
+		[nc addObserver: sentinel selector: @selector(stopMonitoringDevicesList) name: termination object: nil];
+		[nc addObserver: sentinel selector: @selector(updateDevicesList) name: resume object: nil];
 	}
 }
 
@@ -94,46 +101,46 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 {
 	NSParameterAssert(block);
 	
-    NSError *error;
-    NSNumber *downloaded;
-    if (![URL getResourceValue: &downloaded forKey: NSURLUbiquitousItemIsDownloadedKey error: &error])
+	NSError *error;
+	NSNumber *downloaded;
+	if (![URL getResourceValue: &downloaded forKey: NSURLUbiquitousItemIsDownloadedKey error: &error])
 	{
-        // Resource doesn't exist
-        block(YES, nil);
-        return;
-    }
-    
-    if (!downloaded.boolValue)
+		// Resource doesn't exist
+		block(YES, nil);
+		return;
+	}
+	
+	if (!downloaded.boolValue)
 	{
-        NSNumber *downloading;
-        if (![URL getResourceValue: &downloading forKey: NSURLUbiquitousItemIsDownloadingKey error: &error])
+		NSNumber *downloading;
+		if (![URL getResourceValue: &downloading forKey: NSURLUbiquitousItemIsDownloadingKey error: &error])
 		{
-            block(NO, error);
-            return;
-        }
-        
-        if (!downloading.boolValue)
+			block(NO, error);
+			return;
+		}
+		
+		if (!downloading.boolValue)
 		{
-            if (![self.fileManager startDownloadingUbiquitousItemAtURL: URL error:&error])
+			if (![self.fileManager startDownloadingUbiquitousItemAtURL: URL error:&error])
 			{
-                block(NO, error);
-                return;
-            }
-        }
+				block(NO, error);
+				return;
+			}
+		}
 		
-        // Download not complete. Schedule another check.
-        dispatch_queue_t queue = dispatch_get_current_queue();
-        dispatch_retain(queue);
+		// Download not complete. Schedule another check.
+		dispatch_queue_t queue = dispatch_get_current_queue();
+		dispatch_retain(queue);
 		
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), queue, ^{
-            [self syncURLWithCloud: URL completion: [block copy]];
-            dispatch_release(queue);
-        });
-    }
-    else
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), queue, ^{
+			[self syncURLWithCloud: URL completion: [block copy]];
+			dispatch_release(queue);
+		});
+	}
+	else
 	{
-        block(YES, nil);
-    }
+		block(YES, nil);
+	}
 }
 
 #pragma mark - Internal
@@ -149,23 +156,23 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 }
 - (void) stopMonitoringDevicesList
 {
-    [NSFileCoordinator removeFilePresenter:self];
+	[NSFileCoordinator removeFilePresenter:self];
 	
-    [self.devicesListMetadataQuery disableUpdates];
-    [self.devicesListMetadataQuery stopQuery];
+	[self.devicesListMetadataQuery disableUpdates];
+	[self.devicesListMetadataQuery stopQuery];
 	
-    [[NSNotificationCenter defaultCenter] removeObserver: self];
+	[[NSNotificationCenter defaultCenter] removeObserver: self];
 	
-    self.devicesListMetadataQuery = nil;
+	self.devicesListMetadataQuery = nil;
 }
 
 #pragma mark - Notifications
 
 - (void) devicesListDidUpdate: (NSNotification *) note
 {
-    if (self.haveSentResetNotification || self.performingDeviceRegistrationCheck) return;
-    [self.devicesListMetadataQuery disableUpdates];
-    self.performingDeviceRegistrationCheck = YES;
+	if (self.haveSentResetNotification || self.performingDeviceRegistrationCheck) return;
+	[self.devicesListMetadataQuery disableUpdates];
+	self.performingDeviceRegistrationCheck = YES;
 	
 	dispatch_queue_t completionQueue = dispatch_get_current_queue();
 	dispatch_retain(completionQueue);
@@ -175,7 +182,7 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 		NSFileCoordinator *coordinator = [[NSFileCoordinator alloc] initWithFilePresenter: self];
 		[coordinator coordinateReadingItemAtURL: url options: 0 error: NULL byAccessor: ^(NSURL *readURL) {
 			NSArray *devices = [NSArray arrayWithContentsOfURL: readURL];
-			NSString *deviceId = [self ubiquityIdentityToken];
+			id deviceId = [self ubiquityIdentityToken];
 			BOOL deviceIsRegistered = [devices containsObject: deviceId];
 			dispatch_async(completionQueue, ^{
 				self.performingDeviceRegistrationCheck = NO;
@@ -200,36 +207,36 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 	if (!self.ubiquityAvailable)
 		return;
 	
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		[self syncURLWithCloud: self.presentedItemURL completion: ^(BOOL success, NSError *error) {
-            if (!success) return;
-            
-            __block BOOL updated = NO;
-            __block NSMutableArray *devices = nil;
-            NSFileCoordinator *coordinator = [[NSFileCoordinator alloc] initWithFilePresenter: self];
-            [coordinator coordinateReadingItemAtURL: self.presentedItemURL options: 0 error: NULL byAccessor: ^(NSURL *readURL) {
-                devices = [NSMutableArray arrayWithContentsOfURL: readURL];
-                if (!devices) devices = [NSMutableArray array];
+			if (!success) return;
+			
+			__block BOOL updated = NO;
+			__block NSMutableArray *devices = nil;
+			NSFileCoordinator *coordinator = [[NSFileCoordinator alloc] initWithFilePresenter: self];
+			[coordinator coordinateReadingItemAtURL: self.presentedItemURL options: 0 error: NULL byAccessor: ^(NSURL *readURL) {
+				devices = [NSMutableArray arrayWithContentsOfURL: readURL];
+				if (!devices) devices = [NSMutableArray array];
 				
-                NSString *deviceID = [self ubiquityIdentityToken];
-                
-                if (![devices containsObject: deviceID])
+				id deviceID = [self ubiquityIdentityToken];
+				
+				if (![devices containsObject: deviceID])
 				{
-                    [devices addObject: deviceID];
-                    updated = YES;
-                }
-            }];
-            
-            [coordinator coordinateWritingItemAtURL: self.ubiquityURL options: 0 error: NULL byAccessor: ^(NSURL *newURL) {
-                NSFileManager *fm = [[NSFileManager alloc] init];
-                [fm createDirectoryAtURL:newURL withIntermediateDirectories:YES attributes:nil error:NULL];
-            }];
-            
-            if (updated) [coordinator coordinateWritingItemAtURL: self.presentedItemURL options: NSFileCoordinatorWritingForReplacing error: NULL byAccessor: ^(NSURL *writeURL) {
-                [devices writeToURL: writeURL atomically: YES];
-            }];
+					[devices addObject: deviceID];
+					updated = YES;
+				}
+			}];
+			
+			[coordinator coordinateWritingItemAtURL: self.ubiquityURL options: 0 error: NULL byAccessor: ^(NSURL *newURL) {
+				NSFileManager *fm = [[NSFileManager alloc] init];
+				[fm createDirectoryAtURL:newURL withIntermediateDirectories:YES attributes:nil error:NULL];
+			}];
+			
+			if (updated) [coordinator coordinateWritingItemAtURL: self.presentedItemURL options: NSFileCoordinatorWritingForReplacing error: NULL byAccessor: ^(NSURL *writeURL) {
+				[devices writeToURL: writeURL atomically: YES];
+			}];
 		}];
-    });
+	});
 }
 - (void) updateFromPersistentStoreCoordinatorNotification: (NSNotification *) note
 {
@@ -250,27 +257,52 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 
 #pragma mark - Utilities
 
+- (BOOL) nativelySupportsUbiquityIdentityToken
+{
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 60000) || (__MAC_OS_X_VERSION_MAX_ALLOWED >= 1080)
+	return [NSFileManager instancesRespondToSelector: @selector(ubiquityIdentityToken)];
+#else
+	return NO;
+#endif
+}
 - (BOOL) isUbiquityAvailable
 {
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 60000) || (__MAC_OS_X_VERSION_MAX_ALLOWED >= 1080)
+	if (self.nativelySupportsUbiquityIdentityToken)
+		return !![self.fileManager ubiquityIdentityToken];
+#endif
+	
 	return !![self.fileManager URLForUbiquityContainerIdentifier: nil];
 }
 
-- (NSString *) ubiquityIdentityToken
+- (id <NSObject, NSCopying, NSCoding>) ubiquityIdentityToken
 {
 	if (!self.ubiquityAvailable)
 		return nil;
 	
-    NSUserDefaults *sud = [NSUserDefaults standardUserDefaults];
-    NSString *uniqueID = [sud stringForKey: AZCoreRecordManagerUbiquityIdentityTokenKey];
+#if (__IPHONE_OS_VERSION_MAX_ALLOWED >= 60000) || (__MAC_OS_X_VERSION_MAX_ALLOWED >= 1080)
+	if (self.nativelySupportsUbiquityIdentityToken)
+		return [self.fileManager ubiquityIdentityToken];
+#endif
+
+	NSUserDefaults *sud = [NSUserDefaults standardUserDefaults];
+	id uniqueID = [sud objectForKey: AZCoreRecordManagerUbiquityIdentityTokenKey];
 	
-    if (!uniqueID)
+	if (!uniqueID)
 	{
-        uniqueID = [[NSProcessInfo processInfo] globallyUniqueString];
-        [sud setObject: uniqueID forKey: AZCoreRecordManagerUbiquityIdentityTokenKey];
-        [sud synchronize];
-    }
+		CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
+		CFUUIDBytes bytes = CFUUIDGetUUIDBytes(uuid);
+		CFRelease(uuid);
+
+		unsigned char hash[CC_SHA1_DIGEST_LENGTH];
+		CC_SHA1(&bytes, sizeof(bytes), hash);
+
+		uniqueID = [NSData dataWithBytes: hash length: CC_SHA1_DIGEST_LENGTH];
+		[sud setObject: uniqueID forKey: AZCoreRecordManagerUbiquityIdentityTokenKey];
+		[sud synchronize];
+	}
 	
-    return uniqueID;
+	return uniqueID;
 }
 
 - (void) setUbiquityURL: (NSURL *) ubiquityURL

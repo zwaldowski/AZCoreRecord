@@ -299,7 +299,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 {
 	if (!context)
 		context = [NSManagedObjectContext defaultContext];
-    
+	
 	NSManagedObject *managedObject = [self createInContext: context];
 	[managedObject importValuesFromDictionary: objectData];
 	return managedObject;
@@ -353,7 +353,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 {
 	if (!context)
 		context = [NSManagedObjectContext defaultContext];
-    
+	
 	NSEntityDescription *entity = self.entityDescription;
 	NSString *attributeKey = [entity.userInfo valueForKey: AZCoreRecordImportPrimaryAttributeKey] ?: azcr_primaryKeyNameFromString(entity.name);
 	
@@ -427,7 +427,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 {
 	if (!context)
 		context = [NSManagedObjectContext defaultContext];
-    
+	
 	__block NSArray *objectIDs = nil;
 	
 	[context saveDataWithBlock: ^(NSManagedObjectContext *localContext) {
@@ -454,7 +454,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 {
 	if (!context)
 		context = [NSManagedObjectContext defaultContext];
-    
+	
 	__block NSArray *objectIDs = nil;
 	
 	[context saveDataWithBlock: ^(NSManagedObjectContext *localContext) {
