@@ -13,7 +13,7 @@ extern NSString *const AZUbiquityIdentityDidChangeNotification;
 
 @interface AZCoreRecordUbiquitySentinel : NSObject <NSFilePresenter>
 
-+ (AZCoreRecordUbiquitySentinel *)sharedSentinel;
++ (AZCoreRecordUbiquitySentinel *) sharedSentinel;
 
 @property (nonatomic, readonly) NSString *ubiquityIdentityToken;
 @property (nonatomic, readonly, getter = isUbiquityAvailable) BOOL ubiquityAvailable;

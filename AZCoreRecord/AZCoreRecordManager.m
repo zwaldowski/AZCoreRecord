@@ -303,17 +303,31 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 				fetchRequest.predicate = [NSPredicate predicateWithFormat: @"(SUBQUERY(%@, $x, count:($x) > 0).@count == %d)", identityAttributes, identityAttributes.count];
 				
 				NSError *error;
-				NSArray *conflictingManagedObjects = [context executeFetchRequest: fetchRequest error: &error];
+				NSMutableArray *duplicateManagedObjects = [[context executeFetchRequest: fetchRequest error: &error] mutableCopy];
+				[AZCoreRecordManager handleError: error];
 				
-				NSDictionary *attributesDictionary = handler(conflictingManagedObjects, identityAttributes);
-				if (attributesDictionary.count)
+				while (duplicateManagedObjects.count)
 				{
-					[conflictingManagedObjects enumerateObjectsUsingBlock: ^(NSManagedObject *managedObject, NSUInteger idx, BOOL *stop) {
-						[context deleteObject: managedObject];
+					NSManagedObject *managedObject = [duplicateManagedObjects objectAtIndex: 0];
+					
+					NSMutableArray *subpredicates = [NSMutableArray arrayWithCapacity: identityAttributes.count];
+					[identityAttributes enumerateObjectsUsingBlock: ^(NSString *identityAttribute, NSUInteger idx, BOOL *stop) {
+						NSPredicate *subpredicate = [NSPredicate predicateWithFormat: @"%K == %@", identityAttribute, [managedObject valueForKey: identityAttribute]];
+						[subpredicates addObject: subpredicate];
 					}];
-
-					NSManagedObject *resultingObject = [NSEntityDescription insertNewObjectForEntityForName: entityName inManagedObjectContext: context];
-					[resultingObject updateValuesFromDictionary: attributesDictionary];
+					
+					NSPredicate *compoundPredicate = [NSCompoundPredicate andPredicateWithSubpredicates: subpredicates];;;
+					NSArray *duplicateGroup = [duplicateManagedObjects filteredArrayUsingPredicate: compoundPredicate];
+					
+					NSDictionary *attributesDictionary = handler(duplicateGroup, identityAttributes);
+					if (attributesDictionary.count)
+					{
+						[duplicateGroup makeObjectsPerformSelector: @selector(deleteInContext:) withObject: context];
+						[duplicateManagedObjects removeObjectsInArray: duplicateGroup];
+						
+						NSManagedObject *resultingObject = [[NSManagedObject alloc] initWithEntity: entityDescription insertIntoManagedObjectContext: context];
+						[resultingObject updateValuesFromDictionary: attributesDictionary];
+					}
 				}
 			}];
 		} completion: ^{

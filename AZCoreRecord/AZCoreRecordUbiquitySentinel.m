@@ -11,9 +11,9 @@
 #import <CoreData/CoreData.h>
 
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-	#import <UIKit/UIApplication.h>
+#import <UIKit/UIApplication.h>
 #elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
-	#import <AppKit/NSApplication.h>
+#import <AppKit/NSApplication.h>
 #endif
 
 #if (__IPHONE_OS_VERSION_MAX_ALLOWED < 60000) || (__MAC_OS_X_VERSION_MAX_ALLOWED < 1080)
@@ -64,7 +64,7 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 	return self;
 }
 
--(void) dealloc
+- (void) dealloc
 {
     [self stopMonitoringDevicesList];
 }
@@ -174,16 +174,16 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 	[self syncURLWithCloud: self.presentedItemURL completion: ^(BOOL success, NSError *error) {
 		NSFileCoordinator *coordinator = [[NSFileCoordinator alloc] initWithFilePresenter: self];
 		[coordinator coordinateReadingItemAtURL: url options: 0 error: NULL byAccessor: ^(NSURL *readURL) {
-			NSArray *devices = [NSArray arrayWithContentsOfURL:readURL];
+			NSArray *devices = [NSArray arrayWithContentsOfURL: readURL];
 			NSString *deviceId = [self ubiquityIdentityToken];
-			BOOL deviceIsRegistered = [devices containsObject:deviceId];
+			BOOL deviceIsRegistered = [devices containsObject: deviceId];
 			dispatch_async(completionQueue, ^{
 				self.performingDeviceRegistrationCheck = NO;
 				if (!deviceIsRegistered)
 				{
 					self.haveSentResetNotification = YES;
 					[self stopMonitoringDevicesList];
-					[[NSNotificationCenter defaultCenter] postNotificationName: AZUbiquityIdentityDidChangeNotification object:self userInfo:nil];
+					[[NSNotificationCenter defaultCenter] postNotificationName: AZUbiquityIdentityDidChangeNotification object: self userInfo: nil];
 				}
 				else
 				{
