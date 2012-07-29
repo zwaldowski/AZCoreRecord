@@ -205,6 +205,14 @@ static NSUInteger defaultBatchSize = 20;
 	return count;
 }
 
+#pragma mark - Deduplication
+
++ (void) registerConflictResolverWithHandler: (NSDictionary *(^)(NSArray *conflictingManagedObjects, NSArray *identityAttributes)) handler
+{
+	AZCoreRecordManager *manager = [AZCoreRecordManager sharedManager];
+	[manager registerConflictResolverForEntityName: [self entityDescriptionInContext: manager.managedObjectContext].name withHandler: handler];
+}
+
 #pragma mark - Singleton-returning Fetch Request Factory Methods
 
 + (NSFetchRequest *) requestFirst

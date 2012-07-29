@@ -55,6 +55,10 @@
 + (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter;
 + (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter inContext: (NSManagedObjectContext *) context;
 
+#pragma mark - Deduplication
+
++ (void) registerConflictResolverWithHandler: (NSDictionary *(^)(NSArray *conflictingManagedObjects, NSArray *identityAttributes)) handler;
+
 #pragma mark - Singleton-returning Fetch Request Factory Methods
 
 + (NSFetchRequest *) requestFirst;

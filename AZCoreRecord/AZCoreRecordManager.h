@@ -16,6 +16,7 @@ extern NSString *const AZCoreRecordManagerDidFinishAdddingPersistentStoresNotifi
 extern NSString *const AZCoreRecordManagerShouldRunDeduplicationNotification;
 extern NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification;
 
+extern NSString *const AZCoreRecordDeduplicationIdentityAttributeKey;
 extern NSString *const AZCoreRecordLocalStoreConfigurationNameKey;
 extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 
@@ -41,6 +42,7 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 	NSString *_stackModelName;
 	NSURL *_stackModelURL;
 	NSDictionary *_stackModelConfigurations;
+	NSMutableDictionary *_conflictResolutionHandlers;
 	
 	NSManagedObjectContext *_managedObjectContext;
 	NSPersistentStoreCoordinator *_persistentStoreCoordinator;
@@ -51,7 +53,7 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 
 @property (nonatomic, readonly) NSString *stackName;
 
-#pragma mark - Stack accessors
+#pragma mark - Stack Accessors
 
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
@@ -96,6 +98,10 @@ extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 + (void) setDefaultStackModelConfigurations: (NSDictionary *) dictionary;
 
 + (void) setUpDefaultStackWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
+
+#pragma mark - Deduplication
+
+- (void) registerConflictResolverForEntityName: (NSString *) entityName withHandler: (NSDictionary *(^)(NSArray *conflictingManagedObjects, NSArray *identityAttributes)) handler;
 
 #pragma mark - Error Handling
 
