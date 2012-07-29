@@ -31,50 +31,50 @@ static id azcr_colorFromString(NSString *serializedColor)
 	NSCharacterSet *delimiters = [[NSCharacterSet characterSetWithCharactersInString: @"0.123456789"] invertedSet];
 	[colorScanner scanUpToCharactersFromSet: delimiters intoString: NULL];
 	
-	CGFloat *componentValues = calloc(4, sizeof(CGFloat));
-	componentValues[3] = 1.0;
+	CGFloat *components = calloc(4, sizeof(CGFloat));
+	components[3] = 1.0;
 	
-	CGFloat *componentValue = componentValues;
+	CGFloat *component = components;
 	while (![colorScanner isAtEnd])
 	{
 		[colorScanner scanCharactersFromSet: delimiters intoString: NULL];
 #if CGFLOAT_IS_DOUBLE
 		[colorScanner scanDouble: componentValue];
 #else
-		[colorScanner scanFloat: componentValue];
+		[colorScanner scanFloat: component];
 #endif
-		componentValue++;
+		component++;
 	}
 	
 	// Normalize values
-	for (int i = 0; i <= 2; ++i) componentValues[i] = MIN(componentValues[i] / divisor, divisor);
+	for (int i = 0; i <= 2; ++i) components[i] = MIN(components[i] / divisor, divisor);
 	
 	// Convert HSB to HSV
-	if (isHSV) componentValues[3] = divisor - componentValues[3];
+	if (isHSV) components[3] = divisor - components[3];
 	
 	id color = nil;
 	
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 	if (isHSB || isHSV)
 	{
-		color = [UIColor colorWithHue:componentValues[0] saturation:componentValues[1] brightness:componentValues[2] alpha:componentValues[3]];
+		color = [UIColor colorWithHue: components[0] saturation: components[1] brightness: components[2] alpha: components[3]];
 	}
 	else
 	{
-		color = [UIColor colorWithRed:componentValues[0] green:componentValues[1] blue:componentValues[2] alpha:componentValues[3]];
+		color = [UIColor colorWithRed: components[0] green: components[1] blue: components[2] alpha: components[3]];
 	}
 #else
 	if (isHSB || isHSV)
 	{
-		color = [NSColor colorWithDeviceHue:componentValues[0] saturation:componentValues[1] brightness:componentValues[2] alpha:componentValues[3]];
+		color = [NSColor colorWithDeviceHue: componentValues[0] saturation: componentValues[1] brightness: componentValues[2] alpha: componentValues[3]];
 	}
 	else
 	{
-		color = [NSColor colorWithDeviceRed:componentValues[0] green:componentValues[1] blue:componentValues[2] alpha:componentValues[3]];
+		color = [NSColor colorWithDeviceRed: componentValues[0] green: componentValues[1] blue: componentValues[2] alpha: componentValues[3]];
 	}
 #endif
 
-	free(componentValues);
+	free(components);
 	return color;
 }
 
@@ -96,7 +96,6 @@ static NSDate *azcr_dateFromString(NSString *value, NSString *format)
 	});
 	
 	helperFormatter.dateFormat = (format ?: AZCoreRecordImportDefaultDateFormat);
-	
 	return [helperFormatter dateFromString: value];
 }
 
