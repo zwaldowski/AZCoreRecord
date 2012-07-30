@@ -64,7 +64,7 @@
             <userInfo/>
         </attribute>
         <userInfo>
-            <entry key="identityAttribute" value="int64TestAttribute,booleanTestAttribute,decimalTestAttribute"/>
+            <entry key="identityAttribute" value="floatTestAttribute,int64TestAttribute,booleanTestAttribute,decimalTestAttribute"/>
         </userInfo>
     </entity>
     <entity name="SingleRelatedEntity" representedClassName="SingleRelatedEntity">

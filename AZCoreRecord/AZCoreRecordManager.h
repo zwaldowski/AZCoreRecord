@@ -20,7 +20,7 @@ extern NSString *const AZCoreRecordDeduplicationIdentityAttributeKey;
 extern NSString *const AZCoreRecordLocalStoreConfigurationNameKey;
 extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 
-typedef NSDictionary *(^AZCoreRecordDeduplicationHandlerBlock)(NSArray *conflictingManagedObjects, NSArray *identityAttributes);
+typedef NSArray *(^AZCoreRecordDeduplicationHandlerBlock)(NSArray *conflictingManagedObjects, NSArray *identityAttributes);
 typedef void (^AZCoreRecordContextBlock)(NSManagedObjectContext *context);
 typedef void (^AZCoreRecordErrorBlock)(NSError *error);
 typedef void (^AZCoreRecordSeedBlock)(NSManagedObjectContext *oldMOC, NSManagedObjectContext *newMOC);

@@ -139,7 +139,9 @@
         <attribute name="stringTestAttribute" optional="YES" attributeType="String">
             <userInfo/>
         </attribute>
-        <userInfo/>
+        <userInfo>
+            <entry key="identityAttribute" value="floatTestAttribute,int64TestAttribute,booleanTestAttribute,decimalTestAttribute"/>
+        </userInfo>
     </entity>
     <entity name="SingleRelatedEntity" representedClassName="SingleRelatedEntity">
         <attribute name="mappedStringAttribute" optional="YES" attributeType="String">
@@ -169,7 +171,7 @@
         <element name="SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey" positionX="603" positionY="702" width="342" height="60"/>
         <element name="SingleEntityRelatedToMappedEntityWithNestedMappedAttributes" positionX="664" positionY="597" width="470" height="60"/>
         <element name="SingleEntityRelatedToMappedEntityWithSecondaryMappings" positionX="-63" positionY="738" width="344" height="75"/>
-        <element name="SingleEntityWithNoRelationships" positionX="-135" positionY="327" width="180" height="255"/>
+        <element name="SingleEntityWithNoRelationships" positionX="-135" positionY="327" width="180" height="253"/>
         <element name="SingleRelatedEntity" positionX="333" positionY="198" width="189" height="120"/>
     </elements>
 </model>

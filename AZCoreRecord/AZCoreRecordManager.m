@@ -389,16 +389,29 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 					fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates: subpredicates];;
 					
 					NSError *error;
-					NSArray *duplicateGroup = [context executeFetchRequest: fetchRequest error: &error];
+					NSMutableArray *duplicateGroup = [[context executeFetchRequest: fetchRequest error: &error] mutableCopy];
 					[AZCoreRecordManager handleError: error];
 					
-					NSDictionary *attributesDictionary = handler(duplicateGroup, identityAttributes);
-					if (attributesDictionary.count)
+					NSArray *resultingObjects = handler(duplicateGroup, identityAttributes);
+					if (resultingObjects.count)
 					{
-						[duplicateGroup makeObjectsPerformSelector: @selector(deleteInContext:) withObject: context];
+						[resultingObjects enumerateObjectsUsingBlock: ^(id resultingObject, NSUInteger idx, BOOL *stop) {
+							if ([resultingObject isKindOfClass: [NSManagedObject class]])
+							{
+								[duplicateGroup removeObject: resultingObject];
+							}
+							else if ([resultingObjects isKindOfClass: [NSDictionary class]])
+							{
+								NSManagedObject *managedObject = [[NSManagedObject alloc] initWithEntity: entityDescription insertIntoManagedObjectContext: context];
+								[managedObject updateValuesFromDictionary: resultingObject];
+							}
+							else
+							{
+								NSAssert1(NO, @"Resulting object of unexpected class %@ was returned", [resultingObject class]);
+							}
+						}];
 						
-						NSManagedObject *resultingObject = [[NSManagedObject alloc] initWithEntity: entityDescription insertIntoManagedObjectContext: context];
-						[resultingObject updateValuesFromDictionary: attributesDictionary];
+						[duplicateGroup makeObjectsPerformSelector: @selector(deleteInContext:) withObject: context];
 					}
 				}];
 			}];

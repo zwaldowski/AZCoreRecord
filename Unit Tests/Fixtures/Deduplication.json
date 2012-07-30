@@ -75,7 +75,7 @@
 		"nullTestAttribute": null
 	},
 	{
-		"int64TestAttribute": 46,
+		"int64TestAttribute": 45,
 		"stringTestAttribute": "This is a test valueA",
 		"int32TestAttribute": 33,
 		"int16TestAttribute": 257,

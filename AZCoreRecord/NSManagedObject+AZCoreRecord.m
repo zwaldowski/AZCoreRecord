@@ -207,7 +207,7 @@ static NSUInteger defaultBatchSize = 20;
 
 #pragma mark - Deduplication
 
-+ (void) registerDeduplicationHandler: (NSDictionary *(^)(NSArray *conflictingManagedObjects, NSArray *identityAttributes)) handler includeSubentities: (BOOL) includeSubentities
++ (void) registerDeduplicationHandler: (AZCoreRecordDeduplicationHandlerBlock) handler includeSubentities: (BOOL) includeSubentities
 {
 	AZCoreRecordManager *manager = [AZCoreRecordManager sharedManager];
 	[manager registerDeduplicationHandler: handler forEntityName: [self entityDescriptionInContext: manager.managedObjectContext].name includeSubentities: includeSubentities];

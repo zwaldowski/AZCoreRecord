@@ -112,7 +112,7 @@
 	[SingleEntityWithNoRelationships importFromArray: data inContext: _localManager.managedObjectContext];
 	[_localManager.managedObjectContext save];
 	
-	[_localManager registerDeduplicationHandler: ^NSDictionary *(NSArray *conflictingManagedObjects, NSArray *identityAttributes) {
+	[_localManager registerDeduplicationHandler: ^NSArray *(NSArray *conflictingManagedObjects, NSArray *identityAttributes) {
 		NSLog(@"%@", conflictingManagedObjects);
 		return nil;
 	} forEntityName: @"SingleEntityWithNoRelationships"	includeSubentities: NO];
