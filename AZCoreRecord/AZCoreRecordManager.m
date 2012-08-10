@@ -365,17 +365,18 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 				[dictionaryResults enumerateObjectsUsingBlock: ^(NSDictionary *dictionaryResult, NSUInteger _idx, BOOL *stop) {
 					__block BOOL hasDuplicates = YES;
-					__block NSUInteger idx = 0;
-					[dictionaryResult enumerateKeysAndObjectsUsingBlock: ^(NSString *propertyDescriptionName, NSNumber *value, BOOL *stop) {
-						if (idx % 2 != 0 && [value integerValue] <= 1)
+					
+					[propertiesToFetch enumerateObjectsUsingBlock: ^(NSExpressionDescription *expressionDescription, NSUInteger idx, BOOL *stop) {
+						if (idx % 2 == 0) return;
+						
+						NSNumber *value = [dictionaryResult objectForKey: expressionDescription.name];
+						if ([value integerValue] < 2)
 						{
 							hasDuplicates = NO;
 							*stop = YES;
 						}
-						
-						++idx;
 					}];
-					
+
 					if (!hasDuplicates)
 						return;
 					

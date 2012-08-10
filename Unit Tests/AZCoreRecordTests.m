@@ -112,12 +112,23 @@
 	[SingleEntityWithNoRelationships importFromArray: data inContext: _localManager.managedObjectContext];
 	[_localManager.managedObjectContext save];
 	
+	// Part 1
 	[_localManager registerDeduplicationHandler: ^NSArray *(NSArray *conflictingManagedObjects, NSArray *identityAttributes) {
-		NSLog(@"%@", conflictingManagedObjects);
+		return [conflictingManagedObjects lastObject];
+	} forEntityName: @"SingleEntityWithNoRelationships"	includeSubentities: NO];
+	
+	[_localManager performSelector: @selector(azcr_didRecieveDeduplicationNotification:) withObject: nil];
+	
+	// Part 2
+	__block BOOL handlerWasCalled = NO;
+	[_localManager registerDeduplicationHandler: ^NSArray *(NSArray *conflictingManagedObjects, NSArray *identityAttributes) {
+		handlerWasCalled = YES;
 		return nil;
 	} forEntityName: @"SingleEntityWithNoRelationships"	includeSubentities: NO];
 	
 	[_localManager performSelector: @selector(azcr_didRecieveDeduplicationNotification:) withObject: nil];
+	
+	assertThatBool(handlerWasCalled, is(equalToBool(NO)));
 }
 
 @end
