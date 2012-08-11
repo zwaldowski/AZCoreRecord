@@ -19,6 +19,7 @@
 #import "AZCoreRecordUbiquitySentinel.h"
 #import "NSPersistentStoreCoordinator+AZCoreRecord.h"
 #import "NSManagedObject+AZCoreRecord.h"
+#import "NSManagedObject+AZCoreRecordImport.h"
 #import "NSManagedObjectContext+AZCoreRecord.h"
 #import "NSManagedObjectModel+AZCoreRecord.h"
 
@@ -36,7 +37,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 @interface AZCoreRecordManager ()
 
 @property (nonatomic, weak) id <AZCoreRecordErrorHandler> errorDelegate;
-@property (nonatomic, copy) void(^errorHandler)(NSError *);
+@property (nonatomic, copy) AZCoreRecordErrorBlock errorHandler;
 
 @property (nonatomic, strong) NSFileManager *fileManager;
 
