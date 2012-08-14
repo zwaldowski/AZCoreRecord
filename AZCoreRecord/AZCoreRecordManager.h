@@ -94,7 +94,7 @@ typedef void (^AZCoreRecordVoidBlock)(void);
 
 #pragma mark - Default stack settings
 
-+ (AZCoreRecordManager *)sharedManager;
++ (AZCoreRecordManager *) sharedManager;
 
 + (void) setDefaultStackShouldAutoMigrateStore: (BOOL) shouldMigrate;
 + (void) setDefaultStackShouldUseInMemoryStore: (BOOL) inMemory;
