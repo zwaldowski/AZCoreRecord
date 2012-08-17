@@ -284,8 +284,8 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
 		lightweightMigrationOptions = @{
-			NSMigratePersistentStoresAutomaticallyOption : @YES,
-			NSInferMappingModelAutomaticallyOption : @YES
+			NSMigratePersistentStoresAutomaticallyOption : @(YES),
+			NSInferMappingModelAutomaticallyOption : @(YES)
 		};
 	});
 	

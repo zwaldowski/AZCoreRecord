@@ -8,7 +8,7 @@
 //
 
 #import "AZCoreRecordUbiquitySentinel.h"
-#import <CommonCrypto/CommonCrypto.h>
+#import <CommonCrypto/CommonDigest.h>
 #import <CoreData/CoreData.h>
 
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
