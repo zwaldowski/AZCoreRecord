@@ -55,27 +55,23 @@ typedef void (^AZCoreRecordVoidBlock)(void);
 	NSPersistentStoreCoordinator *_persistentStoreCoordinator;
 }
 
-- (id) initWithStackName: (NSString *) name;
+- (id)initWithStackName: (NSString *) name;
 
 @property (nonatomic, readonly) NSString *stackName;
 
 #pragma mark - Stack Accessors
 
-@property (nonatomic, strong, readonly) id <NSObject, NSCopying, NSCoding> ubiquityToken;
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic, strong, readonly) id <NSObject, NSCopying, NSCoding> ubiquityToken;
 
-- (NSManagedObjectContext *) contextForCurrentThread;
+- (NSManagedObjectContext *)contextForCurrentThread;
 
 #pragma mark - Helpers
 
-@property (nonatomic, strong, readonly) NSPersistentStore *fallbackStore;
-@property (nonatomic, strong, readonly) NSPersistentStore *localStore;
-@property (nonatomic, strong, readonly) NSPersistentStore *ubiquitousStore;
-
+@property (nonatomic, readonly) NSURL *ubiquitousStoreURL;
 @property (nonatomic, readonly) NSURL *fallbackStoreURL;
 @property (nonatomic, readonly) NSURL *localStoreURL;
-@property (nonatomic, readonly) NSURL *ubiquitousStoreURL;
 
 @property (nonatomic, readonly, getter = isReadOnly) BOOL readOnly;
 
@@ -84,9 +80,9 @@ typedef void (^AZCoreRecordVoidBlock)(void);
 @property (nonatomic) BOOL stackShouldAutoMigrateStore;
 @property (nonatomic) BOOL stackShouldUseInMemoryStore;
 @property (nonatomic) BOOL stackShouldUseUbiquity;
-@property (nonatomic, copy) NSDictionary *stackModelConfigurations;
 @property (nonatomic, copy) NSString *stackModelName;
 @property (nonatomic, copy) NSURL *stackModelURL;
+@property (nonatomic, copy) NSDictionary *stackModelConfigurations;
 
 - (void) configureWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
 

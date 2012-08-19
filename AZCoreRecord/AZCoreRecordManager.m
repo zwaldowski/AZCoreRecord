@@ -46,12 +46,9 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 @property (nonatomic, readonly) NSURL *stackStoreURL;
 @property (nonatomic, strong) NSMutableDictionary *conflictResolutionHandlers;
-@property (nonatomic, strong, readwrite) id <NSObject, NSCopying, NSCoding> ubiquityToken;
 @property (nonatomic, strong, readwrite) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, strong, readwrite) NSPersistentStore *fallbackStore;
-@property (nonatomic, strong, readwrite) NSPersistentStore *localStore;
-@property (nonatomic, strong, readwrite) NSPersistentStore *ubiquitousStore;
 @property (nonatomic, strong, readwrite) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic, strong, readwrite) id <NSObject, NSCopying, NSCoding> ubiquityToken;
 
 - (NSDictionary *) azcr_lightweightMigrationOptions;
 
@@ -430,8 +427,6 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 {
 	dispatch_semaphore_wait(self.loadSemaphore, DISPATCH_TIME_FOREVER);
 	
-	self.fallbackStore = self.localStore = self.ubiquitousStore = nil;
-	
 	NSString *localConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordLocalStoreConfigurationNameKey];
 	NSString *ubiquitousConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
 	NSURL *localURL = self.localStoreURL;
@@ -457,7 +452,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 			}
 		}
 		
-		self.localStore = [self.persistentStoreCoordinator addStoreAtURL: localURL configuration: localConfiguration options: options];
+		[self.persistentStoreCoordinator addStoreAtURL: localURL configuration: localConfiguration options: options];
 	}
 	
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -467,9 +462,9 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 		NSMutableDictionary *storeOptions = [options mutableCopy];
 		
 		if (self.stackShouldUseInMemoryStore)
-			self.fallbackStore = [self.persistentStoreCoordinator addInMemoryStoreWithConfiguration: ubiquitousConfiguration options: storeOptions];
+			[self.persistentStoreCoordinator addInMemoryStoreWithConfiguration: ubiquitousConfiguration options: storeOptions];
 		else
-			self.fallbackStore = [self.persistentStoreCoordinator addStoreAtURL: fallbackURL configuration: ubiquitousConfiguration options: storeOptions];
+			[self.persistentStoreCoordinator addStoreAtURL: fallbackURL configuration: ubiquitousConfiguration options: storeOptions];
 		
 		[nc postNotificationName: AZCoreRecordManagerDidAddFallbackStoreNotification object: self];
 		_ubiquityEnabled = NO;
@@ -499,7 +494,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 				fallback = YES;
 			}
 			
-			if ((self.ubiquitousStore = [self.persistentStoreCoordinator addStoreAtURL: ubiquityURL configuration: ubiquitousConfiguration options: storeOptions]))
+			if ([self.persistentStoreCoordinator addStoreAtURL: ubiquityURL configuration: ubiquitousConfiguration options: storeOptions])
 			{
 				[nc postNotificationName: AZCoreRecordManagerDidAddUbiquitousStoreNotification object: self];
 				_ubiquityEnabled = YES;
@@ -510,6 +505,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 			}
 			
 			if (fallback) addFallback();
+			
 			finish();
 		});
 	} else {
