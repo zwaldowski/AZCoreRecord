@@ -23,7 +23,7 @@
 
 #pragma mark - In-Memory Store
 
-- (NSPersistentStore *) addInMemoryStoreWithConfiguration: (NSString *)configuration options: (NSDictionary *)options
+- (NSPersistentStore *) addInMemoryStoreWithConfiguration: (NSString *) configuration options: (NSDictionary *) options
 {
 	NSError *error = nil;
 	NSPersistentStore *store = [self addPersistentStoreWithType: NSInMemoryStoreType configuration: configuration URL: nil options: options error: &error];
@@ -36,7 +36,7 @@
 	return [self addInMemoryStoreWithConfiguration: nil options: nil];
 }
 
-- (NSPersistentStore *) addStoreAtURL: (NSURL *)URL configuration: (NSString *)configuration options: (NSDictionary *)options
+- (NSPersistentStore *) addStoreAtURL: (NSURL *) URL configuration: (NSString *) configuration options: (NSDictionary *) options
 {
 	NSError *error = nil;
 	NSPersistentStore *store = [self addPersistentStoreWithType: NSSQLiteStoreType configuration: configuration URL: URL options: options error: &error];
@@ -50,14 +50,14 @@
 {
 	NSParameterAssert(block);
 	
-	dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-	dispatch_async(globalQueue, ^{
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		NSPersistentStoreCoordinator *oldPSC = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: self.managedObjectModel];
 		NSDictionary *oldPSOption = [NSDictionary dictionaryWithObject: [NSNumber numberWithBool: YES] forKey: NSReadOnlyPersistentStoreOption];
 		
 		__block NSString *configuration = nil;
-		[self.persistentStores enumerateObjectsUsingBlock:^(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
-			if ([obj.options objectForKey: NSPersistentStoreUbiquitousContentNameKey]) {
+		[self.persistentStores enumerateObjectsUsingBlock: ^(NSPersistentStore *obj, NSUInteger idx, BOOL *stop) {
+			if ([obj.options objectForKey: NSPersistentStoreUbiquitousContentNameKey])
+			{
 				configuration = obj.configurationName;
 				*stop = YES;
 			}
@@ -69,7 +69,7 @@
 		NSManagedObjectContext *oldMOC = [[NSManagedObjectContext alloc] init];
 		[oldMOC setPersistentStoreCoordinator: oldPSC];
 		
-		NSManagedObjectContext *newMOC = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+		NSManagedObjectContext *newMOC = [[NSManagedObjectContext alloc] initWithConcurrencyType: NSPrivateQueueConcurrencyType];
 		[newMOC setPersistentStoreCoordinator: self];
 		
 		block(oldMOC, newMOC);
