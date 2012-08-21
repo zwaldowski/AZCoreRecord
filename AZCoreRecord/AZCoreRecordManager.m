@@ -427,6 +427,8 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 {
 	dispatch_semaphore_wait(self.loadSemaphore, DISPATCH_TIME_FOREVER);
 	
+	[self azcr_resetStack];
+	
 	NSString *localConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordLocalStoreConfigurationNameKey];
 	NSString *ubiquitousConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
 	NSURL *localURL = self.localStoreURL;
