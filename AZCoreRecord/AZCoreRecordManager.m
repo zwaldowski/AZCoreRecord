@@ -642,7 +642,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 + (void) setDefaultStackShouldAutoMigrateStore: (BOOL) shouldMigrate
 {
-	[[self sharedManager] setStackShouldUseInMemoryStore: shouldMigrate];
+	[[self sharedManager] setStackShouldAutoMigrateStore: shouldMigrate];
 }
 + (void) setDefaultStackShouldUseInMemoryStore: (BOOL) inMemory
 {
