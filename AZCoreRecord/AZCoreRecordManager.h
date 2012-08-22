@@ -9,12 +9,13 @@
 
 #import <CoreData/CoreData.h>
 
-extern NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification;
-extern NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification;
+extern NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification;
 extern NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification;
+extern NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification;
 extern NSString *const AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification;
 extern NSString *const AZCoreRecordManagerShouldRunDeduplicationNotification;
-extern NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification;
+extern NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification;
+extern NSString *const AZCoreRecordManagerWillBeginAddingPersistentStoresNotification;
 
 extern NSString *const AZCoreRecordDeduplicationIdentityAttributeKey;
 extern NSString *const AZCoreRecordLocalStoreConfigurationNameKey;

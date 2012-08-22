@@ -23,12 +23,13 @@
 #import "NSManagedObjectContext+AZCoreRecord.h"
 #import "NSManagedObjectModel+AZCoreRecord.h"
 
-NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification = @"AZCoreRecordManagerWillAddUbiquitousStoreNotification";
-NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification = @"AZCoreRecordManagerDidAddUbiquitousStoreNotification";
+NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification = @"AZCoreRecordDidFinishSeedingPersistentStoreNotification";
 NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRecordManagerDidAddFallbackStoreNotification";
+NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification = @"AZCoreRecordManagerDidAddUbiquitousStoreNotification";
 NSString *const AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification = @"AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification";
 NSString *const AZCoreRecordManagerShouldRunDeduplicationNotification = @"AZCoreRecordManagerShouldRunDeduplicationNotification";
-NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification = @"AZCoreRecordDidFinishSeedingPersistentStoreNotification";
+NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification = @"AZCoreRecordManagerWillAddUbiquitousStoreNotification";
+NSString *const AZCoreRecordManagerWillBeginAddingPersistentStoresNotification = @"AZCoreRecordManagerWillBeginAddingPersistentStoresNotification";
 
 NSString *const AZCoreRecordDeduplicationIdentityAttributeKey = @"identityAttribute";
 NSString *const AZCoreRecordLocalStoreConfigurationNameKey = @"LocalStore";
@@ -426,6 +427,9 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 - (void) azcr_loadPersistentStores
 {
 	dispatch_semaphore_wait(self.loadSemaphore, DISPATCH_TIME_FOREVER);
+
+	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+	[nc postNotificationName: AZCoreRecordManagerWillBeginAddingPersistentStoresNotification object: self];
 	
 	[self azcr_resetStack];
 	
@@ -457,8 +461,6 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 		[self.persistentStoreCoordinator addStoreAtURL: localURL configuration: localConfiguration options: options];
 	}
 	
-	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
 	dispatch_block_t addFallback = ^{
 		
 		NSMutableDictionary *storeOptions = [options mutableCopy];
