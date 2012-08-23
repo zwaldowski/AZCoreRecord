@@ -501,6 +501,8 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 			if ([self.persistentStoreCoordinator addStoreAtURL: ubiquityURL configuration: ubiquitousConfiguration options: storeOptions])
 			{
 				[nc postNotificationName: AZCoreRecordManagerDidAddUbiquitousStoreNotification object: self];
+				if (_managedObjectContext)
+					[_managedObjectContext startObservingUbiquitousChanges];
 				_ubiquityEnabled = YES;
 			}
 			else
