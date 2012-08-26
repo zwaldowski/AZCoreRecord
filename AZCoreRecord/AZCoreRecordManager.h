@@ -51,6 +51,7 @@ typedef void (^AZCoreRecordVoidBlock)(void);
 	NSURL *_stackModelURL;
 	NSDictionary *_stackModelConfigurations;
 	NSMutableDictionary *_conflictResolutionHandlers;
+	Class _stackManagedObjectContextClass;
 	
 	NSManagedObjectContext *_managedObjectContext;
 	NSPersistentStoreCoordinator *_persistentStoreCoordinator;
@@ -84,6 +85,7 @@ typedef void (^AZCoreRecordVoidBlock)(void);
 @property (nonatomic, copy) NSString *stackModelName;
 @property (nonatomic, copy) NSURL *stackModelURL;
 @property (nonatomic, copy) NSDictionary *stackModelConfigurations;
+@property (nonatomic) Class stackManagedObjectContextClass;
 
 - (void) configureWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
 

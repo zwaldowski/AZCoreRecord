@@ -83,7 +83,7 @@
 
 - (NSManagedObjectContext *) newChildContext
 {
-	NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType: NSConfinementConcurrencyType];
+	NSManagedObjectContext *context = [[[self class] alloc] initWithConcurrencyType: NSConfinementConcurrencyType];
 	context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;
 	context.parentContext = self;	
 	return context;

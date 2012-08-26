@@ -78,6 +78,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 		_stackName = [name copy];
 		_semaphore = dispatch_semaphore_create(1);
 		_loadSemaphore = dispatch_semaphore_create(1);
+		_stackManagedObjectContextClass = [NSManagedObjectContext class];
 		
 		self.conflictResolutionHandlers = [NSMutableDictionary dictionary];
 		self.fileManager = [NSFileManager new];
@@ -137,7 +138,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 {
 	if (!_managedObjectContext)
 	{
-		NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType: NSMainQueueConcurrencyType];
+		NSManagedObjectContext *managedObjectContext = [[self.stackManagedObjectContextClass alloc] initWithConcurrencyType: NSMainQueueConcurrencyType];
 		managedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
 		self.managedObjectContext = managedObjectContext;
 	}
@@ -612,6 +613,15 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	[self azcr_resetStack];
 	_stackShouldUseUbiquity = stackShouldUseUbiquity;
 	
+	dispatch_semaphore_signal(self.semaphore);
+}
+- (void) setStackManagedObjectContextClass:(Class)stackManagedObjectContextClass
+{
+	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+
+	[self azcr_resetStack];
+	_stackManagedObjectContextClass = stackManagedObjectContextClass;
+
 	dispatch_semaphore_signal(self.semaphore);
 }
 
