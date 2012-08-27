@@ -206,7 +206,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	if (!self.stackShouldUseUbiquity)
 		return NO;
 	
-	return [(NSData *) self.ubiquityToken length] && !![self.fileManager URLForUbiquityContainerIdentifier: nil];
+	return self.ubiquityToken && [(NSData *) self.ubiquityToken length];
 }
 
 - (NSURL *) fallbackStoreURL
@@ -439,7 +439,11 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	NSURL *localURL = self.localStoreURL;
 	NSURL *fallbackURL = self.fallbackStoreURL;
 	NSURL *ubiquityURL = self.ubiquitousStoreURL;
+#ifdef TARGET_IPHONE_SIMULATOR
+	NSURL *ubiquityContainer = nil;
+#else
 	NSURL *ubiquityContainer = [self.fileManager URLForUbiquityContainerIdentifier:nil];
+#endif
 	
 	NSDictionary *options = (self.stackShouldUseUbiquity || self.stackShouldAutoMigrateStore) ? [self azcr_lightweightMigrationOptions] : [NSDictionary dictionary];
 	

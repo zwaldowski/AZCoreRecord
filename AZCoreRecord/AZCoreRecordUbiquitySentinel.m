@@ -242,17 +242,23 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 {
 	if (!self.ubiquityAvailable)
 		return;
-	
-	self.ubiquityURL = [self.fileManager URLForUbiquityContainerIdentifier: nil];
-	
-	NSArray *newStores = [note.userInfo objectForKey: NSAddedPersistentStoresKey];
-	NSUInteger foundIndex = [newStores indexOfObjectPassingTest: ^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
-		NSDictionary *storeOptions = store.options;
-		return ([storeOptions objectForKey: NSPersistentStoreUbiquitousContentNameKey] != nil && [storeOptions objectForKey: NSPersistentStoreUbiquitousContentURLKey] != nil);
-	}];
-	
-	if (foundIndex != NSNotFound)
-		[self updateDevicesList];
+
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+#ifdef TARGET_IPHONE_SIMULATOR
+		self.ubiquityURL = nil;
+#else
+		self.ubiquityURL = [self.fileManager URLForUbiquityContainerIdentifier:nil];
+#endif
+
+		NSArray *newStores = [note.userInfo objectForKey: NSAddedPersistentStoresKey];
+		NSUInteger foundIndex = [newStores indexOfObjectPassingTest: ^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
+			NSDictionary *storeOptions = store.options;
+			return ([storeOptions objectForKey: NSPersistentStoreUbiquitousContentNameKey] != nil && [storeOptions objectForKey: NSPersistentStoreUbiquitousContentURLKey] != nil);
+		}];
+
+		if (foundIndex != NSNotFound)
+			[self updateDevicesList];
+	});
 }
 
 #pragma mark - Utilities
@@ -272,7 +278,7 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 		return !![self.fileManager ubiquityIdentityToken];
 #endif
 	
-	return !![self.fileManager URLForUbiquityContainerIdentifier: nil];
+	return !!self.ubiquityURL;
 }
 
 - (id <NSObject, NSCopying, NSCoding>) ubiquityIdentityToken
