@@ -439,11 +439,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	NSURL *localURL = self.localStoreURL;
 	NSURL *fallbackURL = self.fallbackStoreURL;
 	NSURL *ubiquityURL = self.ubiquitousStoreURL;
-#ifdef TARGET_IPHONE_SIMULATOR
-	NSURL *ubiquityContainer = nil;
-#else
-	NSURL *ubiquityContainer = [self.fileManager URLForUbiquityContainerIdentifier:nil];
-#endif
+	NSURL *ubiquityContainer = ([[[UIDevice currentDevice].model lowercaseString] rangeOfString:@"simulator"].location == NSNotFound) ? [self.fileManager URLForUbiquityContainerIdentifier:nil] : nil;
 	
 	NSDictionary *options = (self.stackShouldUseUbiquity || self.stackShouldAutoMigrateStore) ? [self azcr_lightweightMigrationOptions] : [NSDictionary dictionary];
 	
@@ -548,9 +544,9 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 - (void) configureWithManagedDocument: (id) managedDocument
 {
 	Class documentClass = NULL;
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 	documentClass = NSClassFromString(@"UIManagedDocument");
-#else
+#elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 	documentClass = NSClassFromString(@"NSPersistentDocument");
 #endif
 	

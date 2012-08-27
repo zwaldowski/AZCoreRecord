@@ -244,11 +244,7 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 		return;
 
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-#ifdef TARGET_IPHONE_SIMULATOR
-		self.ubiquityURL = nil;
-#else
-		self.ubiquityURL = [self.fileManager URLForUbiquityContainerIdentifier:nil];
-#endif
+		self.ubiquityURL = ([[[UIDevice currentDevice].model lowercaseString] rangeOfString:@"simulator"].location == NSNotFound) ? [self.fileManager URLForUbiquityContainerIdentifier:nil] : nil;
 
 		NSArray *newStores = [note.userInfo objectForKey: NSAddedPersistentStoresKey];
 		NSUInteger foundIndex = [newStores indexOfObjectPassingTest: ^BOOL(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {

@@ -114,7 +114,7 @@
 	}
 }
 
-#else
+#elif defined(__MAC_OS_X_VERSION_MIN_REQUIRED)
 
 - (void) testImportNSColorAttributeToEntity
 {
