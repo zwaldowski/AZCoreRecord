@@ -18,28 +18,37 @@
 
 - (BOOL) save
 {
-	return [self saveWithErrorHandler: NULL];
+	return [self saveRecursive: NO errorHandler: NULL];
 }
-- (BOOL) saveWithErrorHandler: (void (^)(NSError *)) errorCallback
+- (BOOL) saveRecursive: (BOOL)recursive errorHandler: (AZCoreRecordErrorBlock) errorCallback
 {
 	__block BOOL success = YES;
-	void (^block)(void) = ^{
-		NSError *error = nil;
-		success = [self save: &error];
-		if (!success) {
-			if (errorCallback)
-				errorCallback(error);
-			else
-				[AZCoreRecordManager handleError: error];
-		}
+	__block NSError *error = nil;
+	NSManagedObjectContext *context = self;
+
+	void (^block)(NSManagedObjectContext *) = ^(NSManagedObjectContext *context){
+		success = [context save: &error];
 	};
-	
-	if (self.concurrencyType == NSConfinementConcurrencyType) {
-		block();
-	} else {
-		[self performBlockAndWait: block];
+
+	while (success && error != nil && context != nil) {
+		if (context.concurrencyType == NSConfinementConcurrencyType) {
+			block(context);
+		} else {
+			[self performBlockAndWait: ^{
+				block(context);
+			}];
+		}
+		
+		context = context.parentContext;
 	}
-	
+
+	if (!success) {
+		if (errorCallback)
+			errorCallback(error);
+		else
+			[AZCoreRecordManager handleError: error];
+	}
+
 	return success;
 }
 
@@ -141,8 +150,8 @@
 			block(localContext);
 		}];
 	}
-	
-	[localContext saveWithErrorHandler: NULL];
+
+	[localContext save];
 	
 	self.mergePolicy = backupMergePolicy;
 }

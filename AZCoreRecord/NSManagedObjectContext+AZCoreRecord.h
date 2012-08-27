@@ -17,7 +17,7 @@ extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
 #pragma mark - Instance Methods
 
 - (BOOL) save;
-- (BOOL) saveWithErrorHandler: (AZCoreRecordErrorBlock) errorCallback;
+- (BOOL) saveRecursive: (BOOL)recursive errorHandler: (AZCoreRecordErrorBlock) errorCallback;
 
 - (id) existingObjectWithURI: (id) URI;
 - (id) existingObjectWithID: (NSManagedObjectID *) objectID;
