@@ -78,22 +78,155 @@
 + (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm;
 + (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-#pragma mark - Array-returning Fetch Request Factory Methods
+#pragma mark -
+/** @name Creating Fetch Requests */
 
+/** Requests instances of all model objects.
+
+ This class method is a member of the `requestAll` group of methods.
+
+ @return A fetch request.
+ @see requestAll
+ @see requestAllInContext:
+ @see requestAllWithPredicate:
+ */
 + (NSFetchRequest *) requestAll;
+
+/** Requests instances of all model objects in a managed object context.
+
+ This class method is a member of the `requestAll` group of methods.
+
+ @param context The managed object context in which to search for objects.
+ @return A fetch request.
+ @see requestAll
+ @see requestAllInContext:
+ @see requestAllWithPredicate:
+ */
 + (NSFetchRequest *) requestAllInContext: (NSManagedObjectContext *) context;
 
-+ (NSFetchRequest *) requestAllWithPredicate: (NSPredicate *) predicate;
-+ (NSFetchRequest *) requestAllWithPredicate: (NSPredicate *) predicate inContext: (NSManagedObjectContext *) context;
+/** Requests instances of all model objects in a managed object context matching a given predicate for the recieving entity.
 
+ This class method is a member of the `requestAll` group of methods.
+
+ @param searchTerm An instance of a predicate representing conditions for which to include an object.
+ @return A fetch request matching the given predicate.
+ @see requestAllWithPredicate:inContext:
+ */
++ (NSFetchRequest *) requestAllWithPredicate: (NSPredicate *) searchTerm;
+
+/** Requests instances of all model objects in a managed object context matching a given predicate for the recieving entity.
+
+ This class method is the base of the `requestAll` group of methods.
+
+ @param searchTerm An instance of a predicate representing conditions for which to include an object.
+ @param context The managed object context in which to search for objects.
+ @return A fetch request matching the given predicate.
+ @see requestAll
+ @see requestAllInContext:
+ @see requestAllWithPredicate:
+ */
++ (NSFetchRequest *) requestAllWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
+
+/** Requests instances of all model objects where an attribute is equal to a given value for the recieving entity.
+
+ This class method is a member of the `requestAllWhere` group of methods.
+
+ @param property A key path for an attribute on the entity to be matched with.
+ @param value Any object that can be parsed as part of a predicate to be matched with.
+ @return A fetch request matching the given value.
+ @see requestAllWhere:equals:sortedBy:ascending:inContext:
+ */
 + (NSFetchRequest *) requestAllWhere: (NSString *) property equals: (id) value;
+
+/** Requests instances of all model objects in a managed object context where an attribute is equal to a given value for the recieving entity.
+
+ This class method is a member of the `requestAllWhere` group of methods.
+
+ @param property A key path for an attribute on the entity to be matched with.
+ @param value Any object that can be parsed as part of a predicate to be matched with.
+ @param context The managed object context in which to search for objects.
+ @return A fetch request matching the given value.
+ @see requestAllWhere:equals:sortedBy:ascending:inContext:
+ */
 + (NSFetchRequest *) requestAllWhere: (NSString *) property equals: (id) value inContext: (NSManagedObjectContext *) context;
+
+/** Requests instances of all model objects where an attribute is equal to a given value for the recieving entity, sorted ascending or descending by a key path.
+
+ This class method is a member of the `requestAllWhere` group of methods.
+
+ @param property A key path for an attribute on the entity to be matched with.
+ @param value Any object that can be parsed as part of a predicate to be matched with.
+ @param sortTerm A key path for an attribute on the entity to sort by.
+ @param ascending If YES, the return values will be sorted in low-to-high order according to sortTerm, otherwise high-to-low.
+ @return A fetch request matching the given value sorted by the given specifiers.
+ @see requestAllWhere:equals:sortedBy:ascending:inContext:
+ */
 + (NSFetchRequest *) requestAllWhere: (NSString *) property equals: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
+
+/** Requests instances of all model objects in a managed object context where an attribute is equal to a given value for the recieving entity, sorted ascending or descending by a key path.
+
+ This class method is the base of the `requestAllWhere` group of methods.
+
+ @param property A key path for an attribute on the entity to be matched with.
+ @param value Any object that can be parsed as part of a predicate to be matched with.
+ @param sortTerm A key path for an attribute on the entity to sort by.
+ @param ascending If YES, the return values will be sorted in low-to-high order according to sortTerm, otherwise high-to-low.
+ @param context The managed object context in which to search for objects.
+ @return A fetch request matching the given value sorted by the given specifiers.
+ @see requestAllWhere:equals:
+ @see requestAllWhere:equals:inContext:
+ @see requestAllWhere:equals:sortedBy:ascending:
+ */
 + (NSFetchRequest *) requestAllWhere: (NSString *) property equals: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
 
+/** Requests instances of all model objects for the recieving entity, sorted ascending or descending by a key path.
+
+ This class method is a member of the `requestAllSortedBy` group of methods.
+
+ @param sortTerm A key path for an attribute on the entity to sort by.
+ @param ascending If YES, the return values will be sorted in low-to-high order according to sortTerm, otherwise high-to-low.
+ @return A fetch request sorted by the given specifiers.
+ @see requestAllSortedBy:ascending:predicate:inContext:
+ */
 + (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
+
+/** Requests instances of all model objects in a managed object context for the recieving entity, sorted ascending or descending by a key path.
+
+ This class method is a member of the `requestAllSortedBy` group of methods.
+
+ @param sortTerm A key path for an attribute on the entity to sort by.
+ @param ascending If YES, the return values will be sorted in low-to-high order according to sortTerm, otherwise high-to-low.
+ @param context The managed object context in which to search for objects.
+ @return A fetch request sorted by the given specifiers.
+ @see requestAllSortedBy:ascending:predicate:inContext:
+ */
 + (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
+
+/** Requests instances of all model objects matching a given predicate for the recieving entity, sorted ascending or descending by a key path.
+
+ This class method is a member of the `requestAllSortedBy` group of methods.
+
+ @param sortTerm A key path for an attribute on the entity to sort by.
+ @param ascending If YES, the return values will be sorted in low-to-high order according to sortTerm, otherwise high-to-low.
+ @param searchTerm An instance of a predicate representing conditions for which to include an object.
+ @return A fetch request with the given predicate sorted by the given specifiers.
+ @see requestAllSortedBy:ascending:predicate:inContext:
+ */
 + (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm;
+
+/** Requests instances of all model objects in a managed object context matching a given predicate for the recieving entity, sorted ascending or descending by a key path.
+
+ This class method is the base of the `requestAllSortedBy` group of methods.
+
+ @param sortTerm A key path for an attribute on the entity to sort by.
+ @param ascending If YES, the return values will be sorted in low-to-high order according to sortTerm, otherwise high-to-low.
+ @param searchTerm An instance of a predicate representing conditions for which to include an object.
+ @param context The managed object context in which to search for objects.
+ @return A fetch request with the given predicate sorted by the given specifiers.
+ @see requestAllSortedBy:ascending:
+ @see requestAllSortedBy:ascending:inContext:
+ @see requestAllSortedBy:ascending:predicate:
+ */
 + (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
 #pragma mark -
