@@ -60,22 +60,155 @@
 
 + (void) registerDeduplicationHandler: (AZCoreRecordDeduplicationHandlerBlock) handler includeSubentities: (BOOL) includeSubentities;
 
-#pragma mark - Singleton-returning Fetch Request Factory Methods
+#pragma mark -
+/** @name Creating Fetch Requests For Single Objects */
 
+/** Requests the first model object for the receiving entity.
+
+ This class method is a member of the `requestFirst` group of methods.
+
+ @return A fetch request for the first object.
+ @see requestFirstWithPredicate:inContext:
+ */
 + (NSFetchRequest *) requestFirst;
+
+/** Requests the first model object in a managed object context for the receiving entity.
+
+ This class method is a member of the `requestFirst` group of methods.
+
+ @param context The managed object context in which to search for objects.
+ @return A fetch request for the first object.
+ @see requestFirstWithPredicate:inContext:
+ */
 + (NSFetchRequest *) requestFirstInContext: (NSManagedObjectContext *) context;
 
+/** Requests the first model object matching a predicate for the receiving entity.
+
+ This class method is a member of the `requestFirst` group of methods.
+
+ @param context The managed object context in which to search for objects.
+ @return A fetch request for the first object matching the predicate.
+ @see requestFirstWithPredicate:inContext:
+ */
 + (NSFetchRequest *) requestFirstWithPredicate: (NSPredicate *) searchTerm;
+
+/** Requests the first model object matching a predicate in a managed object context for the receiving entity.
+
+ This class method is the base of the `requestFirst` group of methods.
+
+ @param searchTerm An instance of a predicate representing conditions for which to include an object.
+ @param context The managed object context in which to search for objects.
+ @return A fetch request for the first object matching the predicate.
+ @see requestFirst
+ @see requestFirstInContext:
+ @see requestFirstWithPredicate:
+ */
 + (NSFetchRequest *) requestFirstWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
+/** Requests the first model object where an attribute is equal to a given value for the receiving entity.
+
+ This class method is a member of the `requestFirstWhere` group of methods.
+
+ @param property A key path for an attribute on the entity to be matched with.
+ @param value Any object that can be parsed as part of a predicate to be matched with.
+ @return A fetch request for the first object matching the predicate.
+
+ @see requestFirstWhere:equals:sortedBy:ascending:inContext:
+ */
 + (NSFetchRequest *) requestFirstWhere: (NSString *) property equals: (id) value;
+
+/** Requests the first model object in a managed object context where an attribute is equal to a given value for the receiving entity.
+
+ This class method is a member of the `requestFirstWhere` group of methods.
+
+ @param property A key path for an attribute on the entity to be matched with.
+ @param value Any object that can be parsed as part of a predicate to be matched with.
+ @param context The managed object context in which to search for objects.
+ @return A fetch request for the first object matching the predicate.
+
+ @see requestFirstWhere:equals:sortedBy:ascending:inContext:
+ */
 + (NSFetchRequest *) requestFirstWhere: (NSString *) property equals: (id) value inContext: (NSManagedObjectContext *) context;
+
+/** Requests the first model object, when sorted ascending or descending by a key path, where an attribute is equal to a given value for the receiving entity.
+
+ This class method is a member of the `requestFirstWhere` group of methods.
+
+ @param property A key path for an attribute on the entity to be matched with.
+ @param value Any object that can be parsed as part of a predicate to be matched with.
+ @param sortTerm A key path for an attribute on the entity to sort by.
+ @param ascending If YES, the return values will be sorted in low-to-high order according to sortTerm, otherwise high-to-low.
+ @return A fetch request for the first object matching the predicate when sorted.
+
+ @see requestFirstWhere:equals:sortedBy:ascending:inContext:
+ */
 + (NSFetchRequest *) requestFirstWhere: (NSString *) property equals: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
+
+/** Requests the first model object, when sorted ascending or descending by a key path, in a managed object context where an attribute is equal to a given value for the receiving entity.
+
+ This class method is the base of the `requestFirstWhere` group of methods.
+
+ @param property A key path for an attribute on the entity to be matched with.
+ @param value Any object that can be parsed as part of a predicate to be matched with.
+ @param sortTerm A key path for an attribute on the entity to sort by.
+ @param ascending If YES, the return values will be sorted in low-to-high order according to sortTerm, otherwise high-to-low.
+ @param context The managed object context in which to search for objects.
+ @return A fetch request for the first object matching the predicate when sorted.
+
+ @see requestFirstWhere:equals:
+ @see requestFirstWhere:equals:inContext:
+ @see requestFirstWhere:equals:sortedBy:ascending:
+ */
 + (NSFetchRequest *) requestFirstWhere: (NSString *) property equals: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
 
+/** Requests the first model object, when sorted ascending or descending by a key path, for the receiving entity.
+
+ This class method is a member of the `requestFirstSortedBy` group of methods.
+
+ @param sortTerm A key path for an attribute on the entity to sort by.
+ @param ascending If YES, the return values will be sorted in low-to-high order according to sortTerm, otherwise high-to-low.
+ @return A fetch request for the first object when sorted.
+ @see requestFirstSortedBy:ascending:predicate:inContext:
+ */
 + (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
+
+/** Requests the first model object, when sorted ascending or descending by a key path, in a managed object context for the receiving entity.
+
+ This class method is a member of the `requestFirstSortedBy` group of methods.
+
+ @param sortTerm A key path for an attribute on the entity to sort by.
+ @param ascending If YES, the return values will be sorted in low-to-high order according to sortTerm, otherwise high-to-low.
+ @param context The managed object context in which to search for objects.
+ @return A fetch request for the first object when sorted.
+ @see requestFirstSortedBy:ascending:predicate:inContext:
+ */
 + (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
+
+/** Requests the first model object, when sorted ascending or descending by a key path, matching a given predicate for the receiving entity.
+
+ This class method is the base of the `requestFirstSortedBy` group of methods.
+
+ @param sortTerm A key path for an attribute on the entity to sort by.
+ @param ascending If YES, the return values will be sorted in low-to-high order according to sortTerm, otherwise high-to-low.
+ @param searchTerm An instance of a predicate representing conditions for which to include an object.
+ @return A fetch request for the first object matching the predicate when sorted.
+ @see requestFirstSortedBy:ascending:predicate:inContext:
+ */
 + (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm;
+
+/** Requests the first model object, when sorted ascending or descending by a key path, in a managed object context matching a given predicate for the receiving entity.
+
+ This class method is the base of the `requestFirstSortedBy` group of methods.
+
+ @param sortTerm A key path for an attribute on the entity to sort by.
+ @param ascending If YES, the return values will be sorted in low-to-high order according to sortTerm, otherwise high-to-low.
+ @param searchTerm An instance of a predicate representing conditions for which to include an object.
+ @param context The managed object context in which to search for objects.
+ @return A fetch request for the first object matching the predicate when sorted.
+ @see requestFirstSortedBy:ascending:
+ @see requestFirstSortedBy:ascending:inContext:
+ @see requestFirstSortedBy:ascending:predicate:
+ */
 + (NSFetchRequest *) requestFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
 #pragma mark -
