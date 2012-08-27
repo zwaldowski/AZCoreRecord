@@ -47,8 +47,8 @@
 	NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
 	assertThat([[testRelationship userInfo] valueForKey: AZCoreRecordImportMapKey], is(equalTo(@"someRandomAttributeName")));
 	
-	assertThatInteger([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey countOfEntitiesInContext: context], is(equalToInteger(1)));
-	assertThatInteger([MappedEntity countOfEntitiesInContext: context], is(equalToInteger(2)));
+	assertThatInteger([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey countInContext: context], is(equalToInteger(1)));
+	assertThatInteger([MappedEntity countInContext: context], is(equalToInteger(2)));
 	assertThat(testRelatedEntity, is(notNilValue()));
 	assertThat([testRelatedEntity sampleAttribute], is(containsString(@"sample json file")));	
 }
@@ -68,8 +68,8 @@
 	NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
 	assertThat([[testRelationship userInfo] valueForKey: AZCoreRecordImportMapKey], is(equalTo(@"someRandomAttributeName")));
 	
-	assertThatInteger([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey countOfEntitiesInContext: context], is(equalToInteger(1)));
-	assertThatInteger([MappedEntity countOfEntitiesInContext: context], is(equalToInteger(1)));
+	assertThatInteger([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey countInContext: context], is(equalToInteger(1)));
+	assertThatInteger([MappedEntity countInContext: context], is(equalToInteger(1)));
 	assertThat(testRelatedEntity, is(notNilValue()));
 	assertThat([testRelatedEntity sampleAttribute], is(containsString(@"sample json file")));
 }
@@ -88,8 +88,8 @@
 	NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
 	assertThat([[testRelationship userInfo] valueForKey: AZCoreRecordImportRelationshipPrimaryKey], is(equalTo(@"testMappedEntityID")));
 	
-	assertThatInteger([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey countOfEntitiesInContext: context], is(equalToInteger(1)));
-	assertThatInteger([MappedEntity countOfEntitiesInContext: context], is(equalToInteger(2)));
+	assertThatInteger([SingleEntityRelatedToMappedEntityUsingMappedPrimaryKey countInContext: context], is(equalToInteger(1)));
+	assertThatInteger([MappedEntity countInContext: context], is(equalToInteger(2)));
 	assertThat([testRelatedEntity testMappedEntityID], is(equalToInteger(42)));
 	assertThat([testRelatedEntity sampleAttribute], containsString(@"sample json file"));	
 }
@@ -109,7 +109,7 @@
 	NSRelationshipDescription *testRelationship = [[mappedEntity propertiesByName] valueForKey:@"mappedEntity"];
 	assertThat([[testRelationship userInfo] valueForKey: AZCoreRecordImportRelationshipPrimaryKey], is(equalTo(@"testMappedEntityID")));
 	
-	assertThatInteger([MappedEntity countOfEntitiesInContext: context], is(equalToInteger(1)));
+	assertThatInteger([MappedEntity countInContext: context], is(equalToInteger(1)));
 	assertThat([testRelatedEntity testMappedEntityID], is(equalToInteger(42)));
 	assertThat([testRelatedEntity sampleAttribute], containsString(@"sample json file"));
 }

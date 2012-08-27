@@ -51,10 +51,10 @@
 
 #pragma mark - Entity Count
 
-+ (NSUInteger) countOfEntities;
-+ (NSUInteger) countOfEntitiesInContext: (NSManagedObjectContext *) context;
-+ (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter;
-+ (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter inContext: (NSManagedObjectContext *) context;
++ (NSUInteger) count;
++ (NSUInteger) countInContext: (NSManagedObjectContext *) context;
++ (NSUInteger) countWithPredicate: (NSPredicate *) searchFilter;
++ (NSUInteger) countWithPredicate: (NSPredicate *) searchFilter inContext: (NSManagedObjectContext *) context;
 
 #pragma mark - Deduplication
 

@@ -180,20 +180,20 @@ static NSUInteger defaultBatchSize = 20;
 
 #pragma mark - Entity Count
 
-+ (NSUInteger) countOfEntities
++ (NSUInteger) count
 {
-	return [self countOfEntitiesWithPredicate: nil inContext: nil];
+	return [self countWithPredicate: nil inContext: nil];
 }
-+ (NSUInteger) countOfEntitiesInContext: (NSManagedObjectContext *) context
++ (NSUInteger) countInContext:(NSManagedObjectContext *)context
 {
-	return [self countOfEntitiesWithPredicate: nil inContext: context];
+	return [self countWithPredicate: nil inContext: context];
 }
 
-+ (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter
++ (NSUInteger) countWithPredicate: (NSPredicate *) searchFilter
 {
-	return [self countOfEntitiesWithPredicate: searchFilter inContext: nil];
+	return [self countWithPredicate: searchFilter inContext: nil];
 }
-+ (NSUInteger) countOfEntitiesWithPredicate: (NSPredicate *) searchFilter inContext: (NSManagedObjectContext *) context
++ (NSUInteger) countWithPredicate: (NSPredicate *) searchFilter inContext: (NSManagedObjectContext *) context
 {
 	if (!context)
 		context = [NSManagedObjectContext defaultContext];

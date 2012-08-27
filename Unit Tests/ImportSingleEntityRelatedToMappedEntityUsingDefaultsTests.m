@@ -49,7 +49,7 @@
 	assertThat(testRelatedEntity, is(notNilValue()));
 	assertThat([testRelatedEntity sampleAttribute], containsString(@"sample json file"));
 	
-	assertThatInteger([MappedEntity countOfEntitiesInContext: context], is(equalToInteger(2)));
+	assertThatInteger([MappedEntity countInContext: context], is(equalToInteger(2)));
 }
 
 - (void) testUpdateMappedEntity
@@ -61,7 +61,7 @@
 	
 	[testEntity updateValuesFromDictionary:self.testEntityData];
 	
-	assertThatInteger([MappedEntity countOfEntitiesInContext: context], is(equalToInteger(1)));
+	assertThatInteger([MappedEntity countInContext: context], is(equalToInteger(1)));
 	
 	assertThat(testEntity, is(notNilValue()));
 	

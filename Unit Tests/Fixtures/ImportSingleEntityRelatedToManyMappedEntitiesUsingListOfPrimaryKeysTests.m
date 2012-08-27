@@ -55,8 +55,8 @@
 		assertThat(relatedEntity.sampleAttribute, containsString(@"test attribute"));
 	}
 	
-	assertThatInteger([SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey countOfEntitiesInContext: context], is(equalToInteger(2)));
-	assertThatInteger([MappedEntity countOfEntitiesInContext: context], is(equalToInteger(10)));
+	assertThatInteger([SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey countInContext: context], is(equalToInteger(2)));
+	assertThatInteger([MappedEntity countInContext: context], is(equalToInteger(10)));
 }
 
 - (void) testDataUpdateWithLookupInfoInDataSet
@@ -66,8 +66,8 @@
 	SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey *testEntity = [[self testEntityClass] updateFromDictionary:self.testEntityData inContext:context];
 	[context save];
 
-	assertThatInteger([SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey countOfEntitiesInContext: context], is(equalToInteger(1)));
-	assertThatInteger([MappedEntity countOfEntitiesInContext: context], is(equalToInteger(10)));
+	assertThatInteger([SingleEntityRelatedToManyMappedEntitiesUsingMappedPrimaryKey countInContext: context], is(equalToInteger(1)));
+	assertThatInteger([MappedEntity countInContext: context], is(equalToInteger(10)));
 			   
 	assertThat(testEntity, is(notNilValue()));
 	assertThat(testEntity.testPrimaryKey, is(equalToInteger(84)));
