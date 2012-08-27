@@ -237,7 +237,7 @@
  */
 + (NSFetchRequest *) requestAllInContext: (NSManagedObjectContext *) context;
 
-/** Requests instances of all model objects in a managed object context matching a given predicate for the recieving entity.
+/** Requests instances of all model objects in a managed object context matching a given predicate for the receiving entity.
 
  This class method is a member of the `requestAll` group of methods.
 
@@ -247,7 +247,7 @@
  */
 + (NSFetchRequest *) requestAllWithPredicate: (NSPredicate *) searchTerm;
 
-/** Requests instances of all model objects in a managed object context matching a given predicate for the recieving entity.
+/** Requests instances of all model objects in a managed object context matching a given predicate for the receiving entity.
 
  This class method is the base of the `requestAll` group of methods.
 
@@ -260,7 +260,7 @@
  */
 + (NSFetchRequest *) requestAllWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-/** Requests instances of all model objects where an attribute is equal to a given value for the recieving entity.
+/** Requests instances of all model objects where an attribute is equal to a given value for the receiving entity.
 
  This class method is a member of the `requestAllWhere` group of methods.
 
@@ -271,7 +271,7 @@
  */
 + (NSFetchRequest *) requestAllWhere: (NSString *) property equals: (id) value;
 
-/** Requests instances of all model objects in a managed object context where an attribute is equal to a given value for the recieving entity.
+/** Requests instances of all model objects in a managed object context where an attribute is equal to a given value for the receiving entity.
 
  This class method is a member of the `requestAllWhere` group of methods.
 
@@ -283,7 +283,7 @@
  */
 + (NSFetchRequest *) requestAllWhere: (NSString *) property equals: (id) value inContext: (NSManagedObjectContext *) context;
 
-/** Requests instances of all model objects where an attribute is equal to a given value for the recieving entity, sorted ascending or descending by a key path.
+/** Requests instances of all model objects where an attribute is equal to a given value for the receiving entity, sorted ascending or descending by a key path.
 
  This class method is a member of the `requestAllWhere` group of methods.
 
@@ -296,7 +296,7 @@
  */
 + (NSFetchRequest *) requestAllWhere: (NSString *) property equals: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
 
-/** Requests instances of all model objects in a managed object context where an attribute is equal to a given value for the recieving entity, sorted ascending or descending by a key path.
+/** Requests instances of all model objects in a managed object context where an attribute is equal to a given value for the receiving entity, sorted ascending or descending by a key path.
 
  This class method is the base of the `requestAllWhere` group of methods.
 
@@ -312,7 +312,7 @@
  */
 + (NSFetchRequest *) requestAllWhere: (NSString *) property equals: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
 
-/** Requests instances of all model objects for the recieving entity, sorted ascending or descending by a key path.
+/** Requests instances of all model objects for the receiving entity, sorted ascending or descending by a key path.
 
  This class method is a member of the `requestAllSortedBy` group of methods.
 
@@ -323,7 +323,7 @@
  */
 + (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
 
-/** Requests instances of all model objects in a managed object context for the recieving entity, sorted ascending or descending by a key path.
+/** Requests instances of all model objects in a managed object context for the receiving entity, sorted ascending or descending by a key path.
 
  This class method is a member of the `requestAllSortedBy` group of methods.
 
@@ -335,7 +335,7 @@
  */
 + (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
 
-/** Requests instances of all model objects matching a given predicate for the recieving entity, sorted ascending or descending by a key path.
+/** Requests instances of all model objects matching a given predicate for the receiving entity, sorted ascending or descending by a key path.
 
  This class method is a member of the `requestAllSortedBy` group of methods.
 
@@ -347,7 +347,7 @@
  */
 + (NSFetchRequest *) requestAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm;
 
-/** Requests instances of all model objects in a managed object context matching a given predicate for the recieving entity, sorted ascending or descending by a key path.
+/** Requests instances of all model objects in a managed object context matching a given predicate for the receiving entity, sorted ascending or descending by a key path.
 
  This class method is the base of the `requestAllSortedBy` group of methods.
 
@@ -365,7 +365,7 @@
 #pragma mark -
 /** @name Fetching Single Objects */
 
-/** Requests and returns the first model object for the recieving entity.
+/** Requests and returns the first model object for the receiving entity.
 
  This class method is a member of the `findFirst` group of methods.
 
@@ -374,7 +374,7 @@
  */
 + (instancetype) findFirst;
 
-/** Requests and returns the first model object in a managed object context for the recieving entity.
+/** Requests and returns the first model object in a managed object context for the receiving entity.
 
  This class method is a member of the `findFirst` group of methods.
 
@@ -384,7 +384,7 @@
  */
 + (instancetype) findFirstInContext: (NSManagedObjectContext *) context;
 
-/** Requests and returns the first model object matching a predicate for the recieving entity.
+/** Requests and returns the first model object matching a predicate for the receiving entity.
 
  This class method is a member of the `findFirst` group of methods.
 
@@ -394,7 +394,7 @@
  */
 + (instancetype) findFirstWithPredicate: (NSPredicate *) searchTerm;
 
-/** Requests and returns the first model object matching a predicate in a managed object context for the recieving entity.
+/** Requests and returns the first model object matching a predicate in a managed object context for the receiving entity.
 
  This class method is a member of the `findFirst` group of methods.
 
@@ -405,7 +405,7 @@
  */
 + (instancetype) findFirstWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-/** Requests and returns the first model object matching a predicate for the recieving entity with specific attributes.
+/** Requests and returns the first model object matching a predicate for the receiving entity with specific attributes.
 
  This class method is a member of the `findFirst` group of methods.
 
@@ -416,7 +416,7 @@
  */
 + (instancetype) findFirstWithPredicate: (NSPredicate *) searchTerm attributes: (NSArray *) attributes;
 
-/** Requests and returns the first model object matching a predicate in a managed object context for the recieving entity with specific attributes.
+/** Requests and returns the first model object matching a predicate in a managed object context for the receiving entity with specific attributes.
 
  This class method is the base of the `findFirst` group of methods.
 
@@ -432,7 +432,7 @@
  */
 + (instancetype) findFirstWithPredicate: (NSPredicate *) searchTerm attributes: (NSArray *) attributes inContext: (NSManagedObjectContext *) context;
 
-/** Requests and returns the first model object where an attribute is equal to a given value for the recieving entity.
+/** Requests and returns the first model object where an attribute is equal to a given value for the receiving entity.
 
  This class method is a member of the `findFirstWhere` group of methods.
 
@@ -444,7 +444,7 @@
  */
 + (instancetype) findFirstWhere: (NSString *) property equals: (id) searchValue;
 
-/** Requests and returns the first model object in a managed object context where an attribute is equal to a given value for the recieving entity.
+/** Requests and returns the first model object in a managed object context where an attribute is equal to a given value for the receiving entity.
 
  This class method is a member of the `findFirstWhere` group of methods.
 
@@ -457,7 +457,7 @@
  */
 + (instancetype) findFirstWhere: (NSString *) property equals: (id) searchValue inContext: (NSManagedObjectContext *) context;
 
-/** Requests and returns the first model object, when sorted ascending or descending by a key path, where an attribute is equal to a given value for the recieving entity.
+/** Requests and returns the first model object, when sorted ascending or descending by a key path, where an attribute is equal to a given value for the receiving entity.
 
  This class method is a member of the `findFirstWhere` group of methods.
 
@@ -471,7 +471,7 @@
  */
 + (instancetype) findFirstWhere: (NSString *) property equals: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
 
-/** Requests and returns the first model object, when sorted ascending or descending by a key path, in a managed object context where an attribute is equal to a given value for the recieving entity.
+/** Requests and returns the first model object, when sorted ascending or descending by a key path, in a managed object context where an attribute is equal to a given value for the receiving entity.
 
  This class method is the base of the `findFirstWhere` group of methods.
 
@@ -488,7 +488,7 @@
  */
 + (instancetype) findFirstWhere: (NSString *) property equals: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
 
-/** Requests and returns the first model object, when sorted ascending or descending by a key path, for the recieving entity.
+/** Requests and returns the first model object, when sorted ascending or descending by a key path, for the receiving entity.
 
  This class method is a member of the `findFirstSortedBy` group of methods.
 
@@ -499,7 +499,7 @@
  */
 + (instancetype) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
 
-/** Requests and returns the first model object, when sorted ascending or descending by a key path, in a managed object context for the recieving entity.
+/** Requests and returns the first model object, when sorted ascending or descending by a key path, in a managed object context for the receiving entity.
 
  This class method is a member of the `findFirstSortedBy` group of methods.
 
@@ -511,7 +511,7 @@
  */
 + (instancetype) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
 
-/** Requests and returns the first model object, when sorted ascending or descending by a key path, matching a given predicate for the recieving entity.
+/** Requests and returns the first model object, when sorted ascending or descending by a key path, matching a given predicate for the receiving entity.
 
  This class method is a member of the `findFirstSortedBy` group of methods.
 
@@ -523,7 +523,7 @@
  */
 + (instancetype) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm;
 
-/** Requests and returns the first model object, when sorted ascending or descending by a key path, in a managed object context matching a given predicate for the recieving entity.
+/** Requests and returns the first model object, when sorted ascending or descending by a key path, in a managed object context matching a given predicate for the receiving entity.
 
  This class method is a member of the `findFirstSortedBy` group of methods.
 
@@ -536,7 +536,7 @@
  */
 + (instancetype) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-/** Requests and returns the first model object, when sorted ascending or descending by a key path, matching a given predicate for the recieving entity with specific attributes.
+/** Requests and returns the first model object, when sorted ascending or descending by a key path, matching a given predicate for the receiving entity with specific attributes.
 
  This class method is a member of the `findFirstSortedBy` group of methods.
 
@@ -549,7 +549,7 @@
  */
 + (instancetype) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm attributes: (NSArray *) attributes;
 
-/** Requests and returns the first model object, when sorted ascending or descending by a key path, in a managed object context matching a given predicate for the recieving entity with specific attributes.
+/** Requests and returns the first model object, when sorted ascending or descending by a key path, in a managed object context matching a given predicate for the receiving entity with specific attributes.
  
  This class method is the base of the `findFirstSortedBy` group of methods.
 
@@ -589,7 +589,7 @@
  */
 + (NSArray *) findAllInContext: (NSManagedObjectContext *) context;
 
-/** Requests and returns instances of all model objects matching a given predicate for the recieving entity.
+/** Requests and returns instances of all model objects matching a given predicate for the receiving entity.
 
  This class method is a member of the `findAll` group of methods.
 
@@ -599,7 +599,7 @@
  */
 + (NSArray *) findAllWithPredicate: (NSPredicate *) searchTerm;
 
-/** Requests and returns instances of all model objects in a managed object context matching a given predicate for the recieving entity.
+/** Requests and returns instances of all model objects in a managed object context matching a given predicate for the receiving entity.
 
  This class method is the base of the `findAll` group of methods.
 
@@ -612,7 +612,7 @@
  */
 + (NSArray *) findAllWithPredicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context;
 
-/** Requests and returns instances of all model objects where an attribute is equal to a given value for the recieving entity.
+/** Requests and returns instances of all model objects where an attribute is equal to a given value for the receiving entity.
 
  This class method is a member of the `findAllWhere` group of methods.
 
@@ -623,7 +623,7 @@
  */
 + (NSArray *) findAllWhere: (NSString *) property equals: (id) value;
 
-/** Requests and returns instances of all model objects in a managed object context where an attribute is equal to a given value for the recieving entity.
+/** Requests and returns instances of all model objects in a managed object context where an attribute is equal to a given value for the receiving entity.
 
  This class method is a member of the `findAllWhere` group of methods.
 
@@ -635,7 +635,7 @@
  */
 + (NSArray *) findAllWhere: (NSString *) property equals: (id) value inContext: (NSManagedObjectContext *) context;
 
-/** Requests and returns instances of all model objects where an attribute is equal to a given value for the recieving entity, sorted ascending or descending by a key path.
+/** Requests and returns instances of all model objects where an attribute is equal to a given value for the receiving entity, sorted ascending or descending by a key path.
 
  This class method is a member of the `findAllWhere` group of methods.
 
@@ -648,7 +648,7 @@
  */
 + (NSArray *) findAllWhere: (NSString *) property equals: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
 
-/** Requests and returns instances of all model objects in a managed object context where an attribute is equal to a given value for the recieving entity, sorted ascending or descending by a key path.
+/** Requests and returns instances of all model objects in a managed object context where an attribute is equal to a given value for the receiving entity, sorted ascending or descending by a key path.
 
  This class method is the base of the `findAllWhere` group of methods.
 
@@ -664,7 +664,7 @@
  */
 + (NSArray *) findAllWhere: (NSString *) property equals: (id) value sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
 
-/** Requests and returns instances of all model objects for the recieving entity, sorted ascending or descending by a key path.
+/** Requests and returns instances of all model objects for the receiving entity, sorted ascending or descending by a key path.
 
  This class method is a member of the `findAllSortedBy` group of methods.
 
@@ -675,7 +675,7 @@
  */
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending;
 
-/** Requests and returns instances of all model objects in a managed object context for the recieving entity, sorted ascending or descending by a key path.
+/** Requests and returns instances of all model objects in a managed object context for the receiving entity, sorted ascending or descending by a key path.
 
  This class method is a member of the `findAllSortedBy` group of methods.
 
@@ -687,7 +687,7 @@
  */
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context;
 
-/** Requests and returns instances of all model objects matching a given predicate for the recieving entity, sorted ascending or descending by a key path.
+/** Requests and returns instances of all model objects matching a given predicate for the receiving entity, sorted ascending or descending by a key path.
 
  This class method is a member of the `findAllSortedBy` group of methods.
 
@@ -699,7 +699,7 @@
  */
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm;
 
-/** Requests and returns instances of all model objects in a managed object context matching a given predicate for the recieving entity, sorted ascending or descending by a key path.
+/** Requests and returns instances of all model objects in a managed object context matching a given predicate for the receiving entity, sorted ascending or descending by a key path.
  
  This class method is the base of the `findAllSortedBy` group of methods.
  
