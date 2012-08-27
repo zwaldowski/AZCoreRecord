@@ -133,10 +133,16 @@
 	NSMergePolicy *backupMergePolicy = self.mergePolicy;
 	self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
 	localContext.mergePolicy = NSOverwriteMergePolicy;
+
+	if (self.concurrencyType == NSConfinementConcurrencyType) {
+		block(localContext);
+	} else {
+		[self performBlock: ^{
+			block(localContext);
+		}];
+	}
 	
-	block(localContext);
-	
-	[localContext save];
+	[localContext saveWithErrorHandler: NULL];
 	
 	self.mergePolicy = backupMergePolicy;
 }
@@ -149,23 +155,15 @@
 - (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block completion: (AZCoreRecordVoidBlock) callback
 {
 	NSParameterAssert(block != nil);
-	
-	NSManagedObjectContext *localContext = [self newChildContext];
-	
-	NSMergePolicy *backupMergePolicy = self.mergePolicy;
-	self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
-	localContext.mergePolicy = NSOverwriteMergePolicy;
-	
-	[self performBlock: ^{
-		block(localContext);
-		
-		[localContext save];
-		
-		self.mergePolicy = backupMergePolicy;
-		
+
+	dispatch_queue_t currentQueue = dispatch_get_current_queue();
+
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		[self saveDataWithBlock: block];
+
 		if (callback)
-			dispatch_async(dispatch_get_main_queue(), callback);
-	}];
+			dispatch_async(currentQueue, callback);
+	});
 }
 
 @end
