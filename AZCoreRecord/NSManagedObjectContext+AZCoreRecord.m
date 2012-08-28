@@ -26,16 +26,12 @@
 	__block NSError *error = nil;
 	NSManagedObjectContext *context = self;
 
-	void (^block)(NSManagedObjectContext *) = ^(NSManagedObjectContext *context){
-		success = [context save: &error];
-	};
-
-	while (success && error != nil && context != nil) {
+	while (success && error == nil && context != nil) {
 		if (context.concurrencyType == NSConfinementConcurrencyType) {
-			block(context);
+			success = [context save: &error];
 		} else {
-			[self performBlockAndWait: ^{
-				block(context);
+			[context performBlockAndWait: ^{
+				success = [context save: &error];
 			}];
 		}
 		
