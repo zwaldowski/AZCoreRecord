@@ -142,7 +142,7 @@
 	if (self.concurrencyType == NSConfinementConcurrencyType) {
 		block(localContext);
 	} else {
-		[self performBlock: ^{
+		[self performBlockAndWait: ^{
 			block(localContext);
 		}];
 	}
@@ -161,14 +161,28 @@
 {
 	NSParameterAssert(block != nil);
 
-	dispatch_queue_t currentQueue = dispatch_get_current_queue();
+	NSManagedObjectContext *localContext = [self newChildContext];
 
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		[self saveDataWithBlock: block];
+	NSMergePolicy *backupMergePolicy = self.mergePolicy;
+	self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+	localContext.mergePolicy = NSOverwriteMergePolicy;
+
+	void (^innerBlock)(void) = ^{
+		block(localContext);
+
+		[localContext save];
+
+		self.mergePolicy = backupMergePolicy;
 
 		if (callback)
-			dispatch_async(currentQueue, callback);
-	});
+			dispatch_async(dispatch_get_main_queue(), callback);
+	};
+
+	if (self.concurrencyType == NSConfinementConcurrencyType) {
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), innerBlock);
+	} else {
+		[self performBlock: innerBlock];
+	 }
 }
 
 @end
