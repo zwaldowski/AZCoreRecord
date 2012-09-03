@@ -439,7 +439,11 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	NSURL *localURL = self.localStoreURL;
 	NSURL *fallbackURL = self.fallbackStoreURL;
 	NSURL *ubiquityURL = self.ubiquitousStoreURL;
-	NSURL *ubiquityContainer = ([[[UIDevice currentDevice].model lowercaseString] rangeOfString:@"simulator"].location == NSNotFound) ? [self.fileManager URLForUbiquityContainerIdentifier:nil] : nil;
+#if TARGET_IPHONE_SIMULATOR
+	NSURL *ubiquityContainer = nil;
+#else
+	NSURL *ubiquityContainer = [self.fileManager URLForUbiquityContainerIdentifier:nil];
+#endif
 	
 	NSDictionary *options = (self.stackShouldUseUbiquity || self.stackShouldAutoMigrateStore) ? [self azcr_lightweightMigrationOptions] : [NSDictionary dictionary];
 	

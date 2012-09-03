@@ -10,8 +10,6 @@
 #import <CoreData/CoreData.h>
 #import "AZCoreRecordManager.h"
 
-extern NSString *const AZCoreRecordDidMergeUbiquitousChangesNotification;
-
 @interface NSManagedObjectContext (AZCoreRecord)
 
 #pragma mark - Instance Methods
