@@ -194,6 +194,8 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 	if (!primaryKeyName) primaryKeyName = azcr_primaryKeyNameFromString(relationshipInfo.destinationEntity.name);
 	
 	id object = [managedObjectClass findFirstWhere: primaryKeyName equals: relatedValue inContext: self.managedObjectContext];
+	if (!object)
+		object = [managedObjectClass createInContext: self.managedObjectContext];
 	if ([singleRelatedObjectData isKindOfClass: [NSDictionary class]])
 		[object updateValuesFromDictionary: singleRelatedObjectData];
 	
