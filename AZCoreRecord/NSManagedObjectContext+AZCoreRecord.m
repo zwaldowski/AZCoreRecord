@@ -26,16 +26,23 @@
 	__block NSError *error = nil;
 	NSManagedObjectContext *context = self;
 
-	while (success && error == nil && context != nil) {
-		if (context.concurrencyType == NSConfinementConcurrencyType) {
-			success = [context save: &error];
+	void (^save)(NSManagedObjectContext *) = ^(NSManagedObjectContext *ctx){
+		if (ctx.concurrencyType == NSConfinementConcurrencyType) {
+			success = [ctx save: &error];
 		} else {
-			[context performBlockAndWait: ^{
-				success = [context save: &error];
+			[ctx performBlockAndWait: ^{
+				success = [ctx save: &error];
 			}];
 		}
-		
-		context = context.parentContext;
+	};
+
+	if (recursive) {
+		while (success && error == nil && context != nil) {
+			save(context);
+			context = context.parentContext;
+		}
+	} else {
+		save(context);
 	}
 
 	if (!success) {
