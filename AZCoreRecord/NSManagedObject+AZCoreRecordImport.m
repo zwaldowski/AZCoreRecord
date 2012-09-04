@@ -352,7 +352,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 	if (!context)
 		context = [NSManagedObjectContext defaultContext];
 	
-	NSEntityDescription *entity = self.entityDescription;
+	NSEntityDescription *entity = [self entityDescriptionInContext: context];
 	NSString *attributeKey = [entity.userInfo valueForKey: AZCoreRecordImportPrimaryAttributeKey] ?: azcr_primaryKeyNameFromString(entity.name);
 	
 	NSAttributeDescription *primaryAttribute = [entity.attributesByName valueForKey: attributeKey];
