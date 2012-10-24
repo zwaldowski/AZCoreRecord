@@ -140,23 +140,25 @@
 {
 	NSParameterAssert(block != nil);
 	
-	NSManagedObjectContext *localContext = [self newChildContext];
-	
-	NSMergePolicy *backupMergePolicy = self.mergePolicy;
-	self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
-	localContext.mergePolicy = NSOverwriteMergePolicy;
-
 	if (self.concurrencyType == NSConfinementConcurrencyType) {
-		block(localContext);
+		block(self);
 	} else {
 		[self performBlockAndWait: ^{
+			NSManagedObjectContext *localContext = [self newChildContext];
+			
+			NSMergePolicy *backupMergePolicy = self.mergePolicy;
+			self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+			localContext.mergePolicy = NSOverwriteMergePolicy;
+			
 			block(localContext);
+			
+			[localContext save];
+			
+			self.mergePolicy = backupMergePolicy;
 		}];
 	}
 
-	[localContext save];
-	
-	self.mergePolicy = backupMergePolicy;
+	[self save];
 }
 
 - (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block
@@ -167,29 +169,26 @@
 - (void) saveDataInBackgroundWithBlock: (AZCoreRecordContextBlock) block completion: (AZCoreRecordVoidBlock) callback
 {
 	NSParameterAssert(block != nil);
-
-	NSManagedObjectContext *localContext = [self newChildContext];
-
-	NSMergePolicy *backupMergePolicy = self.mergePolicy;
-	self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
-	localContext.mergePolicy = NSOverwriteMergePolicy;
-
-	void (^innerBlock)(void) = ^{
+	NSParameterAssert(self.concurrencyType != NSConfinementConcurrencyType);
+	
+	[self performBlock: ^{
+		NSManagedObjectContext *localContext = [self newChildContext];
+		
+		NSMergePolicy *backupMergePolicy = self.mergePolicy;
+		self.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+		localContext.mergePolicy = NSOverwriteMergePolicy;
+		
 		block(localContext);
-
+		
 		[localContext save];
-
+		
 		self.mergePolicy = backupMergePolicy;
-
+		
+		[self save];
+		
 		if (callback)
 			dispatch_async(dispatch_get_main_queue(), callback);
-	};
-
-	if (self.concurrencyType == NSConfinementConcurrencyType) {
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), innerBlock);
-	} else {
-		[self performBlock: innerBlock];
-	 }
+	}];
 }
 
 @end
