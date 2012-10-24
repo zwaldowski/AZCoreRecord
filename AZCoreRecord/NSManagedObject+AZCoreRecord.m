@@ -469,6 +469,9 @@ static NSUInteger defaultBatchSize = 20;
 }
 + (NSArray *) findAllSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending predicate: (NSPredicate *) searchTerm inContext: (NSManagedObjectContext *) context
 {
+	if (!context)
+		context = [NSManagedObjectContext contextForCurrentThread];
+
 	NSFetchRequest *request = [self requestAllSortedBy: sortTerm ascending: ascending predicate: searchTerm inContext: context];
 	NSError *error = nil;
 	NSArray *results = [context executeFetchRequest: request error: &error];
