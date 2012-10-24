@@ -196,7 +196,7 @@ static NSUInteger defaultBatchSize = 20;
 + (NSUInteger) countWithPredicate: (NSPredicate *) searchFilter inContext: (NSManagedObjectContext *) context
 {
 	if (!context)
-		context = [NSManagedObjectContext defaultContext];
+		context = [NSManagedObjectContext contextForCurrentThread];
 	
 	NSError *error = nil;
 	NSFetchRequest *request = [self requestAllWithPredicate: searchFilter inContext: context];
