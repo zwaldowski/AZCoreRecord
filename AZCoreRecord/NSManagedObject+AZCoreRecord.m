@@ -385,7 +385,7 @@ static NSUInteger defaultBatchSize = 20;
 + (instancetype) findFirstWhere: (NSString *) property equals: (id) searchValue sortedBy: (NSString *) sortTerm ascending: (BOOL) ascending inContext: (NSManagedObjectContext *) context
 {
 	NSPredicate *predicate = [NSPredicate predicateWithFormat: @"%K = %@", property, searchValue];
-	return [self findFirstSortedBy: property ascending: NO predicate: predicate inContext: context];
+	return [self findFirstSortedBy: sortTerm ascending: ascending predicate: predicate inContext: context];
 }
 
 + (instancetype) findFirstSortedBy: (NSString *) sortTerm ascending: (BOOL) ascending
