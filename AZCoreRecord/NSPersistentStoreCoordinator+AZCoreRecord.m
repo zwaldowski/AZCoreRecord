@@ -52,6 +52,8 @@
 	
 	dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	dispatch_async(globalQueue, ^{
+		[self lock];
+		
 		NSPersistentStoreCoordinator *oldPSC = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: self.managedObjectModel];
 		NSDictionary *oldPSOption = [NSDictionary dictionaryWithObject: [NSNumber numberWithBool: YES] forKey: NSReadOnlyPersistentStoreOption];
 		
@@ -64,7 +66,7 @@
 		}];
 		
 		if (![oldPSC addStoreAtURL: oldStoreURL configuration: configuration options: oldPSOption])
-			return;
+			return [self unlock];
 		
 		NSManagedObjectContext *oldMOC = [[NSManagedObjectContext alloc] init];
 		[oldMOC setPersistentStoreCoordinator: oldPSC];
@@ -78,6 +80,8 @@
 			[newMOC reset];
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName: AZCoreRecordDidFinishSeedingPersistentStoreNotification object: self];
+		
+		[self unlock];
 	});
 }
 
