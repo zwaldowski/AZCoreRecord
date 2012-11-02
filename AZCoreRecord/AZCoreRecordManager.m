@@ -424,7 +424,6 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 }
 - (void) azcr_loadPersistentStores: (BOOL) obtainLock
 {
-
 	if (obtainLock) dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
 	
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -638,10 +637,15 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 {
 	if (_ubiquityEnabled == enabled)
 		return;
-		
-	_stackShouldUseUbiquity = enabled;
 	
-	[self azcr_didChangeUbiquityIdentityNotification: nil];
+	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+	
+	[self azcr_resetStack];
+	_ubiquityEnabled = enabled;
+	self.ubiquityToken = [[AZCoreRecordUbiquitySentinel sharedSentinel] ubiquityIdentityToken];
+	if (_persistentStoreCoordinator) [self azcr_loadPersistentStores: NO];
+	
+	dispatch_semaphore_signal(self.semaphore);
 }
 
 #pragma mark - Default stack settings
