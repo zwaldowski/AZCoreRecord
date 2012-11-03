@@ -178,7 +178,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 		}
 		
 		NSEntityDescription *destinationEntity = relationshipInfo.destinationEntity;
-		NSString *primaryKeyName = [relationshipInfo.userInfo valueForKey: AZCoreRecordImportRelationshipPrimaryKey] ?: [destinationEntity.userInfo valueForKey: AZCoreRecordImportPrimaryAttributeKey] ?: azcr_primaryKeyNameFromString(relationshipInfo.destinationEntity.name);
+		NSString *primaryKeyName = [relationshipInfo.userInfo valueForKey: AZCoreRecordImportRelationshipPrimaryKey] ?: [destinationEntity.userInfo valueForKey: AZCoreRecordImportRelationshipPrimaryKey] ?: azcr_primaryKeyNameFromString(relationshipInfo.destinationEntity.name);
 		
 		NSAttributeDescription *primaryKeyAttribute = [destinationEntity.attributesByName valueForKey: primaryKeyName];
 		NSString *lookupKey = [primaryKeyAttribute.userInfo valueForKey: AZCoreRecordImportMapKey] ?: primaryKeyAttribute.name;
