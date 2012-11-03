@@ -532,11 +532,15 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	
 	if (_persistentStoreCoordinator)
 	{
+		[self.persistentStoreCoordinator lock];
+		
 		[self.persistentStoreCoordinator.persistentStores enumerateObjectsUsingBlock:^(NSPersistentStore *store, NSUInteger idx, BOOL *stop) {
 			NSError *error = nil;
 			[self.persistentStoreCoordinator removePersistentStore: store error: &error];
 			[AZCoreRecordManager handleError: error];
 		}];
+		
+		[self.persistentStoreCoordinator unlock];
 	}
 }
 
@@ -641,7 +645,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
 	
 	[self azcr_resetStack];
-	_ubiquityEnabled = enabled;
+	_stackShouldUseUbiquity = enabled;
 	self.ubiquityToken = [[AZCoreRecordUbiquitySentinel sharedSentinel] ubiquityIdentityToken];
 	if (_persistentStoreCoordinator) [self azcr_loadPersistentStores: NO];
 	
