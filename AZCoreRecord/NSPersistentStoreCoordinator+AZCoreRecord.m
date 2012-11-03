@@ -50,8 +50,15 @@
 {
 	NSParameterAssert(block);
 	
+	if (![[NSFileManager defaultManager] fileExistsAtPath: oldStoreURL.path])
+		return;
+	
 	dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 	dispatch_async(globalQueue, ^{
+		void (^unlock)(void) = ^{
+			[self unlock];
+		};
+		
 		[self lock];
 		
 		NSPersistentStoreCoordinator *oldPSC = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: self.managedObjectModel];
@@ -66,7 +73,10 @@
 		}];
 		
 		if (![oldPSC addStoreAtURL: oldStoreURL configuration: configuration options: oldPSOption])
-			return [self unlock];
+		{
+			unlock();
+			return;
+		}
 		
 		NSManagedObjectContext *oldMOC = [[NSManagedObjectContext alloc] init];
 		[oldMOC setPersistentStoreCoordinator: oldPSC];
@@ -85,7 +95,7 @@
 		
 		[[NSNotificationCenter defaultCenter] postNotificationName: AZCoreRecordDidFinishSeedingPersistentStoreNotification object: self];
 		
-		[self unlock];
+		unlock();
 	});
 }
 
