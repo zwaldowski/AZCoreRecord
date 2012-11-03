@@ -79,6 +79,10 @@
 		if ([newMOC hasChanges] && [newMOC save])
 			[newMOC reset];
 		
+		NSError *error;
+		[[NSFileManager defaultManager] removeItemAtURL: oldStoreURL error: &error];
+		[AZCoreRecordManager handleError: error];
+		
 		[[NSNotificationCenter defaultCenter] postNotificationName: AZCoreRecordDidFinishSeedingPersistentStoreNotification object: self];
 		
 		[self unlock];
