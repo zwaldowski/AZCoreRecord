@@ -45,7 +45,7 @@ extern NSString *const AZUbiquityIdentityDidChangeNotification;
  
  @see [NSFileManager -ubiquityIdentityToken]
  */
-@property (nonatomic, readonly) id <NSObject, NSCopying, NSCoding> ubiquityIdentityToken;
+@property (nonatomic, copy, readonly) id <NSObject, NSCopying, NSCoding> ubiquityIdentityToken;
 
 /** Returns whether or not ubiquity is available as a shorthand of determining
  whether the user is logged in or the server is unavailable. */

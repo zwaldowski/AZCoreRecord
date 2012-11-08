@@ -13,7 +13,7 @@
 
 @interface ImportSingleEntityWithNoRelationshipsTests : GHTestCase
 
-@property (nonatomic, retain) SingleEntityWithNoRelationships *testEntity;
+@property (nonatomic, strong) SingleEntityWithNoRelationships *testEntity;
 
 @end
 

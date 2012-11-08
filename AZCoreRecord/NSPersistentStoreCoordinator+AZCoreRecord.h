@@ -10,6 +10,10 @@
 #import <CoreData/CoreData.h>
 #import "AZCoreRecordManager.h"
 
+typedef void (^AZCoreRecordSeedBlock)(NSManagedObjectContext *oldMOC, NSManagedObjectContext *newMOC);
+
+extern NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification;
+
 @interface NSPersistentStoreCoordinator (AZCoreRecord)
 
 #pragma mark - Default Store Coordinator

@@ -83,12 +83,12 @@
 
 + (NSManagedObjectContext *) defaultContext
 {
-	return [[AZCoreRecordManager sharedManager] managedObjectContext];
+	return [[AZCoreRecordManager defaultManager] managedObjectContext];
 }
 
 + (NSManagedObjectContext *) contextForCurrentThread
 {
-	return [[AZCoreRecordManager sharedManager] contextForCurrentThread];
+	return [[AZCoreRecordManager defaultManager] contextForCurrentThread];
 }
 
 #pragma mark - Child Contexts
@@ -124,7 +124,7 @@
 
 + (void) resetDefaultContext
 {
-	NSManagedObjectContext *context = [[AZCoreRecordManager sharedManager] managedObjectContext];
+	NSManagedObjectContext *context = [[AZCoreRecordManager defaultManager] managedObjectContext];
 	[context performBlockAndWait: ^{
 		[context reset];
 	}];

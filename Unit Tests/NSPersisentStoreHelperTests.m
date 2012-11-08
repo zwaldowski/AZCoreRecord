@@ -27,7 +27,7 @@
 	
 	NSURL *expectedStoreUrl = [NSURL fileURLWithPath:[applicationLibraryDirectory stringByAppendingPathComponent:defaultStoreName]];
 	
-	NSURL *defaultStoreUrl = [[AZCoreRecordManager sharedManager] storeURL];
+	NSURL *defaultStoreUrl = [[AZCoreRecordManager defaultManager] storeURL];
 	assertThat(defaultStoreUrl, is(equalTo(expectedStoreUrl)));
 }
 

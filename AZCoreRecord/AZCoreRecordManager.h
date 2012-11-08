@@ -1,6 +1,6 @@
 //
-//  AZCoreRecord.h
-//  AZCoreRecord Unit Tests
+//  AZCoreRecordManager.h
+//  AZCoreRecord
 //
 //  Created by Saul Mora on 3/11/10.
 //  Copyright 2010-2011 Magical Panda Software, LLC. All rights reserved.
@@ -9,23 +9,18 @@
 
 #import <CoreData/CoreData.h>
 
-extern NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification;
-extern NSString *const AZCoreRecordManagerDidAddPrimaryStoreNotification;
-extern NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification;
-extern NSString *const AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification;
-extern NSString *const AZCoreRecordManagerShouldRunDeduplicationNotification;
-extern NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification;
-extern NSString *const AZCoreRecordManagerWillBeginAddingPersistentStoresNotification;
-
-extern NSString *const AZCoreRecordDeduplicationIdentityAttributeKey;
-extern NSString *const AZCoreRecordLocalOnlyStoreConfigurationNameKey;
-extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
-
 typedef NSArray *(^AZCoreRecordDeduplicationHandlerBlock)(NSArray *conflictingManagedObjects, NSArray *identityAttributes);
 typedef void (^AZCoreRecordContextBlock)(NSManagedObjectContext *context);
 typedef void (^AZCoreRecordErrorBlock)(NSError *error);
-typedef void (^AZCoreRecordSeedBlock)(NSManagedObjectContext *oldMOC, NSManagedObjectContext *newMOC);
 typedef void (^AZCoreRecordVoidBlock)(void);
+
+extern NSString *const AZCoreRecordManagerWillBeginAddingPersistentStoresNotification;
+extern NSString *const AZCoreRecordManagerDidAddPrimaryStoreNotification;
+extern NSString *const AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification;
+
+extern NSString *const AZCoreRecordManagerShouldRunDeduplicationNotification;
+
+extern NSString *const AZCoreRecordDeduplicationIdentityAttributeKey;
 
 @protocol AZCoreRecordErrorHandler <NSObject>
 @required
@@ -34,28 +29,7 @@ typedef void (^AZCoreRecordVoidBlock)(void);
 
 @end
 
-@interface AZCoreRecordManager : NSObject
-{
-@private
-	__weak id <AZCoreRecordErrorHandler> _errorDelegate;	
-	AZCoreRecordErrorBlock _errorHandler;
-	
-	dispatch_semaphore_t _semaphore;
-	
-	BOOL _stackShouldAutoMigrate;
-	BOOL _stackShouldUseUbiquity;
-	BOOL _stackShouldUseInMemoryStore;
-	id _ubiquityToken;
-	NSString *_stackName;
-	NSString *_stackModelName;
-	NSURL *_stackModelURL;
-	NSDictionary *_stackModelConfigurations;
-	NSMutableDictionary *_conflictResolutionHandlers;
-	Class _stackManagedObjectContextClass;
-	
-	NSManagedObjectContext *_managedObjectContext;
-	NSPersistentStoreCoordinator *_persistentStoreCoordinator;
-}
+@interface AZCoreRecordManager : NSObject <NSLocking>
 
 - (id)initWithStackName: (NSString *) name;
 
@@ -63,43 +37,35 @@ typedef void (^AZCoreRecordVoidBlock)(void);
 
 #pragma mark - Stack Accessors
 
+- (NSManagedObjectContext *)contextForCurrentThread;
+
 @property (nonatomic, strong, readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (nonatomic, strong, readonly) id <NSObject, NSCopying, NSCoding> ubiquityToken;
 
-- (NSManagedObjectContext *)contextForCurrentThread;
+@property (nonatomic, strong, readonly) NSFileManager *fileManager;
 
 #pragma mark - Helpers
 
-@property (nonatomic, readonly) NSURL *storeURL;
-@property (nonatomic, readonly) NSURL *ubiquitousStoreURL;
-@property (nonatomic, readonly) NSURL *localOnlyStoreURL;
-
-@property (nonatomic, readonly, getter = isReadOnly) BOOL readOnly;
+@property (weak, nonatomic, readonly) NSURL *storeURL;
 
 #pragma mark - Options
 
 @property (nonatomic) BOOL stackShouldAutoMigrateStore;
 @property (nonatomic) BOOL stackShouldUseInMemoryStore;
-@property (nonatomic) BOOL stackShouldUseUbiquity;
 @property (nonatomic, copy) NSString *stackModelName;
 @property (nonatomic, copy) NSURL *stackModelURL;
 @property (nonatomic, copy) NSDictionary *stackModelConfigurations;
-@property (nonatomic) Class stackManagedObjectContextClass;
+@property (unsafe_unretained, nonatomic) Class stackManagedObjectContextClass;
 
 - (void) configureWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
 
 - (void) loadPersistentStoresWithCompletion:(void(^)(void))completionBlock;
 
-#pragma mark - Ubiquity Support
-
-@property (nonatomic, getter = isUbiquityEnabled) BOOL ubiquityEnabled;
-
-+ (BOOL) supportsUbiquity;
-
 #pragma mark - Default stack settings
 
-+ (AZCoreRecordManager *) sharedManager;
++ (AZCoreRecordManager *) defaultManager;
++ (void) setDefaultManager: (AZCoreRecordManager *)manager;
++ (void) setDefaultManagerClass:(Class)cls;
 
 + (void) setDefaultStackShouldAutoMigrateStore: (BOOL) shouldMigrate;
 + (void) setDefaultStackShouldUseInMemoryStore: (BOOL) inMemory;

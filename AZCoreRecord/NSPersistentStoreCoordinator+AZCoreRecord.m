@@ -12,13 +12,15 @@
 #import "NSManagedObjectModel+AZCoreRecord.h"
 #import "NSManagedObjectContext+AZCoreRecord.h"
 
+NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification = @"AZCoreRecordDidFinishSeedingPersistentStoreNotification";
+
 @implementation NSPersistentStoreCoordinator (AZCoreRecord)
 
 #pragma mark - Default Store Coordinator
 
 + (NSPersistentStoreCoordinator *) defaultStoreCoordinator
 {
-	return [[AZCoreRecordManager sharedManager] persistentStoreCoordinator];
+	return [[AZCoreRecordManager defaultManager] persistentStoreCoordinator];
 }
 
 #pragma mark - In-Memory Store
