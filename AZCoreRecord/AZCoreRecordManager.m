@@ -24,7 +24,7 @@
 #import "NSManagedObjectModel+AZCoreRecord.h"
 
 NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification = @"AZCoreRecordDidFinishSeedingPersistentStoreNotification";
-NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification = @"AZCoreRecordManagerDidAddFallbackStoreNotification";
+NSString *const AZCoreRecordManagerDidAddPrimaryStoreNotification = @"AZCoreRecordManagerDidAddPrimaryStoreNotification";
 NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification = @"AZCoreRecordManagerDidAddUbiquitousStoreNotification";
 NSString *const AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification = @"AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification";
 NSString *const AZCoreRecordManagerShouldRunDeduplicationNotification = @"AZCoreRecordManagerShouldRunDeduplicationNotification";
@@ -32,7 +32,7 @@ NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification = @"AZCore
 NSString *const AZCoreRecordManagerWillBeginAddingPersistentStoresNotification = @"AZCoreRecordManagerWillBeginAddingPersistentStoresNotification";
 
 NSString *const AZCoreRecordDeduplicationIdentityAttributeKey = @"identityAttribute";
-NSString *const AZCoreRecordLocalStoreConfigurationNameKey = @"LocalStore";
+NSString *const AZCoreRecordLocalOnlyStoreConfigurationNameKey = @"LocalOnlyStore";
 NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousStore";
 
 @interface AZCoreRecordManager ()
@@ -217,11 +217,11 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	return self.ubiquityToken && [(NSData *) self.ubiquityToken length];
 }
 
-- (NSURL *) fallbackStoreURL
+- (NSURL *) storeURL
 {
-	return [self.stackStoreURL URLByAppendingPathComponent: @"FallbackStore.sqlite"];
+	return [self.stackStoreURL URLByAppendingPathComponent: @"Store.sqlite"];
 }
-- (NSURL *) localStoreURL
+- (NSURL *) localOnlyStoreURL
 {
 	return [self.stackStoreURL URLByAppendingPathComponent: @"LocalStore.sqlite"];
 }
@@ -436,10 +436,10 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 - (void) loadPersistentStoresWithCompletion:(void(^)(void))completionBlock {
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-	NSString *localConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordLocalStoreConfigurationNameKey];
+	NSString *localConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordLocalOnlyStoreConfigurationNameKey];
 	NSString *ubiquitousConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
-	NSURL *localURL = self.localStoreURL;
-	NSURL *fallbackURL = self.fallbackStoreURL;
+	NSURL *localURL = self.localOnlyStoreURL;
+	NSURL *fallbackURL = self.storeURL;
 	NSURL *ubiquityURL = self.ubiquitousStoreURL;
 #if TARGET_IPHONE_SIMULATOR
 	NSURL *ubiquityContainer = nil;
@@ -477,7 +477,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 		else
 			[self.persistentStoreCoordinator addStoreAtURL: fallbackURL configuration: ubiquitousConfiguration options: storeOptions];
 
-		[nc postNotificationName: AZCoreRecordManagerDidAddFallbackStoreNotification object: self];
+		[nc postNotificationName: AZCoreRecordManagerDidAddPrimaryStoreNotification object: self];
 		_ubiquityEnabled = NO;
 	};
 

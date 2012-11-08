@@ -22,7 +22,7 @@
 }
 
 - (void)tearDown {
-    NSURL *URLToRemove = [_localManager.fallbackStoreURL URLByDeletingLastPathComponent];
+    NSURL *URLToRemove = [_localManager.storeURL URLByDeletingLastPathComponent];
     _localManager = nil;
 	[[NSFileManager defaultManager] removeItemAtPath:[URLToRemove path] error:nil];
 }

@@ -23,11 +23,11 @@
 - (void)testDefaultStoreIsTheApplicationSupportSlashApplicationFolder
 {
 	NSString *applicationLibraryDirectory = [self applicationStorageDirectory];
-	NSString *defaultStoreName = @"FallbackStore.sqlite";
+	NSString *defaultStoreName = @"Store.sqlite";
 	
 	NSURL *expectedStoreUrl = [NSURL fileURLWithPath:[applicationLibraryDirectory stringByAppendingPathComponent:defaultStoreName]];
 	
-	NSURL *defaultStoreUrl = [[AZCoreRecordManager sharedManager] fallbackStoreURL];
+	NSURL *defaultStoreUrl = [[AZCoreRecordManager sharedManager] storeURL];
 	assertThat(defaultStoreUrl, is(equalTo(expectedStoreUrl)));
 }
 
@@ -35,7 +35,7 @@
 {
 	NSString *applicationLibraryDirectory = [self applicationStorageDirectory];
     NSString *customStackName = @"CustomStoreName.storefile";
-	NSString *defaultStoreName = @"FallbackStore.sqlite";
+	NSString *defaultStoreName = @"Store.sqlite";
     NSString *testStorePath = [NSString stringWithFormat: @"%@/%@/%@", applicationLibraryDirectory, customStackName, defaultStoreName];
 	
 	BOOL folderWasCreated = [[NSFileManager defaultManager] createDirectoryAtPath: [testStorePath stringByDeletingLastPathComponent] withIntermediateDirectories: YES attributes: nil error: NULL];
@@ -45,7 +45,7 @@
 	assertThatBool(fileWasCreated, is(equalToBool(YES)));
 	
 	NSURL *expectedFoundStoreUrl = [NSURL fileURLWithPath:testStorePath];
-	NSURL *foundStoreUrl = [[[AZCoreRecordManager alloc] initWithStackName: customStackName] fallbackStoreURL];
+	NSURL *foundStoreUrl = [[[AZCoreRecordManager alloc] initWithStackName: customStackName] storeURL];
 	
 	assertThat(foundStoreUrl, is(equalTo(expectedFoundStoreUrl)));
 	

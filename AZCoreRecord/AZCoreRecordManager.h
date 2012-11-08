@@ -10,7 +10,7 @@
 #import <CoreData/CoreData.h>
 
 extern NSString *const AZCoreRecordDidFinishSeedingPersistentStoreNotification;
-extern NSString *const AZCoreRecordManagerDidAddFallbackStoreNotification;
+extern NSString *const AZCoreRecordManagerDidAddPrimaryStoreNotification;
 extern NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification;
 extern NSString *const AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification;
 extern NSString *const AZCoreRecordManagerShouldRunDeduplicationNotification;
@@ -18,7 +18,7 @@ extern NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification;
 extern NSString *const AZCoreRecordManagerWillBeginAddingPersistentStoresNotification;
 
 extern NSString *const AZCoreRecordDeduplicationIdentityAttributeKey;
-extern NSString *const AZCoreRecordLocalStoreConfigurationNameKey;
+extern NSString *const AZCoreRecordLocalOnlyStoreConfigurationNameKey;
 extern NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey;
 
 typedef NSArray *(^AZCoreRecordDeduplicationHandlerBlock)(NSArray *conflictingManagedObjects, NSArray *identityAttributes);
@@ -71,9 +71,9 @@ typedef void (^AZCoreRecordVoidBlock)(void);
 
 #pragma mark - Helpers
 
+@property (nonatomic, readonly) NSURL *storeURL;
 @property (nonatomic, readonly) NSURL *ubiquitousStoreURL;
-@property (nonatomic, readonly) NSURL *fallbackStoreURL;
-@property (nonatomic, readonly) NSURL *localStoreURL;
+@property (nonatomic, readonly) NSURL *localOnlyStoreURL;
 
 @property (nonatomic, readonly, getter = isReadOnly) BOOL readOnly;
 
