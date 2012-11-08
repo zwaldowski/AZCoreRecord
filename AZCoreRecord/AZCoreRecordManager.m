@@ -90,12 +90,13 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	}
 	
 	return self;
-	
 }
 
 - (void) dealloc
 {
-	[[NSNotificationCenter defaultCenter] removeObserver: self];
+	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+	[nc removeObserver: self];
+	if (_managedObjectContext) [nc removeObserver: _managedObjectContext];
 	dispatch_release(_semaphore);
 }
 
@@ -131,6 +132,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	
 	return context;
 }
+
 - (NSManagedObjectContext *) managedObjectContext
 {
 	if (!_managedObjectContext)
