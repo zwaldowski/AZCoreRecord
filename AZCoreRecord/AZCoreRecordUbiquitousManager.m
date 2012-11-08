@@ -9,6 +9,7 @@
 #import "AZCoreRecordUbiquitousManager.h"
 #import "AZCoreRecordUbiquitySentinel.h"
 #import "NSPersistentStoreCoordinator+AZCoreRecord.h"
+#import "NSManagedObjectContext+AZCoreRecord.h"
 
 NSString *const AZCoreRecordManagerDidAddUbiquitousStoreNotification = @"AZCoreRecordManagerDidAddUbiquitousStoreNotification";
 NSString *const AZCoreRecordManagerWillAddUbiquitousStoreNotification = @"AZCoreRecordManagerWillAddUbiquitousStoreNotification";

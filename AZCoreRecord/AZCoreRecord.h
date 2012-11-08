@@ -7,6 +7,7 @@
 //
 
 #import "AZCoreRecordManager.h"
+#import "AZCoreRecordUbiquitousManager.h"
 #import "AZCoreRecordUbiquitySentinel.h"
 #import "NSManagedObject+AZCoreRecord.h"
 #import "NSManagedObject+AZCoreRecordImport.h"
