@@ -89,6 +89,8 @@ typedef void (^AZCoreRecordVoidBlock)(void);
 
 - (void) configureWithManagedDocument: (id) managedObject NS_AVAILABLE(10_4, 5_0);
 
+- (void) loadPersistentStoresWithCompletion:(void(^)(void))completionBlock;
+
 #pragma mark - Ubiquity Support
 
 @property (nonatomic, getter = isUbiquityEnabled) BOOL ubiquityEnabled;

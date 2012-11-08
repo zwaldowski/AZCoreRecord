@@ -422,15 +422,9 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 		}];
 	});
 }
-- (void) azcr_loadPersistentStores: (BOOL) obtainLock
-{
-	if (obtainLock) dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-	
+
+- (void) loadPersistentStoresWithCompletion:(void(^)(void))completionBlock {
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-	[nc postNotificationName: AZCoreRecordManagerWillBeginAddingPersistentStoresNotification object: self];
-	
-	[self azcr_resetStack];
-	
 	NSString *localConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordLocalStoreConfigurationNameKey];
 	NSString *ubiquitousConfiguration = [self.stackModelConfigurations objectForKey: AZCoreRecordUbiquitousStoreConfigurationNameKey];
 	NSURL *localURL = self.localStoreURL;
@@ -441,9 +435,9 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 #else
 	NSURL *ubiquityContainer = [self.fileManager URLForUbiquityContainerIdentifier:nil];
 #endif
-	
+
 	NSDictionary *options = (self.stackShouldUseUbiquity || self.stackShouldAutoMigrateStore) ? [self azcr_lightweightMigrationOptions] : [NSDictionary dictionary];
-	
+
 	if (localConfiguration.length)
 	{
 		if (![self.fileManager fileExistsAtPath: localURL.path])
@@ -459,36 +453,31 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 				}
 			}
 		}
-		
+
 		[self.persistentStoreCoordinator addStoreAtURL: localURL configuration: localConfiguration options: options];
 	}
-	
+
 	dispatch_block_t addFallback = ^{
-		
+
 		NSMutableDictionary *storeOptions = [options mutableCopy];
-		
+
 		if (self.stackShouldUseInMemoryStore)
 			[self.persistentStoreCoordinator addInMemoryStoreWithConfiguration: ubiquitousConfiguration options: storeOptions];
 		else
 			[self.persistentStoreCoordinator addStoreAtURL: fallbackURL configuration: ubiquitousConfiguration options: storeOptions];
-		
+
 		[nc postNotificationName: AZCoreRecordManagerDidAddFallbackStoreNotification object: self];
 		_ubiquityEnabled = NO;
 	};
-	
-	dispatch_block_t finish = ^{
-		[nc postNotificationName: AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification object: self];
-		if (obtainLock) dispatch_semaphore_signal(self.semaphore);
-	};
-	
+
 	if (self.stackShouldUseUbiquity && ubiquityURL) {
 		[nc postNotificationName: AZCoreRecordManagerWillAddUbiquitousStoreNotification object: self];
-		
+
 		dispatch_queue_t globalQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 		dispatch_async(globalQueue, ^{
 			NSMutableDictionary *storeOptions = [options mutableCopy];
 			BOOL fallback = NO;
-			
+
 			if (ubiquityContainer)
 			{
 				[storeOptions setObject: @"UbiquitousStore" forKey: NSPersistentStoreUbiquitousContentNameKey];
@@ -499,7 +488,7 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 				[storeOptions setObject: [NSNumber numberWithBool: YES] forKey: NSReadOnlyPersistentStoreOption];
 				fallback = YES;
 			}
-			
+
 			if ([self.persistentStoreCoordinator addStoreAtURL: ubiquityURL configuration: ubiquitousConfiguration options: storeOptions])
 			{
 				[nc postNotificationName: AZCoreRecordManagerDidAddUbiquitousStoreNotification object: self];
@@ -511,15 +500,28 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 			{
 				fallback = YES;
 			}
-			
+
 			if (fallback) addFallback();
-			
-			finish();
+			if (completionBlock) completionBlock();
 		});
 	} else {
 		addFallback();
-		finish();
+		if (completionBlock) completionBlock();
 	}
+}
+- (void) azcr_loadPersistentStores: (BOOL) obtainLock
+{
+	if (obtainLock) dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+	
+	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+	[nc postNotificationName: AZCoreRecordManagerWillBeginAddingPersistentStoresNotification object: self];
+	
+	[self azcr_resetStack];
+
+	[self loadPersistentStoresWithCompletion:^{
+		[nc postNotificationName: AZCoreRecordManagerDidFinishAdddingPersistentStoresNotification object: self];
+		if (obtainLock) dispatch_semaphore_signal(self.semaphore);
+	}];
 }
 - (void) azcr_resetStack
 {
