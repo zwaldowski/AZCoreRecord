@@ -144,35 +144,6 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 	
 	return _managedObjectContext;
 }
-
-- (NSPersistentStoreCoordinator *) persistentStoreCoordinator
-{
-	if (!_persistentStoreCoordinator)
-	{
-		NSManagedObjectModel *model = nil;
-		NSURL *modelURL = self.stackModelURL;
-		NSString *modelName = self.stackModelName;
-		
-		if (!modelURL && modelName) {
-			model = [NSManagedObjectModel modelWithName: modelName];
-		} else if (modelURL) {
-			model = [[NSManagedObjectModel alloc] initWithContentsOfURL: modelURL];
-		} else {
-			model = [NSManagedObjectModel mergedModelFromBundles: nil];
-		}
-		
-		_persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
-		
-		NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-		[nc addObserver: self selector: @selector(azcr_didRecieveDeduplicationNotification:) name: AZCoreRecordDidFinishSeedingPersistentStoreNotification object: _persistentStoreCoordinator];
-		[nc addObserver: self selector: @selector(azcr_didRecieveDeduplicationNotification:) name: NSPersistentStoreDidImportUbiquitousContentChangesNotification object: _persistentStoreCoordinator];
-		
-		[self azcr_loadPersistentStores: YES];
-	}
-	
-	return _persistentStoreCoordinator;
-}
-
 - (void) setManagedObjectContext: (NSManagedObjectContext *) managedObjectContext
 {
 	BOOL isUbiquitous = self.ubiquityEnabled;
@@ -195,6 +166,44 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 			[_managedObjectContext startObservingUbiquitousChanges];
 		
 		[[NSNotificationCenter defaultCenter] addObserver: _managedObjectContext selector: @selector(save) name: key object: nil];
+	}
+}
+
+- (NSPersistentStoreCoordinator *) persistentStoreCoordinator
+{
+	if (!_persistentStoreCoordinator)
+	{
+		NSManagedObjectModel *model = nil;
+		NSURL *modelURL = self.stackModelURL;
+		NSString *modelName = self.stackModelName;
+
+		if (!modelURL && modelName) {
+			model = [NSManagedObjectModel modelWithName: modelName];
+		} else if (modelURL) {
+			model = [[NSManagedObjectModel alloc] initWithContentsOfURL: modelURL];
+		} else {
+			model = [NSManagedObjectModel mergedModelFromBundles: nil];
+		}
+
+		self.persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel: model];
+	}
+
+	return _persistentStoreCoordinator;
+}
+- (void)setPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator {
+	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+	if (_persistentStoreCoordinator) {
+		[nc removeObserver: self name: AZCoreRecordDidFinishSeedingPersistentStoreNotification object: _persistentStoreCoordinator];
+		[nc removeObserver: self name: NSPersistentStoreDidImportUbiquitousContentChangesNotification object: _persistentStoreCoordinator];
+		[self azcr_resetStack];
+	}
+
+	_persistentStoreCoordinator = persistentStoreCoordinator;
+
+	if (_persistentStoreCoordinator) {
+		[nc addObserver: self selector: @selector(azcr_didRecieveDeduplicationNotification:) name: AZCoreRecordDidFinishSeedingPersistentStoreNotification object: _persistentStoreCoordinator];
+		[nc addObserver: self selector: @selector(azcr_didRecieveDeduplicationNotification:) name: NSPersistentStoreDidImportUbiquitousContentChangesNotification object: _persistentStoreCoordinator];
+		[self azcr_loadPersistentStores: YES];
 	}
 }
 
