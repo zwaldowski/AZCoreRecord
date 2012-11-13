@@ -373,7 +373,7 @@ static Class _defaultStackClass = NULL;
 {
 	if (!_sharedManager) {
 		NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *) kCFBundleNameKey];
-		Class stackClass = _defaultStackClass ?: [AZCoreRecordManager class];
+		Class stackClass = _defaultStackClass ?: [self class];
 		self.defaultManager = [[stackClass alloc] initWithStackName: applicationName];
 	}
 	return _sharedManager;
