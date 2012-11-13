@@ -32,14 +32,14 @@ NSString *const AZCoreRecordManagerShouldRunDeduplicationNotification = @"AZCore
 
 NSString *const AZCoreRecordDeduplicationIdentityAttributeKey = @"identityAttribute";
 
+static __weak id <AZCoreRecordErrorHandler> errorDelegate;
+static AZCoreRecordErrorBlock errorHandler;
+
 @interface AZCoreRecordManager ()
 
 @property (nonatomic, strong, readwrite) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong, readwrite) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, strong, readwrite) NSFileManager *fileManager;
-
-@property (nonatomic, weak) id <AZCoreRecordErrorHandler> errorDelegate;
-@property (nonatomic, copy) AZCoreRecordErrorBlock errorHandler;
 
 @property (nonatomic) dispatch_semaphore_t semaphore;
 @property (nonatomic, strong) NSMutableDictionary *conflictResolutionHandlers;
@@ -562,14 +562,14 @@ static Class _defaultStackClass = NULL;
 	dispatch_async(dispatch_get_main_queue(), ^{
 		AZCoreRecordManager *shared = [self defaultManager];
 		
-		void (^block)(NSError *error) = shared.errorHandler;
+		void (^block)(NSError *error) = [self errorHandler];
 		if (block)
 		{
 			block(error);
 			return;
 		}
 		
-		id target = shared.errorDelegate;
+		id target = [self errorDelegate];
 		if (target)
 		{
 			[target performSelector: @selector(handleError:) withObject: error];
@@ -584,20 +584,20 @@ static Class _defaultStackClass = NULL;
 
 + (AZCoreRecordErrorBlock) errorHandler
 {
-	return [[self defaultManager] errorHandler];
+	return errorHandler;
 }
 + (void) setErrorHandler: (AZCoreRecordErrorBlock) block
 {
-	[[self defaultManager] setErrorHandler: block];
+	errorHandler = [block copy];
 }
 
 + (id <AZCoreRecordErrorHandler>) errorDelegate
 {
-	return [[self defaultManager] errorDelegate];
+	return errorDelegate;
 }
 + (void) setErrorDelegate: (id <AZCoreRecordErrorHandler>) target
 {
-	[[self defaultManager] setErrorDelegate: target];
+	errorDelegate = target;
 }
 
 #pragma mark - Data Commit
