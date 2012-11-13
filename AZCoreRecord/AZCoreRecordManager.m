@@ -113,7 +113,7 @@ static AZCoreRecordErrorBlock errorHandler;
 		context = [self.managedObjectContext newChildContext];
 		[dict setObject: context forKey: key];
 		
-		__unsafe_unretained id observer = [[NSNotificationCenter defaultCenter] addObserverForName: NSThreadWillExitNotification object: thread queue: nil usingBlock: ^(NSNotification *note) {
+		__unsafe_unretained __block id observer = [[NSNotificationCenter defaultCenter] addObserverForName: NSThreadWillExitNotification object: thread queue: nil usingBlock: ^(NSNotification *note) {
 			NSThread *thread = [note object];
 			NSManagedObjectContext *context = [thread.threadDictionary objectForKey: key];
 			[context reset];
