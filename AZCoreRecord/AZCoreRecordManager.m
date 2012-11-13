@@ -560,8 +560,6 @@ static Class _defaultStackClass = NULL;
 		return;
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
-		AZCoreRecordManager *shared = [self defaultManager];
-		
 		void (^block)(NSError *error) = [self errorHandler];
 		if (block)
 		{
