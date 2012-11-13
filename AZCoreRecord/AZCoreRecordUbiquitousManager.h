@@ -15,6 +15,8 @@ extern NSString *const AZCoreRecordLocalOnlyStoreConfigurationNameKey;
 
 @interface AZCoreRecordUbiquitousManager : AZCoreRecordManager
 
++ (AZCoreRecordUbiquitousManager *) defaultManager;
+
 #pragma mark - Stack Accessors
 
 @property (nonatomic, strong, readonly) id <NSObject, NSCopying, NSCoding> ubiquityToken;

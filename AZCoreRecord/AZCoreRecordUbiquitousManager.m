@@ -24,6 +24,11 @@ NSString *const AZCoreRecordUbiquitousStoreConfigurationNameKey = @"UbiquitousSt
 
 @implementation AZCoreRecordUbiquitousManager
 
++ (AZCoreRecordUbiquitousManager *) defaultManager
+{
+	return (AZCoreRecordUbiquitousManager *) [super defaultManager];
+}
+
 #pragma mark AZCoreRecordManager
 
 - (id) initWithStackName: (NSString *) name
