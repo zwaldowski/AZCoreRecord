@@ -318,7 +318,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 		NSDictionary *relationships = self.entity.relationshipsByName;
 		if (relationships.count)
 		{
-			__unsafe_unretained NSManagedObject *weakSelf = self;
+			__weak NSManagedObject *weakSelf = self;
 			[self azcr_setRelationships: relationships forDictionary: objectData withBlock: ^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData) {
 				if ([objectData isKindOfClass: [NSDictionary class]])
 				{
@@ -384,7 +384,7 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 		NSDictionary *relationships = self.entity.relationshipsByName;
 		if (relationships.count)
 		{
-			__unsafe_unretained NSManagedObject *weakSelf = self;
+			__weak NSManagedObject *weakSelf = self;
 			[self azcr_setRelationships: relationships forDictionary: objectData withBlock: ^NSManagedObject *(NSRelationshipDescription *relationshipInfo, id objectData) {
 				NSManagedObject *relatedObject = [weakSelf azcr_findObjectForRelationship: relationshipInfo withData: objectData];
 				
