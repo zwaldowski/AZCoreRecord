@@ -355,9 +355,22 @@ NSString *const AZCoreRecordImportRelationshipPrimaryKey = @"primaryKey";
 		context = [NSManagedObjectContext defaultContext];
 	
 	NSEntityDescription *entity = [self entityDescriptionInContext: context];
-	NSString *attributeKey = [entity.userInfo valueForKey: AZCoreRecordImportPrimaryAttributeKey] ?: azcr_primaryKeyNameFromString(entity.name);
-	
+	NSString *attributeKey = [entity.userInfo valueForKey: AZCoreRecordImportPrimaryAttributeKey];
 	NSAttributeDescription *primaryAttribute = [entity.attributesByName valueForKey: attributeKey];
+	
+	NSEntityDescription *superentity = entity;
+	while (superentity && !attributeKey)
+	{
+		attributeKey = [superentity.userInfo valueForKey: AZCoreRecordImportPrimaryAttributeKey];
+		primaryAttribute = [superentity.attributesByName valueForKey: attributeKey];
+		superentity = superentity.superentity;
+	}
+	if (!attributeKey)
+	{
+		attributeKey = azcr_primaryKeyNameFromString(entity.name);
+		primaryAttribute = [entity.attributesByName valueForKey: attributeKey];
+	}
+	
 	NSAssert3(primaryAttribute, @"Unable to determine primary attribute for %@. Specify either an attribute named %@ or the primary key in userInfo named '%@'", entity.name, attributeKey, AZCoreRecordImportPrimaryAttributeKey);
 	
 	NSString *lookupKey = [primaryAttribute.userInfo valueForKey: AZCoreRecordImportMapKey] ?: primaryAttribute.name;
