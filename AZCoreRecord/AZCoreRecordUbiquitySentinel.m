@@ -129,12 +129,8 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 		}
 		
 		// Download not complete. Schedule another check.
-		dispatch_queue_t queue = dispatch_get_current_queue();
-		dispatch_retain(queue);
-		
-		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), queue, ^{
+		dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 			[self syncURLWithCloud: URL completion: [block copy]];
-			dispatch_release(queue);
 		});
 	}
 	else
@@ -174,9 +170,6 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 	[self.devicesListMetadataQuery disableUpdates];
 	self.performingDeviceRegistrationCheck = YES;
 	
-	dispatch_queue_t completionQueue = dispatch_get_current_queue();
-	dispatch_retain(completionQueue);
-	
 	NSURL *url = self.presentedItemURL;
 	[self syncURLWithCloud: self.presentedItemURL completion: ^(BOOL success, NSError *error) {
 		NSFileCoordinator *coordinator = [[NSFileCoordinator alloc] initWithFilePresenter: self];
@@ -184,7 +177,7 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 			NSArray *devices = [NSArray arrayWithContentsOfURL: readURL];
 			id deviceId = [self ubiquityIdentityToken];
 			BOOL deviceIsRegistered = [devices containsObject: deviceId];
-			dispatch_async(completionQueue, ^{
+			dispatch_async(dispatch_get_main_queue(), ^{
 				self.performingDeviceRegistrationCheck = NO;
 				if (!deviceIsRegistered)
 				{
@@ -196,8 +189,6 @@ static NSString *const AZCoreRecordManagerUbiquityIdentityTokenKey = @"Applicati
 				{
 					[self.devicesListMetadataQuery enableUpdates];
 				}
-				
-				dispatch_release(completionQueue);
 			});
 		}];
 	}];
